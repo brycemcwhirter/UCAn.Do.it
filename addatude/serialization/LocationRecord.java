@@ -22,26 +22,19 @@ public class LocationRecord {
     String locationName;
     String locationDescription;
 
+    public static final int LOCATION_NAME_AND_DESCRIPTION = 2;
+
 
 
     public LocationRecord(long userID, double longitude, double latitude, String locationName, String locationDescription) throws ValidationException {
 
-        //Test for Valid Values
-        validUserID(userID);
-        validLongitude(longitude);
-        validLatitude(latitude);
-        validString(locationName);
-        validString(locationDescription);
-
-
-
-
         //Set Params
-        this.userID = userID;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.locationName = locationName;
-        this.locationDescription = locationDescription;
+        setUserID(userID);
+        setLongitude(longitude);
+        setLatitude(latitude);
+        setLocationName(locationName);
+        setLocationDescription(locationDescription);
+
     }
 
 
@@ -64,18 +57,56 @@ public class LocationRecord {
         Double readLatitude = Double.parseDouble(in.readUntilSpace());
 
 
-        //TODO figure out implementation to read Location Name & Description
-
 
         //Read the Location Name & Desc
         String readLocationAndDesc = new String(in.readAllBytes());
+        String[] tokens = divideLocationNameAndDesc(readLocationAndDesc);
 
 
         //Divide the Location Name and Description
-
-
         //Generate a new Location Record
 
+        //Set Params
+        setUserID(userID);
+        setLongitude(longitude);
+        setLatitude(latitude);
+        setLocationName(tokens[0]);
+        setLocationDescription(tokens[1]);
+
+
+
+    }
+
+
+
+    public String[] divideLocationNameAndDesc(String s) throws ValidationException{
+        String[] tokens = new String[2];
+        int start = 0;
+        char[] data = s.toCharArray();
+
+        for(int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++){
+            // Read the Size
+            int size = Integer.parseInt(String.valueOf(s.charAt(start)));
+
+            
+            int begOfWordNdx = start + 2;
+
+            // Read in Size number of Chars
+            String value = s.copyValueOf(data, begOfWordNdx, size);
+            start = begOfWordNdx + size;
+
+
+            // Save the Value
+            tokens[i] = value;
+
+            // Repeat Process for Description
+        }
+
+
+
+
+
+        return tokens;
     }
 
 

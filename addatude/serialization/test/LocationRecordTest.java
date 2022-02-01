@@ -4,6 +4,7 @@ package serialization.test;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperties;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import serialization.LocationRecord;
@@ -131,11 +132,21 @@ public class LocationRecordTest {
             });
         }
 
+        @ParameterizedTest
+        @DisplayName("Valid Divide Location & Desc")
+        @ValueSource(strings = {"2 BU6 Baylor", "12 fayetteville8 arkansas"})
+        public void testValidNameAndDesc(String s) throws ValidationException {
+            var locationRecord = new LocationRecord(1234, 145.0, 89.0, "Waco", "Texas");
+            String[] tokens = locationRecord.divideLocationNameAndDesc(s);
 
-       //TODO how to test the end of stream
+        }
 
 
-        //TODO Write Test for invalid decodes
+
+
+
+
+
         @ParameterizedTest
         @DisplayName("Invalid Decode Streams")
         @MethodSource("invalidDecodeStreams")
