@@ -1,3 +1,11 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 0
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package serialization;
 
 import javax.xml.stream.Location;
@@ -38,11 +46,14 @@ public class LocationRecord {
 
 
 
+
+
+
     public LocationRecord(MessageInput in) throws ValidationException, IOException {
         Objects.requireNonNull(in);
 
         //Read the UserID
-        String readUserID = in.readUntilSpace();
+        Long readUserID = Long.parseLong(in.readUntilSpace());
 
 
         //Read the Longitude
@@ -58,10 +69,17 @@ public class LocationRecord {
 
         //Read the Location Name & Desc
         String readLocationAndDesc = new String(in.readAllBytes());
-        String [] tokens = readLocationAndDesc.split("\\d");
 
+
+        //Divide the Location Name and Description
+
+
+        //Generate a new Location Record
 
     }
+
+
+
 
 
 
@@ -90,56 +108,119 @@ public class LocationRecord {
     }
 
 
+
+
+
+
+
+
     @Override
     public String toString() {
         return String.valueOf(getUserID()) + ":" + getLocationName()+"-"+getLocationDescription()+" ("+getLatitude()+","+getLongitude()+")";
 
     }
 
+
+
+
+
+
     public long getUserID() {
         return userID;
     }
+
+
+
+
+
 
     public void setUserID(long userID) throws ValidationException {
         validUserID(userID);
         this.userID = userID;
     }
 
+
+
+
+
+
     public double getLongitude() {
         return longitude;
     }
+
+
+
+
+
 
     public void setLongitude(double longitude) throws ValidationException {
         validLongitude(longitude);
         this.longitude = longitude;
     }
 
+
+
+
+
+
     public double getLatitude() {
         return latitude;
     }
+
+
+
+
+
 
     public void setLatitude(double latitude) throws ValidationException {
         validLatitude(latitude);
         this.latitude = latitude;
     }
 
+
+
+
+
+
     public String getLocationName() {
         return locationName;
     }
+
+
+
+
+
 
     public void setLocationName(String locationName) throws ValidationException {
         validString(locationName);
         this.locationName = locationName;
     }
 
+
+
+
+
+
+
     public String getLocationDescription() {
         return locationDescription;
     }
+
+
+
+
+
+
 
     public void setLocationDescription(String locationDescription) throws ValidationException {
         validString(locationDescription);
         this.locationDescription = locationDescription;
     }
+
+
+
+
+
 
 
     //Methods that test Valid Parameters
@@ -149,6 +230,11 @@ public class LocationRecord {
         }
     }
 
+
+
+
+
+
     void validString(String testString) throws ValidationException {
 
         //Make Sure String follows Regex #_word
@@ -157,6 +243,11 @@ public class LocationRecord {
         }
 
     }
+
+
+
+
+
 
     private void validDouble(String valString) throws ValidationException{
 
@@ -168,6 +259,11 @@ public class LocationRecord {
 
     }
 
+
+
+
+
+
     private void validLatitude(double latitude) throws ValidationException {
 
         validDouble(Double.toString(latitude));
@@ -177,6 +273,12 @@ public class LocationRecord {
         }
     }
 
+
+
+
+
+
+
     private void validLongitude(double longitude) throws ValidationException {
 
         validDouble(Double.toString(longitude));
@@ -185,6 +287,11 @@ public class LocationRecord {
             throw new ValidationException("Longitude must be between -180 & 180");
         }
     }
+
+
+
+
+
 
     private String validSize(String string) throws ValidationException {
 
