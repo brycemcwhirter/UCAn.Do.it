@@ -59,7 +59,12 @@ public class MessageInput {
     }
 
 
-
+    /**
+     * reads an integer value
+     * @return the integer value read
+     * @throws IOException
+     *      if a read error occurred
+     */
     public int readIntegerValue() throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -84,38 +89,13 @@ public class MessageInput {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
-     * Performs the standard readAllBytes() offered by InputStream
-     *
-     * @return A byte array of the bytes read
+     * reads a specific size of bytes from a Message Input
+     * @param size the number of bytes to read
+     * @return the buffer of read bytes
      * @throws IOException
-     *      If a reading error occurs
+     *      if a read error occurs
      */
-    public byte[] readAllBytes() throws IOException {
-        return in.readAllBytes();
-    }
-
-
     public byte[] readNumOfValues(int size) throws IOException {
         byte[] buf = new byte[size];
         in.read(buf, 0, size);
