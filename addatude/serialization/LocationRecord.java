@@ -84,25 +84,31 @@ public class LocationRecord {
         int start = 0;
         char[] data = s.toCharArray();
 
-        for(int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++){
-            // Read the Size
-            int size = Integer.parseInt(String.valueOf(s.charAt(start)));
+        try {
 
-            
-            int begOfWordNdx = start + 2;
-
-            // Read in Size number of Chars
-            String value = s.copyValueOf(data, begOfWordNdx, size);
-            start = begOfWordNdx + size;
+            for (int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++) {
+                // Read the Size
+                int size = Integer.parseInt(String.valueOf(s.charAt(start)));
 
 
-            // Save the Value
-            tokens[i] = value;
+                int begOfWordNdx = start + 2;
 
-            // Repeat Process for Description
+                // Read in Size number of Chars
+                String value = s.copyValueOf(data, begOfWordNdx, size);
+                start = begOfWordNdx + size;
+
+
+                // Save the Value
+                tokens[i] = value;
+
+                // Repeat Process for Description
+            }
         }
 
+        catch(NumberFormatException e){
+            throw new ValidationException("Invalid Stream. Size Must be specified");
 
+        }
 
 
 
