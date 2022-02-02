@@ -60,6 +60,30 @@ public class MessageInput {
 
 
 
+    public int readIntegerValue() throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+
+            int r;
+            while ((r = in.read()) != -1) {
+                char c = (char) r;
+
+                if (!Character.isDigit(c))
+                    break;
+
+                stringBuilder.append(c);
+            }
+
+        } catch(IOException e) {
+            throw new IOException("Error occurred during reading");
+        }
+
+        return Integer.parseInt(stringBuilder.toString());
+
+    }
+
+
 
 
 
@@ -92,8 +116,11 @@ public class MessageInput {
     }
 
 
+    public byte[] readNumOfValues(int size) throws IOException {
+        byte[] buf = new byte[size];
+        in.read(buf, 0, size);
+        return buf;
 
 
-
-
+    }
 }

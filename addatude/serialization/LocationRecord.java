@@ -28,7 +28,6 @@ public class LocationRecord {
 
     public LocationRecord(long userID, double longitude, double latitude, String locationName, String locationDescription) throws ValidationException {
 
-        //Set Params
         setUserID(userID);
         setLongitude(longitude);
         setLatitude(latitude);
@@ -58,62 +57,27 @@ public class LocationRecord {
 
 
 
-        //Read the Location Name & Desc
-        String readLocationAndDesc = new String(in.readAllBytes());
-        String[] tokens = divideLocationNameAndDesc(readLocationAndDesc);
+
+        String[] tokens = new String[2];
+
+        //For The Location Name and Description
+        // Read the Size of the Value
+        // Read 'Size' number of chars for Value
+        for(int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++){
+            int size = in.readIntegerValue();
+            byte[] buf  = in.readNumOfValues(size);
+            tokens[i] = new String(buf, StandardCharsets.UTF_8);
+        }
 
 
-        //Divide the Location Name and Description
-        //Generate a new Location Record
-
-        //Set Params
-        setUserID(userID);
-        setLongitude(longitude);
-        setLatitude(latitude);
+        setUserID(readUserID);
+        setLongitude(readLongitude);
+        setLatitude(readLatitude);
         setLocationName(tokens[0]);
         setLocationDescription(tokens[1]);
-
-
-
     }
 
 
-
-    public String[] divideLocationNameAndDesc(String s) throws ValidationException{
-        String[] tokens = new String[2];
-        int start = 0;
-        char[] data = s.toCharArray();
-
-        try {
-
-            for (int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++) {
-                // Read the Size
-                int size = Integer.parseInt(String.valueOf(s.charAt(start)));
-
-
-                int begOfWordNdx = start + 2;
-
-                // Read in Size number of Chars
-                String value = s.copyValueOf(data, begOfWordNdx, size);
-                start = begOfWordNdx + size;
-
-
-                // Save the Value
-                tokens[i] = value;
-
-                // Repeat Process for Description
-            }
-        }
-
-        catch(NumberFormatException e){
-            throw new ValidationException("Invalid Stream. Size Must be specified");
-
-        }
-
-
-
-        return tokens;
-    }
 
 
 
@@ -153,7 +117,12 @@ public class LocationRecord {
 
     @Override
     public String toString() {
-        return String.valueOf(getUserID()) + ":" + getLocationName()+"-"+getLocationDescription()+" ("+getLatitude()+","+getLongitude()+")";
+
+        int longVal = (int) getLongitude();
+        int latVal = (int) getLatitude();
+
+
+        return String.valueOf(getUserID()) + ":" + getLocationName()+"-"+getLocationDescription()+" ("+latVal + ".0" +","+longVal+".0"+")";
 
     }
 
@@ -325,23 +294,6 @@ public class LocationRecord {
         }
     }
 
-
-
-
-
-
-    private String validSize(String string) throws ValidationException {
-
-        String[] tokens = string.split("\\s");
-        int size = Integer.parseInt(tokens[0]);
-        String name = tokens[1];
-
-        if(name.length() != size){
-            throw new ValidationException("Invalid String. Size Mismatch: "+ string);
-        }
-
-        return name;
-    }
 
 
 
