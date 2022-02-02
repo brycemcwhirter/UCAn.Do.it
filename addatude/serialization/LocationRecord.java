@@ -141,6 +141,7 @@ public class LocationRecord {
      * @return the user id
      */
     public long getUserID() {
+
         return userID;
     }
 
@@ -162,6 +163,7 @@ public class LocationRecord {
      * @return the longitude
      */
     public double getLongitude() {
+
         return longitude;
     }
 
@@ -183,6 +185,7 @@ public class LocationRecord {
      * @return the latitude
      */
     public double getLatitude() {
+
         return latitude;
     }
 
@@ -204,6 +207,7 @@ public class LocationRecord {
      * @return the location name
      */
     public String getLocationName() {
+
         return locationName;
     }
 
@@ -225,6 +229,7 @@ public class LocationRecord {
      * @return the location description
      */
     public String getLocationDescription() {
+
         return locationDescription;
     }
 
