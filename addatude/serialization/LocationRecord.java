@@ -8,6 +8,7 @@
 
 package serialization;
 
+import javax.xml.stream.Location;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -16,12 +17,13 @@ import java.util.regex.Pattern;
 public class LocationRecord {
 
     long userID;
-    double longitude;
-    double latitude;
+    String longitude;
+    String latitude;
     String locationName;
     String locationDescription;
 
     public static final int LOCATION_NAME_AND_DESCRIPTION = 2;
+    public static final int MAX_NUM_OF_CHARS_FOR_DOUBLE = 10;
 
 
     /**
@@ -34,7 +36,7 @@ public class LocationRecord {
      * @throws ValidationException
      *      If Any of these parameters are invalid
      */
-    public LocationRecord(long userID, double longitude, double latitude, String locationName, String locationDescription) throws ValidationException {
+    public LocationRecord(long userID, String longitude, String latitude, String locationName, String locationDescription) throws ValidationException {
 
         setUserID(userID);
         setLongitude(longitude);
@@ -58,14 +60,17 @@ public class LocationRecord {
 
         //Read the UserID
         long readUserID = Long.parseLong(in.readUntilSpace());
+        setUserID(readUserID);
 
 
         //Read the Longitude
-        double readLongitude = Double.parseDouble(in.readUntilSpace());
+        String readLongitude = in.readUntilSpace();
+        setLongitude(readLongitude);
 
 
         //Read the Latitude
-        double readLatitude = Double.parseDouble(in.readUntilSpace());
+        String readLatitude =in.readUntilSpace();
+        setLatitude(readLatitude);
 
 
 
@@ -81,12 +86,16 @@ public class LocationRecord {
             tokens[i] = new String(buf, StandardCharsets.UTF_8);
         }
 
+        if(!in.isEmpty()){
+            throw new ValidationException("Invalid Stream");
+        }
 
-        setUserID(readUserID);
-        setLongitude(readLongitude);
-        setLatitude(readLatitude);
         setLocationName(tokens[0]);
         setLocationDescription(tokens[1]);
+
+
+
+
     }
 
 
@@ -127,8 +136,8 @@ public class LocationRecord {
     @Override
     public String toString() {
 
-        int longVal = (int) getLongitude();
-        int latVal = (int) getLatitude();
+        String longVal =  getLongitude();
+        String latVal =  getLatitude();
 
 
         return getUserID() + ":" + getLocationName()+"-"+getLocationDescription()+" ("+latVal + ".0" +","+longVal+".0"+")";
@@ -162,7 +171,7 @@ public class LocationRecord {
      * returns the longitude
      * @return the longitude
      */
-    public double getLongitude() {
+    public String getLongitude() {
 
         return longitude;
     }
@@ -174,9 +183,10 @@ public class LocationRecord {
      * @throws ValidationException
      *      If the new longitude is invalid
      */
-    public void setLongitude(double longitude) throws ValidationException {
+    public LocationRecord setLongitude(String longitude) throws ValidationException {
         validLongitude(longitude);
         this.longitude = longitude;
+        return this;
     }
 
 
@@ -184,7 +194,7 @@ public class LocationRecord {
      * returns the latitude
      * @return the latitude
      */
-    public double getLatitude() {
+    public String getLatitude() {
 
         return latitude;
     }
@@ -196,9 +206,10 @@ public class LocationRecord {
      * @throws ValidationException
      *      if the latitude is invalid
      */
-    public void setLatitude(double latitude) throws ValidationException {
+    public LocationRecord setLatitude(String latitude) throws ValidationException {
         validLatitude(latitude);
         this.latitude = latitude;
+        return this;
     }
 
 
@@ -218,9 +229,10 @@ public class LocationRecord {
      * @throws ValidationException
      *      if the location name is invalid
      */
-    public void setLocationName(String locationName) throws ValidationException {
+    public LocationRecord setLocationName(String locationName) throws ValidationException {
         validCharacterList(locationName);
         this.locationName = locationName;
+        return this;
     }
 
 
@@ -240,9 +252,10 @@ public class LocationRecord {
      * @throws ValidationException
      *      if the location description is invalid
      */
-    public void setLocationDescription(String locationDescription) throws ValidationException {
+    public LocationRecord setLocationDescription(String locationDescription) throws ValidationException {
         validCharacterList(locationDescription);
         this.locationDescription = locationDescription;
+        return this;
     }
 
 
@@ -284,7 +297,7 @@ public class LocationRecord {
     private void validDouble(String valString) throws ValidationException{
 
 
-        if(!Pattern.matches("^-?[0-9]+\\.[0-9]+$", valString)){
+        if(!Pattern.matches("^-?[0-9]+\\.[0-9]+$", valString) && (valString.length() <= MAX_NUM_OF_CHARS_FOR_DOUBLE)){
             throw new ValidationException("Longitude or Latitude value doesn't follow protocol specification");
         }
 
@@ -298,11 +311,11 @@ public class LocationRecord {
      * @throws ValidationException
      *      if the latitude is not valid
      */
-    private void validLatitude(double latitude) throws ValidationException {
+    private void validLatitude(String latitude) throws ValidationException {
 
-        validDouble(Double.toString(latitude));
+        validDouble(latitude);
 
-        if(latitude > 90 || latitude < -90){
+        if(Double.parseDouble(latitude) > 90 || Double.parseDouble(latitude) < -90){
             throw new ValidationException("Latitude must be between -90 & 90");
         }
     }
@@ -314,11 +327,11 @@ public class LocationRecord {
      * @throws ValidationException
      *      if the longitude is not valid
      */
-    private void validLongitude(double longitude) throws ValidationException {
+    private void validLongitude(String longitude) throws ValidationException {
 
-        validDouble(Double.toString(longitude));
+        validDouble(longitude);
 
-        if(longitude > 180 || longitude < -180){
+        if(Double.parseDouble(longitude) > 180 || Double.parseDouble(longitude)  < -180){
             throw new ValidationException("Longitude must be between -180 & 180");
         }
     }

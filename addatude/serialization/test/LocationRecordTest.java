@@ -1,6 +1,8 @@
 package serialization.test;
 
 
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,6 @@ public class LocationRecordTest {
 
     @DisplayName("Attribute Constructor")
     @Nested
-    static
     class AttributeConstructorTest{
 
 
@@ -41,7 +42,7 @@ public class LocationRecordTest {
         @DisplayName("Invalid Parameters")
         @ParameterizedTest(name = "{index}: {0}")
         @MethodSource("badParameters")
-        void testInvalid(String message, long userID, double longitude, double latitude, String locationName, String locationDescription) throws IllegalArgumentException {
+        void testInvalid(String message, long userID, String longitude, String latitude, String locationName, String locationDescription) throws IllegalArgumentException {
 
             assertThrows(ValidationException.class, ()-> {
                 LocationRecord bad = new LocationRecord(userID, longitude, latitude, locationName, locationDescription);
@@ -50,7 +51,7 @@ public class LocationRecordTest {
 
         }
 
-        public static Stream<Arguments> badParameters(){
+        public Stream<Arguments> badParameters(){
             return Stream.of(
                     arguments("Bad User ID", -123, 1.23, 3.23, "Baylor", "Bear"),
                     arguments("Bad Longitude", 123, 181, 3.23, "Baylor", "Bear"),
@@ -64,7 +65,7 @@ public class LocationRecordTest {
         @DisplayName("Valid Creation")
         @ParameterizedTest
         @MethodSource("goodParameters")
-        void testValid(long userID, double longitude, double latitude, String locationName, String locationDescription) throws IllegalArgumentException, ValidationException {
+        void testValid(long userID, String longitude, String latitude, String locationName, String locationDescription) throws IllegalArgumentException, ValidationException {
 
             LocationRecord test = new LocationRecord(userID, longitude, latitude, locationName, locationDescription);
 
@@ -80,7 +81,7 @@ public class LocationRecordTest {
 
 
 
-        public static Stream<Arguments> goodParameters(){
+        public Stream<Arguments> goodParameters(){
             return Stream.of(
                     arguments(123, 178.34, 23.34, "Baylor", "Bear"),
                     arguments(231, 180.0, 90.0, "Baylor", "Bear"),
@@ -99,7 +100,6 @@ public class LocationRecordTest {
 
     @DisplayName("Decode")
     @Nested
-    static
     class DecodeConstructorTest{
 
         @ParameterizedTest(name = "Basic Decode")
@@ -140,7 +140,7 @@ public class LocationRecordTest {
 
 
 
-        public static Stream<Arguments> invalidDecodeStreams(){
+        public Stream<Arguments> invalidDecodeStreams(){
             return Stream.of(
                     arguments("1 1.2 3.4 2 BU6 BaylorSizeMismatch"),
                     arguments ("-123 1.2 3.4 2 BU13 invalidUserID"),
@@ -151,7 +151,7 @@ public class LocationRecordTest {
             );
         }
 
-        public static Stream<Arguments> validDecodeStreams(){
+        public Stream<Arguments> validDecodeStreams(){
             return Stream.of(
                     arguments("1 1.2 3.4 2 BU6 Baylor"),
                     arguments("1 1.2 3.4 10 ABCDEFGHIJ16 KLMNOPQRSTUVWXYZ"),
@@ -179,7 +179,7 @@ public class LocationRecordTest {
         public void testEncode() throws IOException, ValidationException {
             var bOut = new ByteArrayOutputStream();
             var out = new MessageOutput(bOut);
-            new LocationRecord(1, 1.2, 3.4, "BU", "Baylor").encode(out);
+            new LocationRecord(1, "1.2", "3.4", "BU", "Baylor").encode(out);
             assertArrayEquals("1 1.2 3.4 2 BU6 Baylor".getBytes(CHARENC), bOut.toByteArray());
         }
 
@@ -200,19 +200,14 @@ public class LocationRecordTest {
 
     @DisplayName("Getters & Setters")
     @Nested
-    static
     class GettersAndSettersTest{
 
-        static LocationRecord locationRecord;
+        LocationRecord locationRecord;
 
-        static {
-            try {
-                locationRecord = new LocationRecord(1234, 145.0, 89.0, "Waco", "Texas");
-            } catch (ValidationException e) {
-                e.printStackTrace();
-            }
-        }
-
+        @BeforeEach
+        void init() throws ValidationException {
+            locationRecord = new LocationRecord(1234, "145.0", "89.0", "Waco", "Texas");
+         }
 
         //set invalid userid
         @ParameterizedTest(name = "Invalid User ID")
@@ -225,8 +220,8 @@ public class LocationRecordTest {
 
         //set invalid longitude
         @ParameterizedTest(name = "Invalid Longitude")
-        @ValueSource(doubles = {-180.1, 180.1, 1893.2})
-        void invalidLongitude(double badLong){
+        @ValueSource(strings = {"-180.1", "180.1", "1893.2"})
+        void invalidLongitude(String badLong){
             assertThrows(ValidationException.class, ()-> {
                 locationRecord.setLongitude(badLong);
             });
@@ -234,8 +229,8 @@ public class LocationRecordTest {
 
         //set invalid latitude
         @ParameterizedTest(name = "Invalid Latitude")
-        @ValueSource(doubles = {-90.1, 90.1})
-        void invalidLatitude(double badLatidude){
+        @ValueSource(strings = {"-90.1", "90.1"})
+        void invalidLatitude(String badLatidude){
             assertThrows(ValidationException.class, ()-> {
                 locationRecord.setLatitude(badLatidude);
             });
@@ -262,7 +257,7 @@ public class LocationRecordTest {
             });
         }
 
-        public static Stream<Arguments> invalidStrings(){
+        public Stream<Arguments> invalidStrings(){
             return Stream.of(
                     arguments("\r\n\r\nNonPrintableCharacters"),
                     arguments("3 invalid")
@@ -280,41 +275,34 @@ public class LocationRecordTest {
 
     @DisplayName("To String")
     @Nested
-    static
     class toStringTests{
 
         @ParameterizedTest(name = "Valid String")
         @MethodSource("testParams")
-        void testValidString(long userID, double longitude, double latitude, String locationName, String locationDescription) throws IllegalArgumentException, ValidationException {
+        void testValidString(long userID, String longitude, String latitude, String locationName, String locationDescription) throws IllegalArgumentException, ValidationException {
 
             LocationRecord test = new LocationRecord(userID, longitude, latitude, locationName, locationDescription);
 
             String actualString = test.toString();
 
-            int longVal = (int) test.getLongitude();
-            int latVal = (int) test.getLatitude();
+            String longVal =  test.getLongitude();
+            String latVal =  test.getLatitude();
             String expectedString = String.valueOf(test.getUserID()) + ":" + test.getLocationName()+"-"+test.getLocationDescription()+" ("+latVal+".0,"+longVal+".0)";
 
             assertEquals(actualString,expectedString);
 
         }
 
-        public static Stream<Arguments> testParams(){
+        public Stream<Arguments> testParams(){
             return Stream.of(
-                    arguments(123, 178.34, 23.34, "Baylor", "Bear"),
-                    arguments(231, 180.0, 90.0, "Baylor", "Bear"),
-                    arguments(453, -180.0, -90.0, "TexasTech", "Lubbock")
+                    arguments(123, "178.34", "23.34", "Baylor", "Bear"),
+                    arguments(231, "180.0", "90.0", "Baylor", "Bear"),
+                    arguments(453, "-180.0", "-90.0", "TexasTech", "Lubbock")
             );
         }
 
 
     }
-
-
-
-
-
-
 
 }
 

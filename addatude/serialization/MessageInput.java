@@ -65,7 +65,7 @@ public class MessageInput {
      * @throws IOException
      *      if a read error occurred
      */
-    public int readIntegerValue() throws IOException {
+    public int readIntegerValue() throws IOException, ValidationException {
         StringBuilder stringBuilder = new StringBuilder();
 
         try {
@@ -75,7 +75,7 @@ public class MessageInput {
                 char c = (char) r;
 
                 if (!Character.isDigit(c))
-                    break;
+                    throw new ValidationException("Invalid Stream");
 
                 stringBuilder.append(c);
             }
@@ -102,5 +102,9 @@ public class MessageInput {
         return buf;
 
 
+    }
+
+    public boolean isEmpty() throws IOException {
+        return(in.available() == 0);
     }
 }
