@@ -23,7 +23,7 @@ public class LocationRecord {
     String locationDescription;
 
     public static final int LOCATION_NAME_AND_DESCRIPTION = 2;
-    public static final int MAX_NUM_OF_CHARS_FOR_DOUBLE = 10;
+
 
 
     /**
@@ -162,7 +162,7 @@ public class LocationRecord {
      *      If the new userID is invalid
      */
     public void setUserID(long userID) throws ValidationException {
-        validUserID(userID);
+        Validator.validUserID(userID);
         this.userID = userID;
     }
 
@@ -184,7 +184,7 @@ public class LocationRecord {
      *      If the new longitude is invalid
      */
     public LocationRecord setLongitude(String longitude) throws ValidationException {
-        validLongitude(longitude);
+        Validator.validLongitude(longitude);
         this.longitude = longitude;
         return this;
     }
@@ -207,7 +207,7 @@ public class LocationRecord {
      *      if the latitude is invalid
      */
     public LocationRecord setLatitude(String latitude) throws ValidationException {
-        validLatitude(latitude);
+        Validator.validLatitude(latitude);
         this.latitude = latitude;
         return this;
     }
@@ -230,7 +230,7 @@ public class LocationRecord {
      *      if the location name is invalid
      */
     public LocationRecord setLocationName(String locationName) throws ValidationException {
-        validCharacterList(locationName);
+        Validator.validCharacterList(locationName);
         this.locationName = locationName;
         return this;
     }
@@ -253,88 +253,13 @@ public class LocationRecord {
      *      if the location description is invalid
      */
     public LocationRecord setLocationDescription(String locationDescription) throws ValidationException {
-        validCharacterList(locationDescription);
+        Validator.validCharacterList(locationDescription);
         this.locationDescription = locationDescription;
         return this;
     }
 
 
-    /**
-     * tests for a valid user ID
-     * @param candidateID the candidate ID to be tested
-     * @throws ValidationException
-     *      if the user ID is invalid
-     */
-    void validUserID(long candidateID) throws ValidationException {
-        if(candidateID < 0 || candidateID > Integer.MAX_VALUE){
-            throw new ValidationException("User ID must be Unsigned Integer");
-        }
-    }
 
-
-    /**
-     * tests if a character list is valid
-     * @param testString the tested string
-     * @throws ValidationException
-     *      if character list is invalid
-     */
-    void validCharacterList(String testString) throws ValidationException {
-
-        //Make Sure String follows validChar
-        if(!Pattern.matches("^[a-zA-Z0-9_]*$", testString)){
-            throw new ValidationException("String is not valid: "+testString);
-        }
-
-    }
-
-
-    /**
-     * tests if a double value is valid
-     * @param valString the tested double value
-     * @throws ValidationException
-     *      if the value is not valid
-     */
-    private void validDouble(String valString) throws ValidationException{
-
-
-        if(!Pattern.matches("^-?[0-9]+\\.[0-9]+$", valString) && (valString.length() <= MAX_NUM_OF_CHARS_FOR_DOUBLE)){
-            throw new ValidationException("Longitude or Latitude value doesn't follow protocol specification");
-        }
-
-
-    }
-
-
-    /**
-     * tests if a given latitude is valid
-     * @param latitude the tested latitude
-     * @throws ValidationException
-     *      if the latitude is not valid
-     */
-    private void validLatitude(String latitude) throws ValidationException {
-
-        validDouble(latitude);
-
-        if(Double.parseDouble(latitude) > 90 || Double.parseDouble(latitude) < -90){
-            throw new ValidationException("Latitude must be between -90 & 90");
-        }
-    }
-
-
-    /**
-     * tests if a given longitude is valid
-     * @param longitude the given longitude
-     * @throws ValidationException
-     *      if the longitude is not valid
-     */
-    private void validLongitude(String longitude) throws ValidationException {
-
-        validDouble(longitude);
-
-        if(Double.parseDouble(longitude) > 180 || Double.parseDouble(longitude)  < -180){
-            throw new ValidationException("Longitude must be between -180 & 180");
-        }
-    }
 
 
 

@@ -2,28 +2,23 @@ package serialization;
 
 import java.io.IOException;
 
-public class Message {
+public abstract class Message {
 
     String operation;
     long mapId;
 
 
+    abstract void encode(MessageOutput out) throws IOException;
 
 
-    static Message decode(MessageInput in) throws ValidationException, NullPointerException{
+
+
+
+    public static Message decode(MessageInput in) throws ValidationException, NullPointerException{
 
         return null;
     }
 
-
-
-
-
-    void encode(MessageOutput out) throws IOException {
-
-        //TODO Encode can be abstract
-
-    }
 
 
 

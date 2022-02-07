@@ -1,5 +1,6 @@
 package serialization;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class LocationResponse extends Message{
 
 
 
-    LocationResponse(long mapId, String mapName){
+    LocationResponse(long mapId, String mapName) throws ValidationException{
 
     }
 
@@ -52,5 +53,10 @@ public class LocationResponse extends Message{
                 "locationRecordList=" + locationRecordList +
                 ", mapName='" + mapName + '\'' +
                 '}';
+    }
+
+    @Override
+    void encode(MessageOutput out) throws IOException {
+
     }
 }

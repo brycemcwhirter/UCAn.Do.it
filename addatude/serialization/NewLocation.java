@@ -1,11 +1,13 @@
 package serialization;
 
+import java.io.IOException;
+
 public class NewLocation extends Message{
 
     long mapId;
     LocationRecord location;
 
-    NewLocation(long mapId, LocationRecord location){
+    NewLocation(long mapId, LocationRecord location) throws ValidationException{
 
     }
 
@@ -24,5 +26,10 @@ public class NewLocation extends Message{
                 "mapId=" + mapId +
                 ", location=" + location +
                 '}';
+    }
+
+    @Override
+    void encode(MessageOutput out) throws IOException {
+
     }
 }

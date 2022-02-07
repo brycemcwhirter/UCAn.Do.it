@@ -1,11 +1,14 @@
 package serialization;
 
+import java.io.IOException;
+
 public class Error extends Message{
 
     String errorMessage;
 
 
     Error(long mapId, String errorMessage){
+
 
     }
 
@@ -22,5 +25,10 @@ public class Error extends Message{
     public String toString() {
         return "error";
         //todo Write the String Implementation of Error Message
+    }
+
+    @Override
+    void encode(MessageOutput out) throws IOException {
+
     }
 }
