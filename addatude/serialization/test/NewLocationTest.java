@@ -11,7 +11,7 @@ public class NewLocationTest {
     @DisplayName("Constructor")
     class constructorTest{
 
-        // Valid Creation
+        // Happy Path
 
         // Invalid mapID
 
@@ -47,7 +47,7 @@ public class NewLocationTest {
     @DisplayName("To String")
     class toString{
 
-        // to String representation
+        // Happy Path
 
     }
 

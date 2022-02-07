@@ -14,7 +14,9 @@ public class LocationResponseTest {
 
         // Happy Path
 
-        // Invalid Arguments (mapName, mapID)
+        // Invalid Arguments (mapName, mapID) (Everything throws ValidationException)
+
+
 
 
 
@@ -39,15 +41,33 @@ public class LocationResponseTest {
     @DisplayName("Add Location Record")
     class addLocationRecordTest{
 
+        // Happy Path
+
+        // Invalid Location Record (null location = validation exception)
+
     }
 
     @DisplayName("Getters & Setters")
     class gettersAndSettersTest{
 
+        // Happy Path for Set
+
+        // Validation Exception (invalid MapNames)
+
+        // get Location Record list (encapsulation test)
+
+        // Happy Path
+
+
+
     }
 
     @DisplayName("To String")
     class toStringTest{
+
+        // Happy Path
+
+
 
     }
 
