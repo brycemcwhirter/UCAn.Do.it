@@ -25,5 +25,5 @@ public class MessageTest {
 
     }
 
-    //todo test hash code & equals ? 
+    //todo test hash code & equals ?
 }
