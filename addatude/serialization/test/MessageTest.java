@@ -1,9 +1,25 @@
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.*;
 import serialization.Message;
+import serialization.MessageOutput;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class ConcreteMessage extends Message {
+
+    ConcreteMessage(){
+
+    }
+
+
+
+    @Override
+    public void encode(MessageOutput out) throws IOException {
+
+    }
+}
 
 @DisplayName("Message Test")
 public class MessageTest {
@@ -17,8 +33,24 @@ public class MessageTest {
 
     @DisplayName("Getters & Setters")
     class gettersAndSetters{
+        ConcreteMessage msg, test;
+
+
+        @BeforeAll
+        void setUp() {
+            msg = new ConcreteMessage();
+            //TODO How to tests abstract class methods?
+        }
 
         // set valid mapID happy path
+
+        @Test
+        @DisplayName("Happy Path for set Map ID")
+        void happySetMapId() {
+
+
+        }
+
 
         // invalid mapID
 
@@ -26,6 +58,15 @@ public class MessageTest {
 
     @DisplayName("Equals & Hashcode")
     class equalsAndHashCode{
+
+        ConcreteMessage a, b;
+
+        @BeforeAll
+        void setUp() {
+            a = new ConcreteMessage();
+            b = new ConcreteMessage();
+
+        }
 
         @Test
         void testEqualObjects() {

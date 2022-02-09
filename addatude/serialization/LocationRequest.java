@@ -16,7 +16,7 @@ public class LocationRequest extends Message{
     }
 
     @Override
-    void encode(MessageOutput out) throws IOException {
+    public void encode(MessageOutput out) throws IOException {
 
     }
 

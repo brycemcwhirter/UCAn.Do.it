@@ -12,7 +12,7 @@ public class Validator {
      * @throws ValidationException
      *      if the user ID is invalid
      */
-    static void validUserID(long candidateID) throws ValidationException {
+    static void validUnsignedInteger(long candidateID) throws ValidationException {
         if(candidateID < 0 || candidateID > Integer.MAX_VALUE){
             throw new ValidationException("User ID must be Unsigned Integer");
         }

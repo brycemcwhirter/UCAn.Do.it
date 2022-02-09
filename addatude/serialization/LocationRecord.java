@@ -8,11 +8,9 @@
 
 package serialization;
 
-import javax.xml.stream.Location;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class LocationRecord {
 
@@ -162,7 +160,7 @@ public class LocationRecord {
      *      If the new userID is invalid
      */
     public void setUserID(long userID) throws ValidationException {
-        Validator.validUserID(userID);
+        Validator.validUnsignedInteger(userID);
         this.userID = userID;
     }
 

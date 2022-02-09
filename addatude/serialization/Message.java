@@ -8,7 +8,7 @@ public abstract class Message {
     long mapId;
 
 
-    abstract void encode(MessageOutput out) throws IOException;
+    public abstract void encode(MessageOutput out) throws IOException;
 
 
 
@@ -45,8 +45,6 @@ public abstract class Message {
         this.mapId = mapId;
         return this;
     }
-
-
 
 
 }
