@@ -1,6 +1,7 @@
 package serialization;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Error extends Message{
 
@@ -30,5 +31,18 @@ public class Error extends Message{
     @Override
     void encode(MessageOutput out) throws IOException {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Error error = (Error) o;
+        return errorMessage.equals(error.errorMessage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(errorMessage);
     }
 }

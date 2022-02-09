@@ -3,6 +3,7 @@ package serialization;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LocationResponse extends Message{
 
@@ -58,5 +59,18 @@ public class LocationResponse extends Message{
     @Override
     void encode(MessageOutput out) throws IOException {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LocationResponse that = (LocationResponse) o;
+        return locationRecordList.equals(that.locationRecordList) && mapName.equals(that.mapName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(locationRecordList, mapName);
     }
 }

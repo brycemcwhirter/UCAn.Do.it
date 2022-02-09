@@ -107,4 +107,17 @@ public class MessageInput {
     public boolean isEmpty() throws IOException {
         return(in.available() == 0);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MessageInput that = (MessageInput) o;
+        return in.equals(that.in);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(in);
+    }
 }

@@ -19,4 +19,14 @@ public class LocationRequest extends Message{
     void encode(MessageOutput out) throws IOException {
 
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
 }

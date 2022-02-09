@@ -1,6 +1,7 @@
 package serialization;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class NewLocation extends Message{
 
@@ -31,5 +32,18 @@ public class NewLocation extends Message{
     @Override
     void encode(MessageOutput out) throws IOException {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NewLocation that = (NewLocation) o;
+        return mapId == that.mapId && location.equals(that.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mapId, location);
     }
 }

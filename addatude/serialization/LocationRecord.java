@@ -177,6 +177,8 @@ public class LocationRecord {
     }
 
 
+
+
     /**
      * validates and sets the longitude
      * @param longitude the new longitude
@@ -258,6 +260,30 @@ public class LocationRecord {
         return this;
     }
 
+
+    /**
+     * Equals Implementation
+     * @param o The Location Record to test against
+     * @return a boolean describing if two location
+     *  records are the same.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LocationRecord that = (LocationRecord) o;
+        return userID == that.userID && longitude.equals(that.longitude) && latitude.equals(that.latitude) && locationName.equals(that.locationName) && locationDescription.equals(that.locationDescription);
+    }
+
+
+    /**
+     * Hash Code implementation
+     * @return A hash representation
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(userID, longitude, latitude, locationName, locationDescription);
+    }
 
 
 

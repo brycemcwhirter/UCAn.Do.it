@@ -39,5 +39,16 @@ public class MessageOutput {
         os.write(b);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MessageOutput that = (MessageOutput) o;
+        return os.equals(that.os);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(os);
+    }
 }
