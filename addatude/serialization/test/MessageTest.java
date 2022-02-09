@@ -12,7 +12,6 @@ public class MessageTest {
     // TODO Write Hash Code & Equal Test for all message types
     // TODO encode happy path / decode for all message types
 
-    // TODO test good / bad
 
 
 
@@ -25,5 +24,22 @@ public class MessageTest {
 
     }
 
-    //todo test hash code & equals ?
+    @DisplayName("Equals & Hashcode")
+    class equalsAndHashCode{
+
+        @Test
+        void testEqualObjects() {
+
+        }
+
+        @Test
+        void testUnequalObjects() {
+
+        }
+
+        @Test
+        void testHashCode() {
+
+        }
+    }
 }

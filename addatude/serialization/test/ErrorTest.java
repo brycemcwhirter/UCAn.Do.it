@@ -56,4 +56,23 @@ public class ErrorTest {
         // Tests Happy Path
 
     }
+
+    @DisplayName("Equals & Hashcode")
+    class equalsAndHashCode{
+
+        @Test
+        void testEqualObjects() {
+
+        }
+
+        @Test
+        void testUnequalObjects() {
+
+        }
+
+        @Test
+        void testHashCode() {
+
+        }
+    }
 }

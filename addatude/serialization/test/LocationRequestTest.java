@@ -32,5 +32,24 @@ public class LocationRequestTest {
 
     }
 
+    @DisplayName("Equals & Hashcode")
+    class equalsAndHashCode{
+
+        @Test
+        void testEqualObjects() {
+
+        }
+
+        @Test
+        void testUnequalObjects() {
+
+        }
+
+        @Test
+        void testHashCode() {
+
+        }
+    }
+
 
 }
