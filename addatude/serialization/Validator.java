@@ -8,12 +8,12 @@ public class Validator {
 
     /**
      * tests for a valid user ID
-     * @param candidateID the candidate ID to be tested
+     * @param candidateInteger the candidate ID to be tested
      * @throws ValidationException
      *      if the user ID is invalid
      */
-    static void validUnsignedInteger(long candidateID) throws ValidationException {
-        if(candidateID < 0 || candidateID > Integer.MAX_VALUE){
+    static void validUnsignedInteger(long candidateInteger) throws ValidationException {
+        if(candidateInteger < 0 || candidateInteger > Integer.MAX_VALUE){
             throw new ValidationException("User ID must be Unsigned Integer");
         }
     }

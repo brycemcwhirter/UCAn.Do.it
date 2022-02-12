@@ -79,9 +79,14 @@ public class LocationRecord {
         // Read the Size of the Value
         // Read 'Size' number of chars for Value
         for(int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++){
-            int size = in.readIntegerValue();
-            byte[] buf  = in.readNumOfValues(size);
-            tokens[i] = new String(buf, StandardCharsets.UTF_8);
+            try {
+                int size = in.readIntegerValue();
+                byte[] buf = in.readNumOfValues(size);
+                tokens[i] = new String(buf, StandardCharsets.UTF_8);
+            }
+            catch(NumberFormatException e){
+                throw new ValidationException("Invalid Stream");
+            }
         }
 
         if(!in.isEmpty()){

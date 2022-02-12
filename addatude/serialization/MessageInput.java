@@ -16,6 +16,8 @@ public class MessageInput {
 
     private InputStream in;
 
+    //TODO Reading Messages for different operations
+
     /**
      * Creates a new Message Input Object
      *
@@ -75,7 +77,7 @@ public class MessageInput {
                 char c = (char) r;
 
                 if (!Character.isDigit(c))
-                    throw new ValidationException("Invalid Stream");
+                    break;
 
                 stringBuilder.append(c);
             }

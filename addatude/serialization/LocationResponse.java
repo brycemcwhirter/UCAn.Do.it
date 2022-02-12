@@ -14,13 +14,19 @@ public class LocationResponse extends Message{
 
 
 
-    LocationResponse(long mapId, String mapName) throws ValidationException{
+    public LocationResponse(long mapId, String mapName) throws ValidationException{
+        super(mapId);
+        Validator.validCharacterList(mapName);
+        this.mapName = mapName;
 
     }
 
 
 
-    public LocationResponse addLocationRecord(LocationRecord locationRecord){
+    public LocationResponse addLocationRecord(LocationRecord locationRecord) throws ValidationException {
+        if(Objects.isNull(locationRecord)){
+            throw new ValidationException("Location Record cannot be null in adding to list");
+        }
 
         return this;
     }
@@ -41,7 +47,8 @@ public class LocationResponse extends Message{
 
 
 
-    public LocationResponse setMapName(String mapName) {
+    public LocationResponse setMapName(String mapName) throws ValidationException {
+        Validator.validCharacterList(mapName);
         this.mapName = mapName;
         return this;
     }

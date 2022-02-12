@@ -1,8 +1,22 @@
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import serialization.*;
 import serialization.Error;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+
 
 @DisplayName("Error")
 public class ErrorTest {
@@ -10,18 +24,49 @@ public class ErrorTest {
 
 
     @DisplayName("Constructor")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class constructorTest{
 
-        // invalid map id
 
-        // invalid char list
 
-        // Null ErrorMessage (Validation Exception)
+        @Test
+        @DisplayName("Valid Set")
+        void validSet() throws ValidationException {
+            Error er = new Error(123, "error");
+            assertEquals(er.getErrorMessage(), "error");
+            assertEquals(er.getMapID(), 123);
+        }
 
-        // char count doesn't match char list size
+
+
+
+        @ParameterizedTest
+        @DisplayName("Invalid Message")
+        @MethodSource("invalidArguments")
+        void invalidMessage(long userID, String errorMsg) throws ValidationException{
+            assertThrows(ValidationException.class, () ->{
+                Error bad = new Error(userID, errorMsg);
+            });
+        }
+
+
+
+
+        public Stream<Arguments> invalidArguments(){
+            return Stream.of(
+                    arguments(123, null),
+                    arguments(-123, "negativeUnsignedInt"),
+                    arguments(123, "\nUnprintableCharacters"),
+                    arguments(Integer.MAX_VALUE+1, "Bad Integer")
+            );
+        }
+
     }
 
-    @DisplayName("Decode Implementation")
+    @DisplayName("Decode & Encode")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class decodeTest{
 
 
@@ -30,48 +75,123 @@ public class ErrorTest {
         void nullIn(){
             assertThrows(NullPointerException.class, ()->{
                 Error bad = (Error) Error.decode(null);
-
             });
         }
+
+        @Test
+        @DisplayName("Decode Test")
+        void decodeTest() throws ValidationException {
+            byte[] buf = "ADDATUDEv1 123 ERROR bad\r\n".getBytes(StandardCharsets.UTF_8);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
+            MessageInput in = new MessageInput(byteArrayInputStream);
+            LocationRequest test = (LocationRequest) Message.decode(in);
+        }
+
+
+
+        @Test
+        @DisplayName("Valid Encode")
+        void validEncode() throws ValidationException, IOException {
+            var bOut = new ByteArrayOutputStream();
+            var out = new MessageOutput(bOut);
+            new Error(123, "bad").encode(out);
+            assertArrayEquals("ADDATUDEv1 123 ERROR 3 bad\r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
+        }
+
+
+
     }
 
+
+
+
+
+
+
+
     @DisplayName("Getters & Setters")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class gettersAndSettersTest{
+
+        Error a;
+
+
+        @BeforeAll
+        void init() throws ValidationException{
+            a = new Error(123, "errormsg");
+
+        }
 
         @Test
         @DisplayName("Valid Set Error Message")
         void validSet(){
-
-            // AssertEquals
-
+            a.setErrorMessage("Error Message");
+            assertEquals("Error Message", a.getErrorMessage());
         }
 
         // Invalid Set (everything throws validation exception)
 
     }
 
+
+
+
+
+
+
+
     @DisplayName("To String")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class toStringTest{
 
-        // Tests Happy Path
+        Error test;
 
+        @Test
+        void validString() throws ValidationException{
+            test = new Error(123, "bad");
+            String toStringRepresentation = test.toString();
+            String valid = " map="+test.getMapID()+" error="+test.getErrorMessage();
+            assertEquals(valid, toStringRepresentation);
+        }
     }
 
+
+
+
+
+
+
+
     @DisplayName("Equals & Hashcode")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class equalsAndHashCode{
+
+        Error a,b,c;
+
+        @BeforeAll
+        void init() throws ValidationException {
+            a = new Error(123, "bad");
+            b = new Error(456, "notGood");
+            c = new Error(123, "bad");
+        }
 
         @Test
         void testEqualObjects() {
+            assertTrue(a.equals(c));
 
         }
 
         @Test
         void testUnequalObjects() {
-
+            assertFalse(a.equals(b));
         }
 
         @Test
         void testHashCode() {
+            assertTrue(a.hashCode() == c.hashCode());
 
         }
     }

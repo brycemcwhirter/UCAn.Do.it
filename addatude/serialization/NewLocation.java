@@ -8,15 +8,23 @@ public class NewLocation extends Message{
     long mapId;
     LocationRecord location;
 
-    NewLocation(long mapId, LocationRecord location) throws ValidationException{
+    public NewLocation(long mapId, LocationRecord location) throws ValidationException{
+        super(mapId);
+        if(Objects.isNull(location))
+            throw new ValidationException("Location Record cannot be null in New Location Instance");
+        this.location = location;
 
     }
+
+
 
     public LocationRecord getLocation() {
         return location;
     }
 
-    public NewLocation setLocation(LocationRecord location) {
+    public NewLocation setLocation(LocationRecord location) throws ValidationException {
+        if(Objects.isNull(location))
+            throw new ValidationException("Location Record cannot be null in New Location Instance");
         this.location = location;
         return this;
     }

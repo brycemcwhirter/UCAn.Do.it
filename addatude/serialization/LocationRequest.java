@@ -5,8 +5,8 @@ import java.io.IOException;
 public class LocationRequest extends Message{
 
 
-    LocationRequest(long mapId){
-        this.mapId = mapId;
+    public LocationRequest(long mapId) throws ValidationException {
+        super(mapId);
     }
 
     @Override

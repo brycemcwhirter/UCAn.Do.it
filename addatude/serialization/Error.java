@@ -8,8 +8,10 @@ public class Error extends Message{
     String errorMessage;
 
 
-    Error(long mapId, String errorMessage){
-
+    public Error(long mapId, String errorMessage) throws ValidationException{
+        super(mapId);
+        Validator.validCharacterList(errorMessage);
+        this.errorMessage = errorMessage;
 
     }
 

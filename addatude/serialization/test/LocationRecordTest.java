@@ -2,10 +2,7 @@ package serialization.test;
 
 
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import serialization.LocationRecord;
@@ -22,19 +19,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 @DisplayName("Location Record")
+@Nested
 public class LocationRecordTest {
 
     private static final Charset CHARENC = StandardCharsets.UTF_8;
-    private static final double DBLDELTA = 0.00001;
-
 
 
     @DisplayName("Attribute Constructor")
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class AttributeConstructorTest{
 
 
@@ -53,11 +52,10 @@ public class LocationRecordTest {
 
         public Stream<Arguments> badParameters(){
             return Stream.of(
-                    arguments("Bad User ID", -123, 1.23, 3.23, "Baylor", "Bear"),
-                    arguments("Bad Longitude", 123, 181, 3.23, "Baylor", "Bear"),
-                    arguments("Bad Latitude", 123, 179, -91, "Baylor", "Bear"),
-                    arguments("Bad Location Name", 123, 181, 3.23, "thisIsBad", "Bear"),
-                    arguments("Bad Location Description", 123, 181, 3.23, "Baylor", "thisIsAlsoBad")
+                    arguments("Bad User ID", -123, "1.23", "3.23", "Baylor", "Bear"),
+                    arguments("Bad Longitude", 123, "181", "3.23", "Baylor", "Bear"),
+                    arguments("Bad Latitude", 123, "179", "-91", "Baylor", "Bear")
+
 
                     );
         }
@@ -72,8 +70,8 @@ public class LocationRecordTest {
 
 
             assertEquals(userID, test.getUserID());
-            assertEquals(longitude, test.getLongitude(), DBLDELTA);
-            assertEquals(latitude, test.getLatitude(), DBLDELTA);
+            assertEquals(longitude, test.getLongitude());
+            assertEquals(latitude, test.getLatitude());
             assertEquals(locationName, test.getLocationName());
             assertEquals(locationDescription, test.getLocationDescription());
 
@@ -83,9 +81,9 @@ public class LocationRecordTest {
 
         public Stream<Arguments> goodParameters(){
             return Stream.of(
-                    arguments(123, 178.34, 23.34, "Baylor", "Bear"),
-                    arguments(231, 180.0, 90.0, "Baylor", "Bear"),
-                    arguments(453, -180.0, -90.0, "TexasTech", "Lubbock")
+                    arguments(123, "178.34", "23.34", "Baylor", "Bear"),
+                    arguments(231, "180.0", "90.0", "Baylor", "Bear"),
+                    arguments(453, "-180.0", "-90.0", "TexasTech", "Lubbock")
             );
         }
 
@@ -100,7 +98,11 @@ public class LocationRecordTest {
 
     @DisplayName("Decode")
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class DecodeConstructorTest{
+
+        //TODO write a method for testing valid decode and asserting values (Make Arguments as types and
+        // pass as params to the testDeocde method. Write them to a string and test decode from there.
 
         @ParameterizedTest(name = "Basic Decode")
         @MethodSource("validDecodeStreams")
@@ -108,9 +110,10 @@ public class LocationRecordTest {
             var in = new MessageInput(new ByteArrayInputStream(
                     decodeStream.getBytes(CHARENC)));
             var msg = new LocationRecord(in);
+
         }
 
-        //TODO write a method for testing valid decode and asserting values
+
 
 
         @Test
@@ -120,11 +123,6 @@ public class LocationRecordTest {
                LocationRecord bad = new LocationRecord(null);
             });
         }
-
-
-
-
-
 
 
 
@@ -200,6 +198,7 @@ public class LocationRecordTest {
 
     @DisplayName("Getters & Setters")
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class GettersAndSettersTest{
 
         LocationRecord locationRecord;
@@ -275,6 +274,7 @@ public class LocationRecordTest {
 
     @DisplayName("To String")
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class toStringTests{
 
         @ParameterizedTest(name = "Valid String")
@@ -304,22 +304,35 @@ public class LocationRecordTest {
 
     }
 
+
     @DisplayName("Equals & Hashcode")
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class equalsAndHashCode{
+
+        LocationRecord a, b, c;
+
+        @BeforeAll
+        void init() throws ValidationException {
+            a = new LocationRecord(123, "178.34", "23.34", "Baylor", "Bear");
+            b = new LocationRecord(453, "-180.0", "-90.0", "TexasTech", "Lubbock");
+            c = new LocationRecord(123, "178.34", "23.34", "Baylor", "Bear");
+        }
 
         @Test
         void testEqualObjects() {
-
+            assertEquals(a, c);
         }
 
         @Test
         void testUnequalObjects() {
+            assertNotEquals(a, b);
 
         }
 
         @Test
         void testHashCode() {
-
+            assertEquals(a.hashCode() , c.hashCode());
         }
     }
 
