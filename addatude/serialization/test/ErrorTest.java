@@ -3,6 +3,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import serialization.*;
 import serialization.Error;
 
@@ -80,11 +81,30 @@ public class ErrorTest {
 
         @Test
         @DisplayName("Decode Test")
-        void decodeTest() throws ValidationException {
+        void decodeTest() throws ValidationException, IOException {
             byte[] buf = "ADDATUDEv1 123 ERROR bad\r\n".getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in = new MessageInput(byteArrayInputStream);
-            LocationRequest test = (LocationRequest) Message.decode(in);
+            Error test = (Error) Message.decode(in);
+        }
+
+
+        @ParameterizedTest(name = "{0}")
+        @DisplayName("Invalid Decode")
+        @MethodSource("invalidDecodeStreams")
+        void invalidDecode(String name, String badStream) throws ValidationException, IOException{
+            assertThrows(ValidationException.class, ()->{
+                byte[] buf = badStream.getBytes(StandardCharsets.UTF_8);
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
+                MessageInput in = new MessageInput(byteArrayInputStream);
+                LocationRequest test = (LocationRequest) Message.decode(in);
+            });
+        }
+
+        public Stream<Arguments> invalidDecodeStreams(){
+            return Stream.of(arguments
+                    ("Invalid Header", "ADDATUDEv2")
+            );
         }
 
 

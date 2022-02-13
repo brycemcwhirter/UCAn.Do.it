@@ -6,7 +6,7 @@ public class LocationRequest extends Message{
 
 
     public LocationRequest(long mapId) throws ValidationException {
-        super(mapId);
+        super("ALL", mapId);
     }
 
     @Override

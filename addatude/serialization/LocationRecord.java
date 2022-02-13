@@ -89,9 +89,7 @@ public class LocationRecord {
             }
         }
 
-        if(!in.isEmpty()){
-            throw new ValidationException("Invalid Stream");
-        }
+
 
         setLocationName(tokens[0]);
         setLocationDescription(tokens[1]);

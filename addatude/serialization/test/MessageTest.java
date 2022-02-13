@@ -1,12 +1,9 @@
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import serialization.Message;
 import serialization.MessageOutput;
 import serialization.ValidationException;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,10 +14,9 @@ public class MessageTest {
     static class ConcreteMessage extends Message {
 
         ConcreteMessage(long mapID) throws ValidationException {
-            super(mapID);
+            super("ConcreteMessage", mapID);
 
         }
-
 
 
         @Override
@@ -30,19 +26,19 @@ public class MessageTest {
     }
 
 
-    // TODO encode happy path / decode for all message types
 
 
 
 
     @DisplayName("Getters & Setters")
-    static
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class gettersAndSetters{
-        static ConcreteMessage msg, test;
+        ConcreteMessage msg, test;
 
 
         @BeforeAll
-        static void setUp() throws ValidationException {
+        void setUp() throws ValidationException {
             msg = new ConcreteMessage(123);
         }
 

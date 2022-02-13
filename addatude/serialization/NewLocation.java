@@ -9,7 +9,7 @@ public class NewLocation extends Message{
     LocationRecord location;
 
     public NewLocation(long mapId, LocationRecord location) throws ValidationException{
-        super(mapId);
+        super("NEW", mapId);
         if(Objects.isNull(location))
             throw new ValidationException("Location Record cannot be null in New Location Instance");
         this.location = location;
@@ -28,6 +28,9 @@ public class NewLocation extends Message{
         this.location = location;
         return this;
     }
+
+    //TODO make sure every class has valid string method
+
 
     @Override
     public String toString() {

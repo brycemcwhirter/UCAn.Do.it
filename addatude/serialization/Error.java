@@ -9,7 +9,7 @@ public class Error extends Message{
 
 
     public Error(long mapId, String errorMessage) throws ValidationException{
-        super(mapId);
+        super("ERROR", mapId);
         Validator.validCharacterList(errorMessage);
         this.errorMessage = errorMessage;
 

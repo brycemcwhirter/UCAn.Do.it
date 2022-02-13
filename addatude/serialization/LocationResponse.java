@@ -15,7 +15,7 @@ public class LocationResponse extends Message{
 
 
     public LocationResponse(long mapId, String mapName) throws ValidationException{
-        super(mapId);
+        super("RESPONSE", mapId);
         Validator.validCharacterList(mapName);
         this.mapName = mapName;
 

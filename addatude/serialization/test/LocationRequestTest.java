@@ -42,7 +42,7 @@ public class LocationRequestTest {
 
         @Test
         @DisplayName("Decode Test")
-        void decodeTest() throws ValidationException {
+        void decodeTest() throws ValidationException, IOException {
             byte[] buf = "ADDATUDEv1 123 ALL \r\n".getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in = new MessageInput(byteArrayInputStream);
