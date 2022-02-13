@@ -10,11 +10,14 @@ package serialization;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class MessageOutput {
 
     OutputStream os;
+    private static final String HEADER = "ADDATUDEv1";
+
 
     /**
      * Generates a Message Output Object
@@ -28,6 +31,8 @@ public class MessageOutput {
         this.os = os;
     }
 
+
+
     /**
      * Performs the standard write function given by 'Output Stream'
      *
@@ -39,6 +44,34 @@ public class MessageOutput {
         os.write(b);
     }
 
+
+
+
+
+    public void writeMessageHeader(long mapId, String operation) throws IOException {
+        String s = HEADER+' '+mapId+' '+operation;
+        writeString(s);
+    }
+
+
+
+
+    public void writeString(String s) throws IOException{
+        os.write((s.length()+" "+s).getBytes());
+    }
+
+
+
+
+    public void writeFooter() throws IOException {
+        os.write("\r\n".getBytes());
+    }
+
+
+
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,8 +80,15 @@ public class MessageOutput {
         return os.equals(that.os);
     }
 
+
+
+
+
     @Override
     public int hashCode() {
         return Objects.hash(os);
     }
+
+
+
 }

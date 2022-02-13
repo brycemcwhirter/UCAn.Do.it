@@ -1,3 +1,11 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 1
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package serialization;
 
 import java.io.IOException;
@@ -23,6 +31,15 @@ public abstract class Message {
         Validator.validCharacterList(operation);
         this.mapId = mapID;
         this.operation = operation;
+    }
+
+
+    public void encodeHeader(MessageOutput out) throws IOException{
+        out.writeMessageHeader(mapId, operation);
+    }
+
+    public void encodeFooter(MessageOutput out) throws IOException{
+        out.writeFooter();
     }
 
 
