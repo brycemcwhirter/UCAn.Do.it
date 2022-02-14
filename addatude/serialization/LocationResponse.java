@@ -28,10 +28,13 @@ public class LocationResponse extends Message{
     }
 
 
-
-
-
-
+    /**
+     * Adds a new location record
+     * @param locationRecord the new location record to add
+     * @return the original response with the new record on the list
+     * @throws ValidationException
+     *      if the location record is null
+     */
     public LocationResponse addLocationRecord(LocationRecord locationRecord) throws ValidationException {
         if(Objects.isNull(locationRecord)){
             throw new ValidationException("Location Record cannot be null in adding to list");
@@ -42,29 +45,30 @@ public class LocationResponse extends Message{
     }
 
 
-
-
-
-
+    /**
+     * Returns a copy of the Location Record List
+     * @return a copy of the location record list
+     */
     public List<LocationRecord> getLocationRecordList(){
-        List<LocationRecord> copy = new ArrayList<>(locationRecordList);
-        return copy;
+        return new ArrayList<>(locationRecordList);
     }
 
 
-
-
-
-
+    /**
+     * @return the name of the map
+     */
     public String getMapName() {
         return mapName;
     }
 
 
-
-
-
-
+    /**
+     * Sets the map name
+     * @param mapName the new map name
+     * @return the original location response with the new name
+     * @throws ValidationException
+     *      if the name is invalid
+     */
     public LocationResponse setMapName(String mapName) throws ValidationException {
         Validator.validCharacterList(mapName);
         this.mapName = mapName;
@@ -72,10 +76,9 @@ public class LocationResponse extends Message{
     }
 
 
-
-
-
-
+    /**
+     * @return a string implementation of a location response
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(" map="+getMapID()+" "+getMapName());
@@ -83,7 +86,7 @@ public class LocationResponse extends Message{
         if(!locationRecordList.isEmpty()) {
             sb.append(" [");
             for (LocationRecord lr : locationRecordList) {
-                sb.append(lr.toString()+",");
+                sb.append(lr.toString()).append(",");
             }
             sb.setCharAt(sb.length()-1, ']');
         }
@@ -91,11 +94,12 @@ public class LocationResponse extends Message{
     }
 
 
-
-
-
-
-
+    /**
+     * Encodes a Location Response
+     * @param out The Output Stream to write to
+     * @throws IOException
+     *      if a write error occurs
+     */
     @Override
     public void encode(MessageOutput out) throws IOException {
         out.writeMessageHeader(getMapID(), getOperation());
@@ -116,11 +120,12 @@ public class LocationResponse extends Message{
     }
 
 
-
-
-
-
-
+    /**
+     * Equals implementation of Location Response
+     * @param o The Message Object
+     * @return
+     *      A boolean describing if a location response is valid
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -130,10 +135,9 @@ public class LocationResponse extends Message{
     }
 
 
-
-
-
-
+    /**
+     * @return the hash implementation of a location response.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(locationRecordList, mapName);

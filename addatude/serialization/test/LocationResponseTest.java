@@ -41,7 +41,7 @@ public class LocationResponseTest {
         @ParameterizedTest(name = "{0}")
         @DisplayName("Invalid Values for Location Response")
         @MethodSource("badParams")
-        void badParamsTest(String msg, long badMapID, String badMapName) throws ValidationException {
+        void badParamsTest(String msg, long badMapID, String badMapName) {
             assertThrows(ValidationException.class, () -> {
                 LocationResponse bad = new LocationResponse(badMapID, badMapName);
 
@@ -73,8 +73,8 @@ public class LocationResponseTest {
         }
 
         @Test
-        @DisplayName("Decode Test")
-        void decodeTest() throws ValidationException, IOException {
+        @DisplayName("Valid Decode")
+        void validDecode() throws ValidationException, IOException {
             byte[] buf = "ADDATUDEv1 123 RESPONSE 8 aMapName1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in = new MessageInput(byteArrayInputStream);
@@ -138,9 +138,7 @@ public class LocationResponseTest {
         @Test
         @DisplayName("Invalid Add")
         void invalidAdd() {
-            assertThrows(ValidationException.class, () -> {
-                locationResponse.addLocationRecord(null);
-            });
+            assertThrows(ValidationException.class, () -> locationResponse.addLocationRecord(null));
         }
 
         // get Location Record list (encapsulation test)
@@ -181,16 +179,12 @@ public class LocationResponseTest {
 
 
         // Validation Exception (invalid MapNames)
-        //TODO invalid map name tests (make an argument test class?)
 
         @ParameterizedTest(name="{0} test")
         @DisplayName("Invalid Map Name")
         @MethodSource("invalidMapNames")
-        void invalidMapName(String type, String badMapName) throws ValidationException {
-
-            assertThrows(ValidationException.class, ()->{
-                locationResponse.setMapName(badMapName);
-            });
+        void invalidMapName(String type, String badMapName) {
+            assertThrows(ValidationException.class, ()-> locationResponse.setMapName(badMapName));
         }
 
         public Stream<Arguments> invalidMapNames(){
@@ -216,15 +210,15 @@ public class LocationResponseTest {
     class toStringTest {
 
         @Test
-        @DisplayName("Valid String")
+        @DisplayName("Valid String Empty")
         void happySetEmpty() throws ValidationException {
             LocationResponse locationResponse = new LocationResponse(123, "myMap");
             String lrString = locationResponse.toString();
-            assertEquals(" map=123 myMap ", lrString);
+            assertEquals(" map=123 myMap", lrString);
         }
 
         @Test
-        @DisplayName("Valid String")
+        @DisplayName("Valid String w/ Records")
         void happySet() throws ValidationException {
             LocationResponse locationResponse = new LocationResponse(123, "myMap");
 

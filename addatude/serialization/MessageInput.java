@@ -17,21 +17,53 @@ public class MessageInput {
 
     private InputStream in;
 
-    //TODO Reading Messages for different operations (Make Each Return Type)
 
-    public Error readError(long mapID, String operation) throws IOException, ValidationException {
+    /**
+     * Reads a new error message
+     * @param mapID the mapID of the error message
+     * @return the new Error Message Read
+     * @throws IOException
+     *      If a read error Occurs
+     * @throws ValidationException
+     *      If the read parameters are invalid
+     */
+    public Error readError(long mapID) throws IOException, ValidationException {
         String errorMsg = readUntilCRLF();
         return new Error(mapID, errorMsg);
     }
 
-    public NewLocation readNewLocation(long readMapID, String operation) throws ValidationException, IOException {
-        LocationRecord locationRecord = new LocationRecord(this);
-        //TODO throw validation exception if stream doesn't end with /r/n
 
+
+
+
+    /**
+     * Generates a new location
+     * @param readMapID the mapID
+     * @return the new location with the parameters
+     * @throws ValidationException
+     *      if any of these parameters are invalid
+     * @throws IOException
+     *      if a read error occurs.
+     */
+    public NewLocation readNewLocation(long readMapID) throws ValidationException, IOException {
+        LocationRecord locationRecord = new LocationRecord(this);
         return new NewLocation(readMapID, locationRecord);
     }
 
-    public LocationResponse readResponse(long readMapID, String operation) throws ValidationException, IOException {
+
+
+
+
+    /**
+     * Reads a new Location Response
+     * @param readMapID the read in mapID
+     * @return the new location response
+     * @throws ValidationException
+     *      if a validation error occurs
+     * @throws IOException
+     *      if a read error occurs
+     */
+    public LocationResponse readResponse(long readMapID) throws ValidationException, IOException {
         int size = readIntegerValue();
         String mapName = new String(readNumOfValues(size), StandardCharsets.UTF_8);
         Validator.validCharacterList(mapName);
@@ -65,6 +97,7 @@ public class MessageInput {
     }
 
 
+
     /**
      * Reads the characters from the Byte Stream Until a ' ' occurs
      *
@@ -95,9 +128,12 @@ public class MessageInput {
     }
 
 
-
-
-
+    /**
+     * reads until CRLF is reached
+     * @return the string read
+     * @throws IOException
+     *      if a read error occurs
+     */
     public String readUntilCRLF() throws IOException{
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -122,10 +158,11 @@ public class MessageInput {
             throw new IOException("Error occurred during reading");
         }
 
+
+
         return stringBuilder.toString();
 
     }
-
 
 
 
@@ -138,7 +175,7 @@ public class MessageInput {
      * @throws IOException
      *      if a read error occurred
      */
-    public int readIntegerValue() throws IOException, ValidationException {
+    public int readIntegerValue() throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         try {
@@ -162,6 +199,8 @@ public class MessageInput {
     }
 
 
+
+
     /**
      * reads a specific size of bytes from a Message Input
      * @param size the number of bytes to read
@@ -171,16 +210,19 @@ public class MessageInput {
      */
     public byte[] readNumOfValues(int size) throws IOException {
         byte[] buf = new byte[size];
-        in.read(buf, 0, size);
+        int i = in.read(buf, 0, size);
         return buf;
 
 
     }
 
-    public boolean isEmpty() throws IOException {
-        return(in.available() == 0);
-    }
 
+    /**
+     * Equals Implementation of a message input
+     * @param o the message input to be compared to
+     * @return a boolean describing if two message
+     * inputs are similar
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -189,10 +231,31 @@ public class MessageInput {
         return in.equals(that.in);
     }
 
+
+    /**
+     * Hash Code Implementation for Message input
+     * @return the hash implementation for messsage input
+     */
     @Override
     public int hashCode() {
         return Objects.hash(in);
     }
 
 
+    /**
+     * Tests if the location record is fully read
+     * @throws ValidationException
+     *      if there is a size mismatch in the location
+     *      description size
+     * @throws IOException
+     *      if a read error occurs.
+     */
+    public void testLocationRecordFullyRead() throws ValidationException, IOException {
+        in.mark(1);
+        int val = in.read();
+        char c = (char) val;
+        if (Character.isLetter(c))
+            throw new ValidationException("Location Record is not fully read");
+        in.reset();
+    }
 }

@@ -90,6 +90,8 @@ public class LocationRecord {
         }
 
 
+        in.testLocationRecordFullyRead();
+
 
         setLocationName(tokens[0]);
         setLocationDescription(tokens[1]);

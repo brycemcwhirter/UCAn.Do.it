@@ -29,6 +29,9 @@ public class Error extends Message{
      */
     public Error(long mapId, String errorMessage) throws ValidationException{
         super(OPERATION, mapId);
+        if(errorMessage == null){
+            throw new ValidationException("Error Message Cannot be null");
+        }
         Validator.validCharacterList(errorMessage);
         this.errorMessage = errorMessage;
 

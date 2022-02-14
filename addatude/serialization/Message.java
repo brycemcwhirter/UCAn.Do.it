@@ -80,14 +80,13 @@ public abstract class Message {
 
 
         //Switch Operation
-        switch(operation){
-            case "NEW": return in.readNewLocation(readMapID, operation);
-            case "ALL": return new LocationRequest(readMapID);
-            case "RESPONSE": return in.readResponse(readMapID, operation);
-            case "ERROR": return in.readError(readMapID, operation);
-            default:
-                throw new ValidationException("Invalid Operation");
-        }
+        return switch (operation) {
+            case "NEW" -> in.readNewLocation(readMapID);
+            case "ALL" -> new LocationRequest(readMapID);
+            case "RESPONSE" -> in.readResponse(readMapID);
+            case "ERROR" -> in.readError(readMapID);
+            default -> throw new ValidationException("Invalid Operation");
+        };
     }
 
 
