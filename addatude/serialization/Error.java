@@ -74,11 +74,17 @@ public class Error extends Message{
 
 
 
+    /**
+     * Encode Implementation for an Error Messsage
+     * @param out The Output Stream to write to
+     * @throws IOException
+     *      If a reading error occurs
+     */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        encodeHeader(out);
+        out.writeMessageHeader(getMapID(), getOperation());
         out.writeString(errorMessage);
-        encodeFooter(out);
+        out.writeMessageFooter();
     }
 
 

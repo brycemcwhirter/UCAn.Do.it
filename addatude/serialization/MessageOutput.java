@@ -49,8 +49,8 @@ public class MessageOutput {
 
 
     public void writeMessageHeader(long mapId, String operation) throws IOException {
-        String s = HEADER+' '+mapId+' '+operation;
-        writeString(s);
+        String messageHeader = HEADER+' '+mapId+' '+operation+' ';
+        os.write(messageHeader.getBytes(StandardCharsets.UTF_8));
     }
 
 
@@ -63,9 +63,11 @@ public class MessageOutput {
 
 
 
-    public void writeFooter() throws IOException {
+    public void writeMessageFooter() throws IOException {
         os.write("\r\n".getBytes());
     }
+
+
 
 
 

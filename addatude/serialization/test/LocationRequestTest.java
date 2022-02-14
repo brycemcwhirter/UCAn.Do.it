@@ -55,8 +55,6 @@ public class LocationRequestTest {
             var bOut = new ByteArrayOutputStream();
             var out = new MessageOutput(bOut);
             new LocationRequest(234).encode(out);
-
-
             assertArrayEquals("ADDATUDEv1 234 ALL \r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
         }
 

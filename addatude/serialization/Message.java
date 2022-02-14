@@ -34,13 +34,7 @@ public abstract class Message {
     }
 
 
-    public void encodeHeader(MessageOutput out) throws IOException{
-        out.writeMessageHeader(mapId, operation);
-    }
 
-    public void encodeFooter(MessageOutput out) throws IOException{
-        out.writeFooter();
-    }
 
 
     /**
