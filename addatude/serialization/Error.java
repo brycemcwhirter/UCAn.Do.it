@@ -67,7 +67,7 @@ public class Error extends Message{
      */
     @Override
     public String toString() {
-        return " map="+mapId+" error="+errorMessage;
+        return " map="+getMapID()+" error="+errorMessage;
     }
 
 

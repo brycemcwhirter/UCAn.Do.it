@@ -1,6 +1,7 @@
 package serialization;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,17 +10,25 @@ public class LocationResponse extends Message{
 
     List<LocationRecord> locationRecordList = new ArrayList<>();
     String mapName;
+    private static final String OPERATION = "RESPONSE";
 
 
-
-
-
+    /**
+     * Generates a new LocationResponse
+     * @param mapId the mapId
+     * @param mapName the name of the map
+     * @throws ValidationException
+     *  if any of these parameters are invalid
+     */
     public LocationResponse(long mapId, String mapName) throws ValidationException{
-        super("RESPONSE", mapId);
+        super(OPERATION, mapId);
         Validator.validCharacterList(mapName);
         this.mapName = mapName;
 
     }
+
+
+
 
 
 
@@ -28,22 +37,31 @@ public class LocationResponse extends Message{
             throw new ValidationException("Location Record cannot be null in adding to list");
         }
 
+        locationRecordList.add(locationRecord);
         return this;
     }
 
 
 
-    public List<LocationRecord> getLocationRecordList(){
 
-        //todo Encapsulation! make a copy of list and send it back.
-        return null;
+
+
+    public List<LocationRecord> getLocationRecordList(){
+        List<LocationRecord> copy = new ArrayList<>(locationRecordList);
+        return copy;
     }
+
+
+
 
 
 
     public String getMapName() {
         return mapName;
     }
+
+
+
 
 
 
@@ -55,18 +73,53 @@ public class LocationResponse extends Message{
 
 
 
+
+
+
     @Override
     public String toString() {
-        return "LocationResponse{" +
-                "locationRecordList=" + locationRecordList +
-                ", mapName='" + mapName + '\'' +
-                '}';
+        StringBuilder sb = new StringBuilder(" map="+getMapID()+" "+getMapName());
+
+        if(!locationRecordList.isEmpty()) {
+            sb.append(" [");
+            for (LocationRecord lr : locationRecordList) {
+                sb.append(lr.toString()+",");
+            }
+            sb.setCharAt(sb.length()-1, ']');
+        }
+        return sb.toString();
     }
+
+
+
+
+
+
 
     @Override
     public void encode(MessageOutput out) throws IOException {
+        out.writeMessageHeader(getMapID(), getOperation());
+        out.writeString(getMapName());
 
+
+        if(locationRecordList.size() > 0) {
+
+            out.write((locationRecordList.size() + " ").getBytes(StandardCharsets.UTF_8));
+
+            for (LocationRecord lr : locationRecordList) {
+                lr.encode(out);
+            }
+
+        }
+
+        out.writeMessageFooter();
     }
+
+
+
+
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -76,8 +129,16 @@ public class LocationResponse extends Message{
         return locationRecordList.equals(that.locationRecordList) && mapName.equals(that.mapName);
     }
 
+
+
+
+
+
     @Override
     public int hashCode() {
         return Objects.hash(locationRecordList, mapName);
     }
+
+
+
 }

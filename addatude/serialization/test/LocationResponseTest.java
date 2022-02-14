@@ -82,12 +82,33 @@ public class LocationResponseTest {
         }
 
         @Test
-        @DisplayName("Encode Test")
-        void encodeTest() throws ValidationException, IOException{
+        @DisplayName("Encode Test No Locations")
+        void encodeNoLocationsTest() throws ValidationException, IOException{
             var bOut = new ByteArrayOutputStream();
             var out = new MessageOutput(bOut);
             new LocationResponse(123, "aMap").encode(out);
-            assertArrayEquals("ADDATUDEv1 123 RESPONSE \r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
+            assertArrayEquals("ADDATUDEv1 123 RESPONSE 4 aMap\r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
+        }
+
+        @Test
+        @DisplayName("Encode Test with Locations")
+        void encodeWithLocationsTest() throws ValidationException, IOException{
+            var bOut = new ByteArrayOutputStream();
+            var out = new MessageOutput(bOut);
+            LocationResponse locationResponse = new LocationResponse(123, "aMap");
+
+            LocationRecord a, b;
+            a = new LocationRecord(1, "1.2", "3.4", "BU", "Baylor");
+            b = new LocationRecord(23, "2.3", "4.5", "Lubbock", "Texas");
+
+            locationResponse.addLocationRecord(a);
+            locationResponse.addLocationRecord(b);
+
+            locationResponse.encode(out);
+
+
+
+            assertArrayEquals("ADDATUDEv1 123 RESPONSE 4 aMap2 1 1.2 3.4 2 BU6 Baylor23 2.3 4.5 7 Lubbock5 Texas\r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
         }
     }
 
@@ -125,7 +146,8 @@ public class LocationResponseTest {
         // get Location Record list (encapsulation test)
         @DisplayName("Location Record List Encapsulation")
         @Test
-        void encapsulationGetList() {
+        void encapsulationGetList() throws ValidationException {
+            locationResponse.addLocationRecord(locationRecord);
             List<LocationRecord> list = locationResponse.getLocationRecordList();
             list.clear();
             assertNotEquals(list, locationResponse.getLocationRecordList());
@@ -181,20 +203,54 @@ public class LocationResponseTest {
     }
 
 
+
+
+
+
+
+
+
+
     @DisplayName("To String")
     @Nested
     class toStringTest {
 
         @Test
         @DisplayName("Valid String")
-        void happySet() throws ValidationException {
+        void happySetEmpty() throws ValidationException {
             LocationResponse locationResponse = new LocationResponse(123, "myMap");
             String lrString = locationResponse.toString();
-            assertEquals(" map=123 myMap", lrString);
+            assertEquals(" map=123 myMap ", lrString);
+        }
+
+        @Test
+        @DisplayName("Valid String")
+        void happySet() throws ValidationException {
+            LocationResponse locationResponse = new LocationResponse(123, "myMap");
+
+            LocationRecord a, b;
+            a = new LocationRecord(1, "1.2", "3.4", "BU", "Baylor");
+            b = new LocationRecord(23, "2.3", "4.5", "Lubbock", "Texas");
+
+            locationResponse = locationResponse.addLocationRecord(a);
+            locationResponse = locationResponse.addLocationRecord(b);
+
+
+            String lrString = locationResponse.toString();
+
+            assertEquals(" map=123 myMap ["+a+','+b+"]", lrString);
         }
 
 
     }
+
+
+
+
+
+
+
+
 
 
     @DisplayName("Equals & Hashcode")

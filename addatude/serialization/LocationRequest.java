@@ -26,7 +26,7 @@ public class LocationRequest extends Message{
      */
     @Override
     public String toString() {
-        return " map="+mapId;
+        return " map="+getMapID();
     }
 
 
