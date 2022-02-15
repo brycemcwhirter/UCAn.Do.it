@@ -101,8 +101,7 @@ public class LocationRecordTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class DecodeConstructorTest{
 
-        //TODO write a method for testing valid decode and asserting values (Make Arguments as types and
-        // pass as params to the testDeocde method. Write them to a string and test decode from there.
+
 
         @ParameterizedTest(name = "Basic Decode")
         @MethodSource("validDecodeStreams")

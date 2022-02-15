@@ -84,5 +84,4 @@ public class Validator {
     }
 
 
-    //todo write valid mapID (99999 is MAX (specification in Program1 Assignment))
 }

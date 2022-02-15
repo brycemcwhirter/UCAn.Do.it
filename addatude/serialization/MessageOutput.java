@@ -45,35 +45,46 @@ public class MessageOutput {
     }
 
 
-
-
-
+    /**
+     * Writes the message header onto the output stream
+     * @param mapId The mapID to be written
+     * @param operation the operation to be written
+     * @throws IOException
+     *      If a write error
+     */
     public void writeMessageHeader(long mapId, String operation) throws IOException {
         String messageHeader = HEADER+' '+mapId+' '+operation+' ';
         os.write(messageHeader.getBytes(StandardCharsets.UTF_8));
     }
 
 
-
-
+    /**
+     * Writes a string onto an output stream
+     * @param s the string to write
+     * @throws IOException
+     *      if a write error occurs
+     */
     public void writeString(String s) throws IOException{
         os.write((s.length()+" "+s).getBytes());
     }
 
 
-
-
+    /**
+     * Writes the Message Footer onto the output stream
+     * @throws IOException
+     *      If a write error occurs
+     */
     public void writeMessageFooter() throws IOException {
         os.write("\r\n".getBytes());
     }
 
 
-
-
-
-
-
-
+    /**
+     * Equals Implementation
+     * @param o The Compared MessageOutput object
+     * @return a boolean describing if two MessageOutput objects
+     *  are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -83,9 +94,10 @@ public class MessageOutput {
     }
 
 
-
-
-
+    /**
+     * Hash Code Implementation
+     * @return the Hash implementation of a Message Output
+     */
     @Override
     public int hashCode() {
         return Objects.hash(os);
