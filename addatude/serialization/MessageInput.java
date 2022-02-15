@@ -255,7 +255,7 @@ public class MessageInput {
         int val = in.read();
         char c = (char) val;
         if (Character.isLetter(c))
-            throw new ValidationException("Location Record is not fully read");
+            throw new ValidationException("InvalidStream", "Location Record is not fully read");
         in.reset();
     }
 }

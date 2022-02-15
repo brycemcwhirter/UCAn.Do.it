@@ -37,7 +37,7 @@ public class LocationResponse extends Message{
      */
     public LocationResponse addLocationRecord(LocationRecord locationRecord) throws ValidationException {
         if(Objects.isNull(locationRecord)){
-            throw new ValidationException("Location Record cannot be null in adding to list");
+            throw new ValidationException("Null Location Record", "Location Record cannot be null in adding to list");
         }
 
         locationRecordList.add(locationRecord);

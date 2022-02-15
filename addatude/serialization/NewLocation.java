@@ -21,7 +21,7 @@ public class NewLocation extends Message{
     public NewLocation(long mapId, LocationRecord location) throws ValidationException{
         super(OPERATION, mapId);
         if(Objects.isNull(location))
-            throw new ValidationException("Location Record cannot be null in New Location Instance");
+            throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
         this.location = location;
 
     }
@@ -36,7 +36,7 @@ public class NewLocation extends Message{
      */
     public NewLocation setLocation(LocationRecord location) throws ValidationException {
         if(Objects.isNull(location))
-            throw new ValidationException("Location Record cannot be null in New Location Instance");
+            throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
         this.location = location;
         return this;
     }

@@ -85,7 +85,7 @@ public class LocationRecord {
                 tokens[i] = new String(buf, StandardCharsets.UTF_8);
             }
             catch(NumberFormatException e){
-                throw new ValidationException("Invalid Stream");
+                throw new ValidationException("Invalid Stream", "Location Record Stream has invalid value");
             }
         }
 

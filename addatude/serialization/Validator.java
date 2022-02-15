@@ -10,11 +10,11 @@ public class Validator {
      * tests for a valid user ID
      * @param candidateInteger the candidate ID to be tested
      * @throws ValidationException
-     *      if the user ID is invalid
+     *      if the candidateInteger is invalid
      */
     static void validUnsignedInteger(long candidateInteger) throws ValidationException {
         if(candidateInteger < 0 || candidateInteger > Integer.MAX_VALUE){
-            throw new ValidationException("User ID must be Unsigned Integer");
+            throw new ValidationException("Invalid Unsigned Integer", "Value must be Unsigned Integer");
         }
     }
 
@@ -29,7 +29,7 @@ public class Validator {
 
         //Make Sure String follows validChar
         if(!Pattern.matches("^[a-zA-Z0-9_]*$", testString)){
-            throw new ValidationException("String is not valid: "+testString);
+            throw new ValidationException("Invalid String", "String is not valid: "+testString);
         }
 
     }
@@ -45,7 +45,7 @@ public class Validator {
 
 
         if(!Pattern.matches("^-?[0-9]+\\.[0-9]+$", valString) && (valString.length() <= MAX_NUM_OF_CHARS_FOR_DOUBLE)){
-            throw new ValidationException("Longitude or Latitude value doesn't follow protocol specification");
+            throw new ValidationException("Invalid Double", "Longitude or Latitude value doesn't follow protocol specification");
         }
 
 
@@ -63,7 +63,7 @@ public class Validator {
         validDouble(latitude);
 
         if(Double.parseDouble(latitude) > 90 || Double.parseDouble(latitude) < -90){
-            throw new ValidationException("Latitude must be between -90 & 90");
+            throw new ValidationException("Invalid Latitude", "Latitude must be between -90 & 90");
         }
     }
 
@@ -79,7 +79,7 @@ public class Validator {
         validDouble(longitude);
 
         if(Double.parseDouble(longitude) > 180 || Double.parseDouble(longitude)  < -180){
-            throw new ValidationException("Longitude must be between -180 & 180");
+            throw new ValidationException("Invalid Longitude", "Longitude must be between -180 & 180");
         }
     }
 

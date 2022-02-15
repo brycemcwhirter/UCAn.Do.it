@@ -64,7 +64,7 @@ public abstract class Message {
         // Read the Header & Make Sure it Matches
         String header = in.readUntilSpace();
         if(!header.equals(HEADER)){
-            throw new ValidationException("invalid stream");
+            throw new ValidationException("invalid stream", "Protocol: "+ HEADER);
         }
 
 
@@ -85,7 +85,7 @@ public abstract class Message {
             case "ALL" -> new LocationRequest(readMapID);
             case "RESPONSE" -> in.readResponse(readMapID);
             case "ERROR" -> in.readError(readMapID);
-            default -> throw new ValidationException("Invalid Operation");
+            default -> throw new ValidationException("Invalid Operation", "Cannot Perform "+ operation);
         };
     }
 
