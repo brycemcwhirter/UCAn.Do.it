@@ -65,7 +65,7 @@ public class MessageOutput {
      *      if a write error occurs
      */
     public void writeString(String s) throws IOException{
-        os.write((s.length()+" "+s).getBytes());
+        os.write((s.length()+" "+s).getBytes(StandardCharsets.UTF_8));
     }
 
 
@@ -75,7 +75,7 @@ public class MessageOutput {
      *      If a write error occurs
      */
     public void writeMessageFooter() throws IOException {
-        os.write("\r\n".getBytes());
+        os.write("\r\n".getBytes(StandardCharsets.UTF_8));
     }
 
 

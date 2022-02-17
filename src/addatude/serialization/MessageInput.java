@@ -18,6 +18,21 @@ public class MessageInput {
     private final InputStream in;
 
 
+    public char readVal() throws IOException, ValidationException {
+        int i = in.read();
+
+
+
+        if(i == -1){
+            throw new ValidationException("Invalid Stream", "Read Error Occurred");
+        }
+
+
+
+        return (char) i;
+    }
+
+
     /**
      * Reads a new error message
      * @param mapID the mapID of the error message
@@ -66,7 +81,7 @@ public class MessageInput {
     public LocationResponse readResponse(long readMapID) throws ValidationException, IOException {
         int size = readIntegerValue();
         String mapName = new String(readNumOfValues(size), StandardCharsets.UTF_8);
-        Validator.validString(mapName);
+        Validator.validString("Param", mapName);
 
         int numOfLocation = readIntegerValue();
 
@@ -105,27 +120,21 @@ public class MessageInput {
      * @throws IOException
      *      If a reading error occurs
      */
-    public String readUntilSpace() throws IOException {
+    public String readUntilSpace() throws IOException, ValidationException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        try {
+        while (true) {
+            char c = readVal();
 
-            int r;
-            while ((r = in.read()) != -1) {
-                char c = (char) r;
+            if (c == ' ')
+                break;
 
-                if (c == ' ')
-                    break;
-
-                stringBuilder.append(c);
-            }
-
-        } catch(IOException e) {
-            throw new IOException("Error occurred during reading");
+            stringBuilder.append(c);
         }
 
         return stringBuilder.toString();
     }
+
 
 
     /**
@@ -134,30 +143,22 @@ public class MessageInput {
      * @throws IOException
      *      if a read error occurs
      */
-    public String readUntilCRLF() throws IOException{
+    public String readUntilCRLF() throws IOException, ValidationException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        try {
+        while (true) {
+            char c = readVal();
 
-            int r;
-            while ((r = in.read()) != -1) {
-                char c = (char) r;
+            if (c == '\r'){
+                c = readVal();
 
-                if (c == '\r'){
-                    r = in.read();
-                    c = (char) r;
-                    if(c == '\n')
-                        break;
+                if(c == '\n') {
+                    stringBuilder.append(c);
+                    break;
                 }
-
-
-                stringBuilder.append(c);
             }
-
-        } catch(IOException e) {
-            throw new IOException("Error occurred during reading");
+            stringBuilder.append(c);
         }
-
 
 
         return stringBuilder.toString();
@@ -175,26 +176,26 @@ public class MessageInput {
      * @throws IOException
      *      if a read error occurred
      */
-    public int readIntegerValue() throws IOException {
+    public int readIntegerValue() throws IOException, ValidationException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        try {
 
-            int r;
-            while ((r = in.read()) != -1) {
-                char c = (char) r;
+        String val = readUntilSpace();
+        val.trim();
+        stringBuilder.append(val);
 
-                if (!Character.isDigit(c))
-                    break;
+        int value;
+        try{
+            value = Integer.parseInt(stringBuilder.toString());
 
-                stringBuilder.append(c);
-            }
-
-        } catch(IOException e) {
-            throw new IOException("Error occurred during reading");
+        }
+        catch (NumberFormatException e){
+            throw new ValidationException("InvalidRead", "Value on stream must be Integer Value", e);
         }
 
-        return Integer.parseInt(stringBuilder.toString());
+
+
+        return value;
 
     }
 
@@ -213,18 +214,29 @@ public class MessageInput {
     public byte[] readNumOfValues(int size) throws IOException, ValidationException {
         StringBuilder sb = new StringBuilder();
 
-
         for(int i = 0; i < size; i++){
-            int j = in.read();
+            char j = readVal();
 
-            if(j == -1){
-                throw new ValidationException("Invalid Stream", "Stream is Invalid");
+            if(j <= 0x7f){
+
             }
 
-            sb.append((char) j);
+            else if(j <= 0x7ff){
+
+            }
+
+            else if(Character.isHighSurrogate(j)) {
+                size += 3;
+                j = readVal();
+                sb.append(j);
+                j = readVal();
+                sb.append(j);
+            }
+
+
+
+            sb.append(j);
         }
-
-
 
         return sb.toString().getBytes(StandardCharsets.UTF_8);
 
@@ -257,20 +269,5 @@ public class MessageInput {
     }
 
 
-    /**
-     * Tests if the location record is fully read
-     * @throws ValidationException
-     *      if there is a size mismatch in the location
-     *      description size
-     * @throws IOException
-     *      if a read error occurs.
-     */
-    public void testLocationRecordFullyRead() throws ValidationException, IOException {
-        in.mark(1);
-        int val = in.read();
-        char c = (char) val;
-        if (Character.isLetter(c))
-            throw new ValidationException("InvalidStream", "Location Record is not fully read");
-        in.reset();
-    }
+
 }

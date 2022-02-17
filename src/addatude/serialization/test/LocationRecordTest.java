@@ -145,7 +145,8 @@ public class LocationRecordTest {
                     arguments("5 50.01245671 -10.0 4 here5 there"),
                     arguments("1 5.0 -10.0123456 4 here5 there"),
                     arguments("1 5.0 -10.0 4 here5 ther"),
-                    arguments("1 5.0 -10.4 4 here5")
+                    arguments("1 5.0 -10.4 4 here5"),
+                    arguments("5 5.0 -10.0 4 h\u00AEre5 ther\u00AE")
 
 
 
@@ -160,8 +161,8 @@ public class LocationRecordTest {
                     arguments("2003 -97.12 31.55 8 Magnolia13 ChipAndJoanna"),
                     arguments("5 5.0 -10.0 4 here5 there"),
                     arguments("99999 5.0 -10.0 4 here5 there"),
-                    arguments("0 180.0 -90.0 5 o n e12 hello there!"),
-                    arguments("5 5.0 -10.0 4 h re4 ther")
+                    arguments("0 180.0 -90.0 5 o n e12 hello there!")
+
             );
         }
 
@@ -195,6 +196,8 @@ public class LocationRecordTest {
                 MessageOutput bad = new MessageOutput(null);
             });
         }
+
+
 
 
 
@@ -302,7 +305,8 @@ public class LocationRecordTest {
         public Stream<Arguments> invalidStrings(){
             return Stream.of(
                     arguments("\u0009"),
-                    arguments("\u0009\u0009ring")
+                    arguments("\u0009ring"),
+                    arguments("\u00AEring")
             );
         }
 

@@ -30,7 +30,7 @@ public class LocationResponse extends Message{
      */
     public LocationResponse(long mapId, String mapName) throws ValidationException{
         super(OPERATION, mapId);
-        Validator.validString(mapName);
+        Validator.validString("Param", mapName);
         this.mapName = mapName;
 
     }
@@ -78,7 +78,7 @@ public class LocationResponse extends Message{
      *      if the name is invalid
      */
     public LocationResponse setMapName(String mapName) throws ValidationException {
-        Validator.validString(mapName);
+        Validator.validString("Param", mapName);
         this.mapName = mapName;
         return this;
     }

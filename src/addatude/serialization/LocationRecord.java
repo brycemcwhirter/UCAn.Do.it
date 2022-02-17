@@ -57,10 +57,11 @@ public class LocationRecord {
         Objects.requireNonNull(in, "Message Cannot be Null");
         String readIN;
 
-        try{
+        try {
 
-            //Read the UserID
+            //Read the UserID & Validating
             readIN = in.readUntilSpace();
+            Validator.validUnsignedInteger("UserID", readIN);
             long readUserID = Long.parseLong(readIN);
             setUserId(readUserID);
 
@@ -71,10 +72,8 @@ public class LocationRecord {
 
 
             //Read the Latitude
-            String readLatitude =in.readUntilSpace();
+            String readLatitude = in.readUntilSpace();
             setLatitude(readLatitude);
-
-
 
 
             String[] tokens = new String[2];
@@ -82,35 +81,19 @@ public class LocationRecord {
             //For The Location Name and Description
             // Read the Size of the Value
             // Read 'Size' number of chars for Value
-            for(int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++){
-                try {
-                    int size = in.readIntegerValue();
-                    byte[] buf = in.readNumOfValues(size);
-                    String read = new String(buf, StandardCharsets.UTF_8);
-                    Validator.validString(read);
-                    tokens[i] = read;
-
-                }
-                catch(NumberFormatException e){
-                    throw new ValidationException("Invalid Stream", "Location Record Stream has invalid value");
-                }
+            for (int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++) {
+                int size = in.readIntegerValue();
+                byte[] buf = in.readNumOfValues(size);
+                String read = new String(buf, StandardCharsets.UTF_8);
+                tokens[i] = read;
             }
-
-
-            in.testLocationRecordFullyRead();
 
 
             setLocationName(tokens[0]);
             setLocationDescription(tokens[1]);
-
         }
-
-        catch (NumberFormatException e){
-            throw new ValidationException("Invalid Value", "Value must be numerical", e);
-        }
-
-        catch(IOException e){
-            throw new ValidationException("Invalid Stream", "I/O Error on Stream");
+        catch (IOException e){
+            throw new ValidationException("Invalid Stream", "An Error in Read Occurred");
         }
 
 
@@ -179,7 +162,7 @@ public class LocationRecord {
      *      If the new userID is invalid
      */
     public LocationRecord setUserId(long userID) throws ValidationException {
-        Validator.validUnsignedInteger(String.valueOf(userID));
+        Validator.validUnsignedInteger("UserID", String.valueOf(userID));
         this.userID = userID;
         return this;
     }
@@ -248,8 +231,8 @@ public class LocationRecord {
      *      if the location name is invalid
      */
     public LocationRecord setLocationName(String locationName) throws ValidationException {
-        Validator.validString(locationName);
-        Validator.validUnsignedInteger(String.valueOf(locationName.length()));
+        Validator.validString("Location Name", locationName);
+        Validator.validUnsignedInteger("Location Name Size", String.valueOf(locationName.length()));
         this.locationName = locationName;
         return this;
     }
@@ -272,8 +255,8 @@ public class LocationRecord {
      *      if the location description is invalid
      */
     public LocationRecord setLocationDescription(String locationDescription) throws ValidationException {
-        Validator.validString(locationDescription);
-        Validator.validUnsignedInteger(String.valueOf(locationDescription.length()));
+        Validator.validString("Location Description", locationDescription);
+        Validator.validUnsignedInteger("Location Description Size", String.valueOf(locationDescription.length()));
         this.locationDescription = locationDescription;
         return this;
     }

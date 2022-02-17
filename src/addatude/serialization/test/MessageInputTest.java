@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import addatude.serialization.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -33,18 +34,18 @@ public class MessageInputTest {
 
         @BeforeAll
         static void init(){
-            byte[] buf = "This is a test".getBytes(StandardCharsets.UTF_8);
+            byte[] buf = "This is a test\r\n".getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             in = new MessageInput(byteArrayInputStream);
         }
 
         @Test
         @DisplayName("Read Until Space Valid")
-        void testReadUntilSpaceValid() throws IOException {
+        void testReadUntilSpaceValid() throws IOException, ValidationException {
             String test = in.readUntilSpace();
             assertEquals("This", test);
-
         }
+
 
         @ParameterizedTest
         @DisplayName("Reading Size & Value")
@@ -53,14 +54,49 @@ public class MessageInputTest {
             byte[] buf = string.getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in1 = new MessageInput(byteArrayInputStream);
-
-
         }
+
+
+        @ParameterizedTest
+        @DisplayName("Read Integer Value")
+        @ValueSource(strings = {"12345 ", "1234 "})
+        void testReadIntegerValue(String string) throws ValidationException, IOException {
+            byte[] buf = string.getBytes(StandardCharsets.UTF_8);
+            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+            MessageInput in1 = new MessageInput(bais);
+            assertEquals(Integer.parseInt(string.trim()), in1.readIntegerValue());
+        }
+
+
+
+
+
+        @Test
+        @DisplayName("Reading Until CRLF")
+        void readUntilCRLFValid() throws IOException, ValidationException {
+            String test = in.readUntilCRLF();
+            assertEquals("This is a test", test);
+        }
+
+
+
+        @ParameterizedTest(name="Invalid CRLF Read")
+        @ValueSource(strings={"\rhi\n"})
+        void readUntilCRLFValid(String val) throws IOException, ValidationException {
+            byte[] buf = val.getBytes(StandardCharsets.UTF_8);
+            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+            MessageInput input = new MessageInput(bais);
+            String test = input.readUntilCRLF();
+        }
+
+
 
     }
 
     @DisplayName("Equals & Hashcode")
     class equalsAndHashCode{
+
+
 
         @Test
         void testEqualObjects() {

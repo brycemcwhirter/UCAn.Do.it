@@ -26,9 +26,9 @@ public abstract class Message {
      *      If any of these parameters are invalid
      */
     public Message(String operation, long mapID) throws ValidationException {
-        Validator.validUnsignedInteger(String.valueOf(mapID));
+        Validator.validUnsignedInteger("MapID", String.valueOf(mapID));
         Objects.requireNonNull(operation);
-        Validator.validString(operation);
+        Validator.validString("Param", operation);
         this.mapId = mapID;
         this.operation = operation;
     }
@@ -71,7 +71,7 @@ public abstract class Message {
 
         // Read the MAP ID
         long readMapID = Long.parseLong(in.readUntilSpace());
-        Validator.validUnsignedInteger(String.valueOf(readMapID));
+        Validator.validUnsignedInteger("MapID", String.valueOf(readMapID));
 
 
         // Read the Operation
@@ -115,7 +115,7 @@ public abstract class Message {
      *      If the new mapID is invalid
      */
     public final Message setMapId(long mapId) throws ValidationException{
-        Validator.validUnsignedInteger(String.valueOf(mapId));
+        Validator.validUnsignedInteger("MapID",String.valueOf(mapId));
         this.mapId = mapId;
         return this;
     }

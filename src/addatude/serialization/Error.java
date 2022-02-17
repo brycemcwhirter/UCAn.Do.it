@@ -32,7 +32,7 @@ public class Error extends Message{
         if(errorMessage == null){
             throw new ValidationException("Null Error Message", "Error Message Cannot be null");
         }
-        Validator.validString(errorMessage);
+        Validator.validString("Param", errorMessage);
         this.errorMessage = errorMessage;
 
     }
