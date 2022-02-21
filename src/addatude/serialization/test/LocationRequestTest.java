@@ -2,14 +2,19 @@ package addatude.serialization.test;
 
 import addatude.serialization.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 @DisplayName("Location Request")
@@ -23,12 +28,17 @@ public class LocationRequestTest {
         @Test
         void validCreation() throws ValidationException {
             LocationRequest locationRequest = new LocationRequest(123);
-            assertEquals(locationRequest.getMapID(), 123);
+            assertEquals(locationRequest.getMapId(), 123);
         }
     }
 
+
+
+
+
     @DisplayName("Decode & Encode")
     @Nested
+    static
     class decodeTest{
 
 
@@ -41,6 +51,9 @@ public class LocationRequestTest {
             });
         }
 
+
+
+
         @Test
         @DisplayName("Decode Test")
         void decodeTest() throws ValidationException, IOException {
@@ -49,6 +62,35 @@ public class LocationRequestTest {
             MessageInput in = new MessageInput(byteArrayInputStream);
             LocationRequest test = (LocationRequest) Message.decode(in);
         }
+
+
+
+
+
+        @ParameterizedTest
+        @DisplayName("Invalid Decode Test")
+        @MethodSource("invalidDecodeStreams")
+        void invalidDecode(String bad)  {
+            assertThrows(ValidationException.class, ()->{
+                byte[] buf = bad.getBytes(StandardCharsets.UTF_8);
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
+                MessageInput in = new MessageInput(byteArrayInputStream);
+                LocationRequest test = (LocationRequest) Message.decode(in);
+            });
+        }
+
+        public static Stream<Arguments> invalidDecodeStreams(){
+            return Stream.of(
+                    arguments("ADDATUDEv1 5 ALL ADDATUDEv1 345 ALL")
+            );
+        }
+
+        
+
+
+
+
+
 
         @Test
         @DisplayName("Encode")

@@ -30,7 +30,7 @@ public class LocationResponseTest {
         @Test
         void validCreation() throws ValidationException {
             LocationResponse locationResponse = new LocationResponse(123, "myMap");
-            assertEquals(123, locationResponse.getMapID());
+            assertEquals(123, locationResponse.getMapId());
             assertEquals("myMap", locationResponse.getMapName());
         }
 

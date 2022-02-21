@@ -30,8 +30,29 @@ public class LocationResponse extends Message{
      */
     public LocationResponse(long mapId, String mapName) throws ValidationException{
         super(OPERATION, mapId);
-        Validator.validString("Param", mapName);
+        Validator.validString("Map Name", mapName);
+        Validator.validUnsignedInteger("Map Name Size", String.valueOf(mapName.length()));
         this.mapName = mapName;
+
+    }
+
+
+    public LocationResponse(long mapID, MessageInput in) throws ValidationException{
+        super(OPERATION, mapID);
+
+        int size = in.readIntegerValue();
+        String mapName = new String(in.readNumOfValues(size), StandardCharsets.UTF_8);
+        Validator.validString("Param", mapName);
+
+        int numOfLocation = in.readIntegerValue();
+
+        this.mapName = mapName;
+
+        for (int i = 0; i < numOfLocation; i++) {
+            LocationRecord lr = new LocationRecord(in);
+            this.addLocationRecord(lr);
+        }
+
 
     }
 
@@ -78,7 +99,8 @@ public class LocationResponse extends Message{
      *      if the name is invalid
      */
     public LocationResponse setMapName(String mapName) throws ValidationException {
-        Validator.validString("Param", mapName);
+        Validator.validString("Map Name", mapName);
+        Validator.validUnsignedInteger("Map Name Size", String.valueOf(mapName.length()));
         this.mapName = mapName;
         return this;
     }
@@ -89,7 +111,7 @@ public class LocationResponse extends Message{
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(" map="+getMapID()+" "+getMapName());
+        StringBuilder sb = new StringBuilder("LocationResponse: map="+ getMapId()+" "+getMapName());
 
         if(!locationRecordList.isEmpty()) {
             sb.append(" [");
@@ -110,7 +132,7 @@ public class LocationResponse extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        out.writeMessageHeader(getMapID(), getOperation());
+        out.writeMessageHeader(getMapId(), getOperation());
         out.writeString(getMapName());
 
 

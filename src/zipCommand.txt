@@ -1,1 +1,1 @@
-zip -r Prog0Full.zip addatude -x "*/*.DS_Store" -x "__MACOSX"; mv Prog0Full.zip ~/Desktop 
+zip -r Prog1Full.zip addatude -x "*/*.DS_Store" -x "__MACOSX"; mv Prog1Full.zip ~/Desktop 

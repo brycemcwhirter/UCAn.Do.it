@@ -6,6 +6,10 @@
  *
  ************************************************/
 
+/**
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
 import java.io.IOException;
@@ -18,82 +22,21 @@ public class MessageInput {
     private final InputStream in;
 
 
-    public char readVal() throws IOException, ValidationException {
-        int i = in.read();
+    public char readVal() throws ValidationException, IOException {
+        int i = 0;
 
+        i = in.read();
 
-
-        if(i == -1){
-            throw new ValidationException("Invalid Stream", "Read Error Occurred");
+        if (i == -1){
+            throw new IOException("Invalid Read");
         }
-
 
 
         return (char) i;
     }
 
 
-    /**
-     * Reads a new error message
-     * @param mapID the mapID of the error message
-     * @return the new Error Message Read
-     * @throws IOException
-     *      If a read error Occurs
-     * @throws ValidationException
-     *      If the read parameters are invalid
-     */
-    public Error readError(long mapID) throws IOException, ValidationException {
-        String errorMsg = readUntilCRLF();
-        return new Error(mapID, errorMsg);
-    }
 
-
-
-
-
-    /**
-     * Generates a new location
-     * @param readMapID the mapID
-     * @return the new location with the parameters
-     * @throws ValidationException
-     *      if any of these parameters are invalid
-     * @throws IOException
-     *      if a read error occurs.
-     */
-    public NewLocation readNewLocation(long readMapID) throws ValidationException, IOException {
-        LocationRecord locationRecord = new LocationRecord(this);
-        return new NewLocation(readMapID, locationRecord);
-    }
-
-
-
-
-
-    /**
-     * Reads a new Location Response
-     * @param readMapID the read in mapID
-     * @return the new location response
-     * @throws ValidationException
-     *      if a validation error occurs
-     * @throws IOException
-     *      if a read error occurs
-     */
-    public LocationResponse readResponse(long readMapID) throws ValidationException, IOException {
-        int size = readIntegerValue();
-        String mapName = new String(readNumOfValues(size), StandardCharsets.UTF_8);
-        Validator.validString("Param", mapName);
-
-        int numOfLocation = readIntegerValue();
-
-        LocationResponse locationResponse = new LocationResponse(readMapID, mapName);
-
-        for(int i = 0; i < numOfLocation; i++){
-            LocationRecord lr = new LocationRecord(this);
-            locationResponse.addLocationRecord(lr);
-        }
-
-        return locationResponse;
-    }
 
 
 
@@ -120,17 +63,26 @@ public class MessageInput {
      * @throws IOException
      *      If a reading error occurs
      */
-    public String readUntilSpace() throws IOException, ValidationException {
+    public String readUntilSpace() throws ValidationException {
         StringBuilder stringBuilder = new StringBuilder();
+        char c;
 
-        while (true) {
-            char c = readVal();
+        try {
 
-            if (c == ' ')
-                break;
+            while (true) {
+                c = readVal();
 
-            stringBuilder.append(c);
+                if (c == ' ')
+                    break;
+
+                stringBuilder.append(c);
+            }
         }
+
+        catch (IOException e) {
+            throw new ValidationException("Invalid Read", "A space was never reached", e);
+        }
+
 
         return stringBuilder.toString();
     }
@@ -143,25 +95,33 @@ public class MessageInput {
      * @throws IOException
      *      if a read error occurs
      */
-    public String readUntilCRLF() throws IOException, ValidationException {
+    public boolean endOfStream() throws ValidationException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        while (true) {
-            char c = readVal();
+        try{
+            while (true) {
+                char c = readVal();
 
-            if (c == '\r'){
-                c = readVal();
+                if (c == '\r'){
+                    c = readVal();
 
-                if(c == '\n') {
-                    stringBuilder.append(c);
-                    break;
+                    if(c == '\n') {
+                        return true;
+                    }
+
                 }
+
+                return false;
+
             }
-            stringBuilder.append(c);
         }
 
 
-        return stringBuilder.toString();
+
+        catch(IOException e) {
+            throw new ValidationException("Invalid Read", "CRLF was never reached", e);
+        }
+
 
     }
 
@@ -173,10 +133,10 @@ public class MessageInput {
     /**
      * reads an integer value
      * @return the integer value read
-     * @throws IOException
-     *      if a read error occurred
+     * @throws ValidationException
+     *      if an invalid read occurs
      */
-    public int readIntegerValue() throws IOException, ValidationException {
+    public int readIntegerValue() throws ValidationException {
         StringBuilder stringBuilder = new StringBuilder();
 
 
@@ -211,36 +171,37 @@ public class MessageInput {
      * @throws ValidationException
      *      if the stream doesn't read the right number of bytes
      */
-    public byte[] readNumOfValues(int size) throws IOException, ValidationException {
+    public byte[] readNumOfValues(int size) throws ValidationException {
         StringBuilder sb = new StringBuilder();
+        boolean onUnicode=false;
 
-        for(int i = 0; i < size; i++){
-            char j = readVal();
+        try {
 
-            if(j <= 0x7f){
+            for (int i = 0; i < size; i++) {
+                char j = readVal();
 
-            }
+                if (j <= 0x7f) {
+                    onUnicode = false;
+                } else if (j <= 0x7ff && !onUnicode) {
+                    size++;
+                    onUnicode = true;
+                }
 
-            else if(j <= 0x7ff){
-
-            }
-
-            else if(Character.isHighSurrogate(j)) {
-                size += 3;
-                j = readVal();
-                sb.append(j);
-                j = readVal();
                 sb.append(j);
             }
-
-
-
-            sb.append(j);
+        }
+        catch (IOException e){
+            throw new ValidationException("Invalid Read", "Size specified is larger than bytes on stream", e);
         }
 
         return sb.toString().getBytes(StandardCharsets.UTF_8);
 
 
+    }
+
+
+    public void closeMessageInputStream() throws IOException {
+        in.close();
     }
 
 

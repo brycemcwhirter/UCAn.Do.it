@@ -1,6 +1,18 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 0
+ * Class: Data Communications
+ *
+ ************************************************/
+
+/**
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
-import java.util.regex.Matcher;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Validator {
@@ -16,18 +28,22 @@ public class Validator {
      */
     public static void validUnsignedInteger(String parameter, String candidateInteger) throws ValidationException {
 
-        if(candidateInteger == null){
-            throw new ValidationException("Null Unsigned Int", parameter + " cannot be null");
+        try{
+            Objects.requireNonNull(candidateInteger);
+
+            if(!candidateInteger.matches("\\d*")){
+                throw new ValidationException("Invalid UserID", parameter + " must be numeric: "+candidateInteger);
+            }
+
+            long val = Long.parseLong(candidateInteger);
+
+            if(val < 0 || val > 99999){
+                throw new ValidationException("Invalid Unsigned Integer", parameter + " must be Unsigned Integer");
+            }
         }
 
-        if(!candidateInteger.matches("\\d*")){
-            throw new ValidationException("Invalid UserID", parameter + " must be numeric: "+candidateInteger);
-        }
-
-        long val = Long.parseLong(candidateInteger);
-
-        if(val < 0 || val > 99999){
-            throw new ValidationException("Invalid Unsigned Integer", parameter + " must be Unsigned Integer");
+        catch(NullPointerException e){
+            throw new ValidationException("Null Unsigned Int", parameter + " cannot be null", e);
         }
     }
 
@@ -52,8 +68,8 @@ public class Validator {
 
 
 
-        if(!Pattern.matches("^.*\\P{C}.*", testString)){
-            throw new ValidationException("Invalid String", "String Contains Unprintable Characters: "+testString);
+        if(!Pattern.matches("\\P{C}*", testString)){
+            throw new ValidationException("Invalid String", parameter + " Contains Unprintable Characters: "+testString);
         }
 
 
@@ -113,4 +129,10 @@ public class Validator {
     }
 
 
+    //TODO REMOVE OR ADD COMMENTS
+    public static void validMessage(MessageInput in) throws ValidationException{
+        if(!in.endOfStream()){
+            throw new ValidationException("Invalid Stream", "Premature EOS");
+        }
+    }
 }

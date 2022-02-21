@@ -30,8 +30,8 @@ public class NewLocationTest {
         void validConstructor() throws ValidationException {
             LocationRecord locationRecord = new LocationRecord(123, "178.34", "23.34", "Baylor", "Bear");
             NewLocation newLocation = new NewLocation(123, locationRecord);
-            assertEquals(123, newLocation.getMapID());
-            assertEquals(locationRecord, newLocation.getLocation());
+            assertEquals(123, newLocation.getMapId());
+            assertEquals(locationRecord, newLocation.getLocationRecord());
         }
 
 
@@ -111,8 +111,8 @@ public class NewLocationTest {
 
         @Test
         void validLocationRecordSet() throws ValidationException {
-            a.setLocation(e);
-            assertEquals(e, a.getLocation());
+            a.setLocationRecord(e);
+            assertEquals(e, a.getLocationRecord());
         }
 
 
@@ -120,7 +120,7 @@ public class NewLocationTest {
         @Test
         void invalidLocationRecordSet() throws ValidationException{
             assertThrows(ValidationException.class, ()->{
-                a.setLocation(null);
+                a.setLocationRecord(null);
             });
         }
 

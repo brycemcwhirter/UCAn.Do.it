@@ -6,9 +6,15 @@
  *
  ************************************************/
 
+/**
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class Message {
@@ -16,6 +22,7 @@ public abstract class Message {
     public final String operation;
     long mapId;
     private static final String HEADER = "ADDATUDEv1";
+    private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR");
 
 
     /**
@@ -28,7 +35,7 @@ public abstract class Message {
     public Message(String operation, long mapID) throws ValidationException {
         Validator.validUnsignedInteger("MapID", String.valueOf(mapID));
         Objects.requireNonNull(operation);
-        Validator.validString("Param", operation);
+        validOperation(operation);
         this.mapId = mapID;
         this.operation = operation;
     }
@@ -58,20 +65,22 @@ public abstract class Message {
      * @throws IOException
      *      If a read error occurs
      */
-    public static Message decode(MessageInput in) throws ValidationException, NullPointerException, IOException {
+    public static Message decode(MessageInput in) throws ValidationException, NullPointerException {
         Objects.requireNonNull(in);
+        Message a;
 
         // Read the Header & Make Sure it Matches
         String header = in.readUntilSpace();
         if(!header.equals(HEADER)){
-            throw new ValidationException("invalid stream", "Protocol: "+ HEADER);
+            throw new ValidationException("Invalid Protocol stream", "Protocol: "+ HEADER);
         }
 
 
 
         // Read the MAP ID
-        long readMapID = Long.parseLong(in.readUntilSpace());
-        Validator.validUnsignedInteger("MapID", String.valueOf(readMapID));
+        String readMapID = in.readUntilSpace();
+        Validator.validUnsignedInteger("MapID", readMapID);
+        long mapIdVal = Long.parseLong(readMapID);
 
 
         // Read the Operation
@@ -80,22 +89,27 @@ public abstract class Message {
 
 
         //Switch Operation
-        return switch (operation) {
-            case "NEW" -> in.readNewLocation(readMapID);
-            case "ALL" -> new LocationRequest(readMapID);
-            case "RESPONSE" -> in.readResponse(readMapID);
-            case "ERROR" -> in.readError(readMapID);
+        switch (operation) {
+            case "NEW" -> a = new NewLocation(mapIdVal, in);
+            case "ALL" -> a = new LocationRequest(mapIdVal, in);
+            case "RESPONSE" -> a = new LocationResponse(mapIdVal, in);
+            case "ERROR" -> a = new Error(mapIdVal, in);
             default -> throw new ValidationException("Invalid Operation", "Cannot Perform "+ operation);
         };
+
+        if(!in.endOfStream()){
+            throw new ValidationException("Invalid Stream", "Stream doesn't follow specification");
+        }
+
+        return a;
     }
 
 
     /**
      * @return the mapID
      */
-    public final long getMapID(){
+    public final long getMapId(){
         return mapId;
-
     }
 
 
@@ -119,6 +133,25 @@ public abstract class Message {
         this.mapId = mapId;
         return this;
     }
+
+
+    /**
+     * Tests to make a sure an operation is valid
+     * @param operation the operation to test on
+     * @return a boolean describing if an operation
+     *  is valid.
+     */
+    public void validOperation(String operation) throws ValidationException {
+        if (!Operations.contains(operation)){
+            throw new ValidationException("Invalid Operation", "Operation "+ operation+" not permitable");
+        }
+    }
+
+
+
+
+
+
 
 
     /**

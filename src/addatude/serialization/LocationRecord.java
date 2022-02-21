@@ -6,8 +6,13 @@
  *
  ************************************************/
 
+/**
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
+import javax.xml.stream.Location;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -57,7 +62,7 @@ public class LocationRecord {
         Objects.requireNonNull(in, "Message Cannot be Null");
         String readIN;
 
-        try {
+        //try {
 
             //Read the UserID & Validating
             readIN = in.readUntilSpace();
@@ -78,6 +83,8 @@ public class LocationRecord {
 
             String[] tokens = new String[2];
 
+
+
             //For The Location Name and Description
             // Read the Size of the Value
             // Read 'Size' number of chars for Value
@@ -91,14 +98,18 @@ public class LocationRecord {
 
             setLocationName(tokens[0]);
             setLocationDescription(tokens[1]);
-        }
-        catch (IOException e){
-            throw new ValidationException("Invalid Stream", "An Error in Read Occurred");
-        }
-
-
-
     }
+
+
+    LocationRecord(LocationRecord loc) throws ValidationException {
+        this(loc.getUserId(), loc.getLongitude(), loc.getLatitude(), loc.getLocationName(), loc.getLocationDescription());
+    }
+
+
+
+
+
+
 
 
     /**

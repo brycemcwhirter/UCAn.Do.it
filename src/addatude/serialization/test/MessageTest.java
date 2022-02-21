@@ -6,6 +6,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import addatude.serialization.*;
 
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -48,7 +50,7 @@ public class MessageTest {
         @DisplayName("Happy Path for set Map ID")
         void happySetMapId() throws ValidationException {
             msg.setMapId(456);
-            assertEquals(456, msg.getMapID());
+            assertEquals(456, msg.getMapId());
         }
 
 
@@ -60,6 +62,8 @@ public class MessageTest {
                msg.setMapId(badMapID);
             });
         }
+
+
 
     }
 

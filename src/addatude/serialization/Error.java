@@ -32,11 +32,28 @@ public class Error extends Message{
         if(errorMessage == null){
             throw new ValidationException("Null Error Message", "Error Message Cannot be null");
         }
-        Validator.validString("Param", errorMessage);
+        Validator.validString("Error Message", errorMessage);
         this.errorMessage = errorMessage;
 
     }
 
+
+
+    public Error(long mapID, MessageInput in) throws ValidationException {
+        super(OPERATION, mapID);
+        String msgSize = in.readUntilSpace();
+        Validator.validUnsignedInteger("Error Message Size", msgSize);
+
+
+        int size = Integer.parseInt(msgSize);
+        String testMsg = new String(in.readNumOfValues(size));
+        Validator.validString("Error Message", testMsg);
+        Validator.validUnsignedInteger("Error Message Size", String.valueOf(testMsg.length()));
+
+
+        this.errorMessage = testMsg;
+        Validator.validMessage(in);
+    }
 
 
 
@@ -57,7 +74,9 @@ public class Error extends Message{
      * @param errorMessage the new error message
      * @return the associate error with the new message
      */
-    public Error setErrorMessage(String errorMessage) {
+    public Error setErrorMessage(String errorMessage) throws ValidationException {
+        Validator.validString("Error Message", errorMessage);
+        Validator.validUnsignedInteger("Error Message Size", String.valueOf(errorMessage.length()));
         this.errorMessage = errorMessage;
         return this;
     }
@@ -70,7 +89,7 @@ public class Error extends Message{
      */
     @Override
     public String toString() {
-        return " map="+getMapID()+" error="+errorMessage;
+        return "Error: map="+ getMapId()+" error="+errorMessage;
     }
 
 
@@ -85,7 +104,7 @@ public class Error extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        out.writeMessageHeader(getMapID(), getOperation());
+        out.writeMessageHeader(getMapId(), getOperation());
         out.writeString(errorMessage);
         out.writeMessageFooter();
     }
@@ -118,6 +137,6 @@ public class Error extends Message{
      */
     @Override
     public int hashCode() {
-        return Objects.hash(errorMessage);
+        return Objects.hash(super.hashCode(), errorMessage);
     }
 }

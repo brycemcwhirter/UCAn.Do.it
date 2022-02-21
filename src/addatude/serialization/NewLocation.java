@@ -30,8 +30,15 @@ public class NewLocation extends Message{
         super(OPERATION, mapId);
         if(Objects.isNull(location))
             throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
-        this.location = location;
+        LocationRecord copy = new LocationRecord(location);
+        this.location = copy;
 
+    }
+
+
+    public NewLocation(long mapId, MessageInput in) throws ValidationException{
+        super(OPERATION, mapId);
+        location = new LocationRecord(in);
     }
 
 
@@ -42,10 +49,11 @@ public class NewLocation extends Message{
      * @throws ValidationException
      *      if the new Location is null
      */
-    public NewLocation setLocation(LocationRecord location) throws ValidationException {
+    public NewLocation setLocationRecord(LocationRecord location) throws ValidationException {
         if(Objects.isNull(location))
             throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
-        this.location = location;
+        LocationRecord copy = new LocationRecord(location);
+        this.location = copy;
         return this;
     }
 
@@ -56,7 +64,7 @@ public class NewLocation extends Message{
      */
     @Override
     public String toString() {
-        return " map="+getMapID()+" "+location;
+        return "NewLocation: map="+ getMapId()+" "+location;
     }
 
 
@@ -68,7 +76,7 @@ public class NewLocation extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        out.writeMessageHeader(getMapID(), getOperation());
+        out.writeMessageHeader(getMapId(), getOperation());
         location.encode(out);
         out.writeMessageFooter();
     }
@@ -78,8 +86,8 @@ public class NewLocation extends Message{
      * returns the location of a NewLocation
      * @return the location
      */
-    public LocationRecord getLocation() {
-        return location;
+    public LocationRecord getLocationRecord() throws ValidationException {
+        return new LocationRecord(location);
     }
 
 
@@ -93,10 +101,10 @@ public class NewLocation extends Message{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         NewLocation that = (NewLocation) o;
         return mapId == that.mapId && location.equals(that.location);
     }
-
 
     /**
      * Hash Code Implementation of a NewLocation
@@ -104,9 +112,6 @@ public class NewLocation extends Message{
      */
     @Override
     public int hashCode() {
-        return Objects.hash(mapId, location);
+        return Objects.hash(super.hashCode(), mapId, location);
     }
-
-
-
 }

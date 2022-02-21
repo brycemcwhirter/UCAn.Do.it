@@ -120,7 +120,8 @@ public class LocationRecordTest {
 
 
         @ParameterizedTest(name = "Invalid Decode Streams")
-        @MethodSource("invalidDecodeStreams")
+        //@MethodSource("invalidDecodeStreams")
+        @ValueSource(strings = {"123 180.0 90.0 2 SizeMistMatch", "1 5.0 -10.4 4 here5"})
         void invalidDecodeStream(String badDecodeStream){
             assertThrows(ValidationException.class, ()->{
                 var in = new MessageInput(new ByteArrayInputStream(
@@ -133,7 +134,6 @@ public class LocationRecordTest {
 
         public Stream<Arguments> invalidDecodeStreams(){
             return Stream.of(
-                    arguments("1 1.2 3.4 2 BU6 BaylorSizeMismatch"),
                     arguments ("-123 1.2 3.4 2 BU13 invalidUserID"),
                     arguments("123 -190 invalid longitude"),
                     arguments("123 180.0 -923.3 invalid latitude"),
@@ -146,12 +146,11 @@ public class LocationRecordTest {
                     arguments("1 5.0 -10.0123456 4 here5 there"),
                     arguments("1 5.0 -10.0 4 here5 ther"),
                     arguments("1 5.0 -10.4 4 here5"),
-                    arguments("5 5.0 -10.0 4 h\u00AEre5 ther\u00AE")
-
-
+                    arguments("1 5.0 -10.4 4 here100 there")
 
             );
         }
+
 
         public Stream<Arguments> validDecodeStreams(){
             return Stream.of(
@@ -161,7 +160,8 @@ public class LocationRecordTest {
                     arguments("2003 -97.12 31.55 8 Magnolia13 ChipAndJoanna"),
                     arguments("5 5.0 -10.0 4 here5 there"),
                     arguments("99999 5.0 -10.0 4 here5 there"),
-                    arguments("0 180.0 -90.0 5 o n e12 hello there!")
+                    arguments("0 180.0 -90.0 5 o n e12 hello there!"),
+                    arguments("5 5.0 -10.0 4 h\u00AEre5 ther\u00AE")
 
             );
         }
@@ -305,8 +305,7 @@ public class LocationRecordTest {
         public Stream<Arguments> invalidStrings(){
             return Stream.of(
                     arguments("\u0009"),
-                    arguments("\u0009ring"),
-                    arguments("\u00AEring")
+                    arguments("\u0009ring")
             );
         }
 

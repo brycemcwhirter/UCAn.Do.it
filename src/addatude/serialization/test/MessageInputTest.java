@@ -1,5 +1,6 @@
 package addatude.serialization.test;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -71,23 +72,6 @@ public class MessageInputTest {
 
 
 
-        @Test
-        @DisplayName("Reading Until CRLF")
-        void readUntilCRLFValid() throws IOException, ValidationException {
-            String test = in.readUntilCRLF();
-            assertEquals("This is a test", test);
-        }
-
-
-
-        @ParameterizedTest(name="Invalid CRLF Read")
-        @ValueSource(strings={"\rhi\n"})
-        void readUntilCRLFValid(String val) throws IOException, ValidationException {
-            byte[] buf = val.getBytes(StandardCharsets.UTF_8);
-            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-            MessageInput input = new MessageInput(bais);
-            String test = input.readUntilCRLF();
-        }
 
 
 

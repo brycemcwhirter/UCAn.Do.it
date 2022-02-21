@@ -26,6 +26,13 @@ public class LocationRequest extends Message{
     }
 
 
+
+    public LocationRequest(long mapId, MessageInput in) throws ValidationException{
+        super(OPERATION, mapId);
+        Validator.validMessage(in);
+    }
+
+
     /**
      * String Implementation of a Location
      * Request
@@ -34,7 +41,7 @@ public class LocationRequest extends Message{
      */
     @Override
     public String toString() {
-        return " map="+getMapID();
+        return "LocationRequest: map="+ getMapId();
     }
 
 
@@ -47,7 +54,7 @@ public class LocationRequest extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        out.writeMessageHeader(getMapID(), getOperation());
+        out.writeMessageHeader(getMapId(), getOperation());
         out.writeMessageFooter();
     }
 
