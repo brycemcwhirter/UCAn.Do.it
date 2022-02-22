@@ -49,7 +49,7 @@ public class ValidatorTest {
         }
 
         @ParameterizedTest(name="{0} is invalid")
-        @ValueSource(strings = {"\u00AEring"})
+        @ValueSource(strings = {"\u00d6\u008dring"})
         void invalidStringTest(String s)  {
             assertThrows(ValidationException.class, ()->Validator.validString("Param", s));
         }

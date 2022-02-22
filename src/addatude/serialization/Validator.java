@@ -129,10 +129,5 @@ public class Validator {
     }
 
 
-    //TODO REMOVE OR ADD COMMENTS
-    public static void validMessage(MessageInput in) throws ValidationException{
-        if(!in.endOfStream()){
-            throw new ValidationException("Invalid Stream", "Premature EOS");
-        }
-    }
+
 }

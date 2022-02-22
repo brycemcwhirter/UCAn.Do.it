@@ -1,10 +1,12 @@
 import addatude.serialization.*;
+import addatude.serialization.Error;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.xml.stream.Location;
 import java.io.ByteArrayInputStream;
@@ -16,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @Nested
+@DisplayName("Donahoo Test")
 public class failingTest {
 
     @Nested
@@ -76,7 +79,6 @@ public class failingTest {
         //Throw Validation Exception in IO Problem
             // close the message input before decoding? (ADDATUDEv1 5 NEW 6 7.0 8.0 3 xyz4 qwer )
 
-
         @Test
         void validationExceptionIO() {
             assertThrows(ValidationException.class, ()->{
@@ -87,13 +89,32 @@ public class failingTest {
                 var a = Message.decode(in);
             });
         }
+
+
+        @Test
+        void decodeSpecificStream() throws ValidationException {
+            byte[] valid = "ADDATUDEv1 99999 NEW 99999 180.0 -90.0 5 o n e12 hello there!\r\n".getBytes(StandardCharsets.UTF_8);
+            ByteArrayInputStream bais = new ByteArrayInputStream(valid);
+            MessageInput in = new MessageInput(bais);
+            var a = Message.decode(in);
+        }
     }
 
     @Nested
     static
     class ErrorTest{
 
+        Error a = new Error(123, "errormsg");
+
+        ErrorTest() throws ValidationException {
+        }
+
         //repeated 1's?
+        @ParameterizedTest(name="{0} is invalid")
+        @ValueSource(strings = {"1111111111111111111111111111111111111111111111111111111111111111111111111111"})
+        void invalidErrorMessage(String bad){
+            assertThrows(ValidationException.class, ()-> a.setErrorMessage(bad));
+        }
 
         // Premature EOS [byte array?]
 

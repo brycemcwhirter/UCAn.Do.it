@@ -136,7 +136,7 @@ public class NewLocationTest {
             NewLocation a = new NewLocation(456, d);
 
             String NewLocationString = a.toString();
-            assertEquals(" map=456 "+ d, NewLocationString);
+            assertEquals("NewLocation: map=456 "+ d, NewLocationString);
 
         }
     }

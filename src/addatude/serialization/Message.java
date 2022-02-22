@@ -22,6 +22,7 @@ public abstract class Message {
     public final String operation;
     long mapId;
     private static final String HEADER = "ADDATUDEv1";
+    private static final String FOOTER = "\r\n";
     private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR");
 
 
@@ -97,9 +98,12 @@ public abstract class Message {
             default -> throw new ValidationException("Invalid Operation", "Cannot Perform "+ operation);
         };
 
-        if(!in.endOfStream()){
-            throw new ValidationException("Invalid Stream", "Stream doesn't follow specification");
+
+        String footer = new String(in.readNumOfValues(2));
+        if(!footer.equals(FOOTER)){
+            throw new ValidationException("Invalid Message Stream", "Footer not found in message");
         }
+
 
         return a;
     }

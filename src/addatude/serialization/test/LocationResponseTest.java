@@ -212,7 +212,7 @@ public class LocationResponseTest {
         void happySetEmpty() throws ValidationException {
             LocationResponse locationResponse = new LocationResponse(123, "myMap");
             String lrString = locationResponse.toString();
-            assertEquals(" map=123 myMap", lrString);
+            assertEquals("LocationResponse: map=123 myMap", lrString);
         }
 
         @Test
@@ -230,7 +230,7 @@ public class LocationResponseTest {
 
             String lrString = locationResponse.toString();
 
-            assertEquals(" map=123 myMap ["+a+','+b+"]", lrString);
+            assertEquals("LocationResponse: map=123 myMap ["+a+','+b+"]", lrString);
         }
 
 

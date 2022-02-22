@@ -29,7 +29,6 @@ public class LocationRequest extends Message{
 
     public LocationRequest(long mapId, MessageInput in) throws ValidationException{
         super(OPERATION, mapId);
-        Validator.validMessage(in);
     }
 
 

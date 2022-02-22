@@ -52,7 +52,6 @@ public class Error extends Message{
 
 
         this.errorMessage = testMsg;
-        Validator.validMessage(in);
     }
 
 

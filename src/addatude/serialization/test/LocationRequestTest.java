@@ -118,7 +118,7 @@ public class LocationRequestTest {
         void toStringTest() throws ValidationException {
             LocationRequest lr = new LocationRequest(123);
             String lrString = lr.toString();
-            assertEquals(" map=123", lrString);
+            assertEquals("LocationRequest: map=123", lrString);
         }
 
     }

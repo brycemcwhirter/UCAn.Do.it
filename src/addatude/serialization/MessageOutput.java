@@ -17,6 +17,7 @@ public class MessageOutput {
 
     OutputStream os;
     private static final String HEADER = "ADDATUDEv1";
+    private static final String FOOTER= "\r\n";
 
 
     /**
@@ -75,7 +76,7 @@ public class MessageOutput {
      *      If a write error occurs
      */
     public void writeMessageFooter() throws IOException {
-        os.write("\r\n".getBytes(StandardCharsets.UTF_8));
+        os.write(FOOTER.getBytes(StandardCharsets.UTF_8));
     }
 
 

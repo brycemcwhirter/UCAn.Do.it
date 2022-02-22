@@ -184,7 +184,6 @@ public class LocationRecord {
      * @return the longitude
      */
     public String getLongitude() {
-
         return longitude;
     }
 
