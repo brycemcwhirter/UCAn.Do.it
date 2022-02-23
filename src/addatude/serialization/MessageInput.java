@@ -18,15 +18,31 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * This Class 
+ * This Class Specifies the Methods
+ * for Reading Messages from the
+ * Input Stream.
  */
 public class MessageInput {
 
+
+    /**
+     * The Input Stream Used for reading input.
+     */
     private final InputStream in;
 
 
+
+
+
+    /**
+     * Reads one value from the input stream
+     * @return The value read
+     * @throws IOException
+     *      If an I/O Error Occurs or read
+     *      returns -1.
+     */
     public char readVal() throws IOException {
-        int i = 0;
+        int i;
 
         i = in.read();
 
@@ -92,42 +108,6 @@ public class MessageInput {
 
 
 
-    /**
-     * reads until CRLF is reached
-     * @return the string read
-     * @throws IOException
-     *      if a read error occurs
-     */
-    public boolean endOfStream() throws ValidationException {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        try{
-            while (true) {
-                char c = readVal();
-
-                if (c == '\r'){
-                    c = readVal();
-
-                    if(c == '\n') {
-                        return true;
-                    }
-
-                }
-
-                return false;
-
-            }
-        }
-
-
-
-        catch(IOException e) {
-            throw new ValidationException("Invalid Read", "CRLF was never reached", e);
-        }
-
-
-    }
-
 
 
 
@@ -161,6 +141,10 @@ public class MessageInput {
         return value;
 
     }
+
+
+
+
 
 
 
@@ -203,9 +187,19 @@ public class MessageInput {
     }
 
 
+    /**
+     * Closes the Input Stream
+     * @throws IOException
+     *      If an error occurs
+     */
     public void closeMessageInputStream() throws IOException {
         in.close();
     }
+
+
+
+
+
 
 
     /**
@@ -221,6 +215,7 @@ public class MessageInput {
         MessageInput that = (MessageInput) o;
         return in.equals(that.in);
     }
+
 
 
     /**

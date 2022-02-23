@@ -41,7 +41,7 @@ public class Client {
     //TODO tests that all values read in are valid. (return msg that says invalid or catch Validation Exception in main?)
     private static String newOperation(int mapId, Scanner scanner) throws ValidationException {
 
-
+        b
 
         // Reading Longitude
         String readLongitude = scanner.nextLine();
@@ -164,7 +164,7 @@ public class Client {
 
             // Prompt the User to Continue
             System.out.print("Continue? (y/n) > ");
-            option =
+            //option =
 
 
 

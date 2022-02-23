@@ -13,6 +13,7 @@
 package addatude.serialization;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -189,6 +190,33 @@ public abstract class Message {
     public int hashCode() {
         return Objects.hash(mapId);
     }
+
+
+
+
+    /**
+     * Writes the message header onto the output stream
+     * @param mapId The mapID to be written
+     * @param operation the operation to be written
+     * @throws IOException
+     *      If a write error
+     */
+    public static void writeMessageHeader(long mapId, String operation, MessageOutput out) throws IOException {
+        String messageHeader = HEADER+' '+mapId+' '+operation+' ';
+        out.write(messageHeader.getBytes(StandardCharsets.UTF_8));
+    }
+
+
+
+    /**
+     * Writes the Message Footer onto the output stream
+     * @throws IOException
+     *      If a write error occurs
+     */
+    public static void writeMessageFooter(MessageOutput out) throws IOException {
+        out.write(FOOTER.getBytes(StandardCharsets.UTF_8));
+    }
+
 
 
 }

@@ -58,8 +58,8 @@ public class LocationRequest extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        out.writeMessageHeader(getMapId(), getOperation());
-        out.writeMessageFooter();
+        Message.writeMessageHeader(getMapId(), getOperation(), out);
+        Message.writeMessageFooter(out);
     }
 
 

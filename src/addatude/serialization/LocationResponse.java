@@ -199,7 +199,7 @@ public class LocationResponse extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        out.writeMessageHeader(getMapId(), getOperation());
+        Message.writeMessageHeader(getMapId(), getOperation(), out);
         out.writeString(getMapName());
 
 
@@ -213,7 +213,7 @@ public class LocationResponse extends Message{
 
         }
 
-        out.writeMessageFooter();
+        Message.writeMessageFooter(out);
     }
 
 

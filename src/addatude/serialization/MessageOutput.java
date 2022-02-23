@@ -15,9 +15,12 @@ import java.util.Objects;
 
 public class MessageOutput {
 
+    /**
+     * The Output Stream Tied to the Message Output
+     */
     OutputStream os;
-    private static final String HEADER = "ADDATUDEv1";
-    private static final String FOOTER= "\r\n";
+
+
 
 
     /**
@@ -46,17 +49,7 @@ public class MessageOutput {
     }
 
 
-    /**
-     * Writes the message header onto the output stream
-     * @param mapId The mapID to be written
-     * @param operation the operation to be written
-     * @throws IOException
-     *      If a write error
-     */
-    public void writeMessageHeader(long mapId, String operation) throws IOException {
-        String messageHeader = HEADER+' '+mapId+' '+operation+' ';
-        os.write(messageHeader.getBytes(StandardCharsets.UTF_8));
-    }
+
 
 
     /**
@@ -70,14 +63,7 @@ public class MessageOutput {
     }
 
 
-    /**
-     * Writes the Message Footer onto the output stream
-     * @throws IOException
-     *      If a write error occurs
-     */
-    public void writeMessageFooter() throws IOException {
-        os.write(FOOTER.getBytes(StandardCharsets.UTF_8));
-    }
+
 
 
     /**

@@ -136,9 +136,9 @@ public class Error extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        out.writeMessageHeader(getMapId(), getOperation());
+        Message.writeMessageHeader(getMapId(), getOperation(), out);
         out.writeString(errorMessage);
-        out.writeMessageFooter();
+        Message.writeMessageFooter(out);
     }
 
 
