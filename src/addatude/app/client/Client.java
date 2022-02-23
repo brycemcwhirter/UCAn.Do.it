@@ -1,9 +1,12 @@
 package addatude.app.client;
 
-import addatude.serialization.Validator;
+import addatude.serialization.*;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Client {
@@ -36,31 +39,27 @@ public class Client {
 
     //Todo Tests for valid longitude & latitude values according to program 2 specification
     //TODO tests that all values read in are valid. (return msg that says invalid or catch Validation Exception in main?)
-    private static String newOperation(int mapId, Scanner scanner){
+    private static String newOperation(int mapId, Scanner scanner) throws ValidationException {
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(PROTOCOL + " " + mapId + " NEW " + VALID_USER_ID + " ");
 
-        double readLongitude = scanner.nextDouble();
-        //todo tests then append
-        //Validator.validString();
-        sb.append(readLongitude + " ");
 
-        double readLatitude = scanner.nextDouble();
-        sb.append(readLatitude + " ");
+        // Reading Longitude
+        String readLongitude = scanner.nextLine();
+
+        // Reading Latitude
+        String readLatitude = scanner.nextLine();
 
 
         String readLocationName = scanner.nextLine();
-        sb.append(readLocationName.length() + " " + readLocationName);
 
 
         String readLocationDesc = scanner.nextLine();
-        sb.append(readLocationDesc.length() + " " + readLocationDesc);
 
-        sb.append("\r\n");
+        LocationRecord loc = new LocationRecord(VALID_USER_ID, readLongitude, readLatitude, readLocationName, readLocationDesc);
+        NewLocation newLocation = new NewLocation(mapId, loc);
 
 
-        return sb.toString();
+        return newLocation.encode(buf);
     }
 
 
@@ -69,8 +68,15 @@ public class Client {
 
 
 
-    private static String allOperation(int mapId) {
-        return PROTOCOL + " " + mapId + " ALL \r\n";
+    private static String allOperation(int mapId) throws ValidationException {
+        LocationRequest req = new LocationRequest(mapId);
+        return req.toString();
+    }
+
+
+    private static char askToContinue() throws IOException {
+        System.out.print("Continue (y/n) > ");
+        return (char) System.in.read();
     }
 
 
@@ -78,7 +84,7 @@ public class Client {
 
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ValidationException {
 
         Scanner scanner = new Scanner(System.in);
         char option = YES;
@@ -90,7 +96,8 @@ public class Client {
 
         // Test for Valid Arguments (Server Identity & Server Port)
         if(args.length != 2){
-            System.out.println("java Client.java <ServerIdentity> <ServerPort>");
+            System.out.println("Run As: java Client.java <ServerIdentity> <ServerPort>");
+            return;
         }
 
         server = args[0];
@@ -135,22 +142,32 @@ public class Client {
 
 
 
-                // Send a Message to the server
+                // Creating Connection
                 Socket socket = new Socket(server, serverPort);
                 InputStream in = socket.getInputStream();
                 OutputStream out = socket.getOutputStream();
 
 
+                // Sending the request
+                out.write(msg.getBytes(StandardCharsets.UTF_8));
+
 
                 // print the response / error message to the console
+                BufferedReader socketReader = new BufferedReader(new InputStreamReader(in));
+                String line = socketReader.readLine();    // reads a line of text
+                System.out.println(line);
 
 
 
             }
-            // Prompt the User to Continue
 
-            System.out.print("Continue (y/n) > ");
-            option = (char) System.in.read();
+
+            // Prompt the User to Continue
+            System.out.print("Continue? (y/n) > ");
+            option =
+
+
+
             //todo TEST FOR INVALID INPUT AT OPTION
         }
 

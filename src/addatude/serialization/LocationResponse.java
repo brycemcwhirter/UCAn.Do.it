@@ -14,11 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The Location Response is a specific
+ * message that holds a list of location
+ * records tied to a specific mapId.
+ */
 public class LocationResponse extends Message{
 
-    List<LocationRecord> locationRecordList = new ArrayList<>();
-    String mapName;
-    private static final String OPERATION = "RESPONSE";
+    List<LocationRecord> locationRecordList = new ArrayList<>(); // A List of Location Record tied to the response
+    String mapName; // The Name of the Map tied to the Location Response
+    private static final String OPERATION = "RESPONSE"; // The Operation of the Location Response
 
 
     /**
@@ -33,10 +38,23 @@ public class LocationResponse extends Message{
         Validator.validString("Map Name", mapName);
         Validator.validUnsignedInteger("Map Name Size", String.valueOf(mapName.length()));
         this.mapName = mapName;
-
     }
 
 
+
+
+
+
+
+
+    /**
+     * This Constructor creates a new Location Response
+     * by decoding the Message Input.
+     * @param mapID The Map ID of the Location Response
+     * @param in The Message Input Stream
+     * @throws ValidationException
+     *      If Any Parameters are deemed invalid.
+     */
     public LocationResponse(long mapID, MessageInput in) throws ValidationException{
         super(OPERATION, mapID);
 
@@ -57,6 +75,12 @@ public class LocationResponse extends Message{
     }
 
 
+
+
+
+
+
+
     /**
      * Adds a new location record
      * @param locationRecord the new location record to add
@@ -74,6 +98,12 @@ public class LocationResponse extends Message{
     }
 
 
+
+
+
+
+
+
     /**
      * Returns a copy of the Location Record List
      * @return a copy of the location record list
@@ -83,12 +113,37 @@ public class LocationResponse extends Message{
     }
 
 
+
+
+
+
+
+
     /**
      * @return the name of the map
      */
     public String getMapName() {
         return mapName;
     }
+
+
+
+
+
+
+    /**
+     * @return The Operation
+     */
+    @Override
+    public String getOperation() {
+        return OPERATION;
+    }
+
+
+
+
+
+
 
 
     /**
@@ -104,6 +159,12 @@ public class LocationResponse extends Message{
         this.mapName = mapName;
         return this;
     }
+
+
+
+
+
+
 
 
     /**
@@ -122,6 +183,12 @@ public class LocationResponse extends Message{
         }
         return sb.toString();
     }
+
+
+
+
+
+
 
 
     /**
@@ -150,6 +217,12 @@ public class LocationResponse extends Message{
     }
 
 
+
+
+
+
+
+
     /**
      * Equals implementation of Location Response
      * @param o The Message Object
@@ -163,6 +236,12 @@ public class LocationResponse extends Message{
         LocationResponse that = (LocationResponse) o;
         return locationRecordList.equals(that.locationRecordList) && mapName.equals(that.mapName);
     }
+
+
+
+
+
+
 
 
     /**

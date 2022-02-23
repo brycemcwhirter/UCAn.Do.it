@@ -17,12 +17,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+/**
+ * This Class 
+ */
 public class MessageInput {
 
     private final InputStream in;
 
 
-    public char readVal() throws ValidationException, IOException {
+    public char readVal() throws IOException {
         int i = 0;
 
         i = in.read();

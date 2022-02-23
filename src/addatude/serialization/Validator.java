@@ -12,12 +12,16 @@
 
 package addatude.serialization;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Validator {
 
     static final int MAX_DOUBLE_SIZE = 10;
+    private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR"); //
+
 
 
     /**
@@ -103,7 +107,7 @@ public class Validator {
      * @throws ValidationException
      *      if the latitude is not valid
      */
-    static void validLatitude(String latitude) throws ValidationException {
+    public static void validLatitude(String latitude) throws ValidationException {
 
         validDouble("Latitude", latitude);
 
@@ -119,12 +123,25 @@ public class Validator {
      * @throws ValidationException
      *      if the longitude is not valid
      */
-    static void validLongitude(String longitude) throws ValidationException {
+    public static void validLongitude(String longitude) throws ValidationException {
 
         validDouble("Longitude", longitude);
 
         if(Double.parseDouble(longitude) > 180 || Double.parseDouble(longitude)  < -180){
             throw new ValidationException("Invalid Longitude", "Longitude must be between -180 & 180");
+        }
+    }
+
+
+    /**
+     * Tests to make a sure an operation is valid
+     * @param operation the operation to test on
+     * @return a boolean describing if an operation
+     *  is valid.
+     */
+    public static void validOperation(String operation) throws ValidationException {
+        if (!Operations.contains(operation)){
+            throw new ValidationException("Invalid Operation", "Operation "+ operation+" not permitable");
         }
     }
 

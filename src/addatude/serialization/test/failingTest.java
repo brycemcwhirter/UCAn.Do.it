@@ -116,7 +116,18 @@ public class failingTest {
             assertThrows(ValidationException.class, ()-> a.setErrorMessage(bad));
         }
 
+
+
+
         // Premature EOS [byte array?]
+        @Test
+        void prematureEOS() throws ValidationException, IOException {
+            byte[] valid = "ADDATUDEv1 12345 ERROR 100 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789\r\n".getBytes(StandardCharsets.UTF_8);
+            ByteArrayInputStream bais = new ByteArrayInputStream(valid);
+            MessageInput in = new MessageInput(bais);
+            in.closeMessageInputStream();
+            var a = Message.decode(in);
+        }
 
     }
 

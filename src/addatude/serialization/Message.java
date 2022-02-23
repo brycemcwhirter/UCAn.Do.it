@@ -17,13 +17,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Message Class
+ *
+ * This is the abstract class
+ * for the message type of the
+ * ADDATUDE Protocol.
+ */
 public abstract class Message {
 
-    public final String operation;
-    long mapId;
-    private static final String HEADER = "ADDATUDEv1";
-    private static final String FOOTER = "\r\n";
-    private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR");
+
+    long mapId; // The MapID Related to the message of the ADDATUDE Protocol
+    private static final String HEADER = "ADDATUDEv1"; // The Header of the Message
+    private static final String FOOTER = "\r\n"; // The Footer of the Message
 
 
     /**
@@ -36,9 +42,8 @@ public abstract class Message {
     public Message(String operation, long mapID) throws ValidationException {
         Validator.validUnsignedInteger("MapID", String.valueOf(mapID));
         Objects.requireNonNull(operation);
-        validOperation(operation);
+        Validator.validOperation(operation);
         this.mapId = mapID;
-        this.operation = operation;
     }
 
 
@@ -52,6 +57,10 @@ public abstract class Message {
      *      If a write error occurs
      */
     public abstract void encode(MessageOutput out) throws IOException;
+
+
+
+
 
 
     /**
@@ -109,6 +118,9 @@ public abstract class Message {
     }
 
 
+
+
+
     /**
      * @return the mapID
      */
@@ -117,12 +129,19 @@ public abstract class Message {
     }
 
 
+
+
+
+
     /**
      * @return The Operation of the Message
      */
-    public final String getOperation(){
-        return operation;
-    }
+    public abstract String getOperation();
+
+
+
+
+
 
 
     /**
@@ -137,21 +156,6 @@ public abstract class Message {
         this.mapId = mapId;
         return this;
     }
-
-
-    /**
-     * Tests to make a sure an operation is valid
-     * @param operation the operation to test on
-     * @return a boolean describing if an operation
-     *  is valid.
-     */
-    public void validOperation(String operation) throws ValidationException {
-        if (!Operations.contains(operation)){
-            throw new ValidationException("Invalid Operation", "Operation "+ operation+" not permitable");
-        }
-    }
-
-
 
 
 
@@ -169,8 +173,11 @@ public abstract class Message {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message = (Message) o;
-        return mapId == message.mapId && operation.equals(message.operation);
+        return mapId == message.mapId;
     }
+
+
+
 
 
     /**
@@ -180,6 +187,8 @@ public abstract class Message {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(operation, mapId);
+        return Objects.hash(mapId);
     }
+
+
 }

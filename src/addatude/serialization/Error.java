@@ -11,10 +11,16 @@ package addatude.serialization;
 import java.io.IOException;
 import java.util.Objects;
 
+
+/**
+ * The Error Class is a specific
+ * Message that describes an Error within
+ * the protocol.
+ */
 public class Error extends Message{
 
-    String errorMessage;
-    private static final String OPERATION = "ERROR";
+    String errorMessage; //The Specific Messaged tied to the Error
+    private static final String OPERATION = "ERROR"; // The Operation of the Error Message
 
 
 
@@ -39,6 +45,17 @@ public class Error extends Message{
 
 
 
+
+
+
+
+
+    /**
+     * Creates a new error message from an input stream.
+     * @param mapID
+     * @param in
+     * @throws ValidationException
+     */
     public Error(long mapID, MessageInput in) throws ValidationException {
         super(OPERATION, mapID);
         String msgSize = in.readUntilSpace();
@@ -58,12 +75,19 @@ public class Error extends Message{
 
 
 
+
+
+
     /**
      * @return the error message
      */
     public String getErrorMessage() {
         return errorMessage;
     }
+
+
+
+
 
 
 
@@ -81,6 +105,12 @@ public class Error extends Message{
     }
 
 
+
+
+
+
+
+
     /**
      * To String Implementation
      * @return a String representation of
@@ -90,6 +120,9 @@ public class Error extends Message{
     public String toString() {
         return "Error: map="+ getMapId()+" error="+errorMessage;
     }
+
+
+
 
 
 
@@ -109,6 +142,18 @@ public class Error extends Message{
     }
 
 
+    /**
+     * @return The Operation
+     */
+    @Override
+    public String getOperation() {
+        return OPERATION;
+    }
+
+
+
+
+
 
 
 
@@ -126,6 +171,11 @@ public class Error extends Message{
         Error error = (Error) o;
         return errorMessage.equals(error.errorMessage);
     }
+
+
+
+
+
 
 
 

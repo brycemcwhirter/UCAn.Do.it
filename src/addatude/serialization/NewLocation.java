@@ -11,11 +11,17 @@ package addatude.serialization;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * New Location Class
+ *
+ * This class is a Message
+ * specifying a New Location
+ * to be added to a set of locations.
+ */
 public class NewLocation extends Message{
 
-    long mapId;
-    LocationRecord location;
-    private static final String OPERATION = "NEW";
+    LocationRecord location; // The New Location to be added
+    private static final String OPERATION = "NEW"; // The Operation Describing the Message
 
 
 
@@ -65,6 +71,12 @@ public class NewLocation extends Message{
     @Override
     public String toString() {
         return "NewLocation: map="+ getMapId()+" "+location;
+    }
+
+
+    @Override
+    public String getOperation() {
+        return OPERATION;
     }
 
 

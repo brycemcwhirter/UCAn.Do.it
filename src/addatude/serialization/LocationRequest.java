@@ -43,6 +43,11 @@ public class LocationRequest extends Message{
         return "LocationRequest: map="+ getMapId();
     }
 
+    @Override
+    public String getOperation() {
+        return OPERATION;
+    }
+
 
     /**
      * Writes a Location Request to a Message
