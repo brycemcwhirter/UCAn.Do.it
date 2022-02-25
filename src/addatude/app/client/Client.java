@@ -1,31 +1,52 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 2
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package addatude.app.client;
 
 import addatude.serialization.*;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.Buffer;
+import java.util.Objects;
 import java.util.Scanner;
+
+
+
 
 public class Client {
 
     private static final char YES = 'y';
-    private static final char NO = 'n';
     private static final int VALID_MAP_ID = 345;
     private static final int VALID_USER_ID = 143; //653 % 255
 
     private static final String ALL_OPERATION = "ALL";
     private static final String NEW_OPERATION = "NEW";
-    private static final String PROTOCOL = "ADDATUDEv1";
 
 
-    static int validMapID(Scanner scanner){
+    static class ClientErrorMessageHandler{
+
+        static void localClientValidation(String errorMessage){
+            System.out.println("Invalid User Input: " + errorMessage);
+        }
+
+        static void handleErrorMessage(String errorMessage){
+            System.out.println("Error: " + errorMessage);
+        }
+
+    }
+
+
+    static int getMapID(BufferedReader consoleReader) throws IOException {
         // Input Appropriate Attribute Values &
         // Ask for the MAP ID
         System.out.print("Map ID > ");
-        int mapID = Integer.parseInt(scanner.nextLine());
+        int mapID = Integer.parseInt(consoleReader.readLine());
 
         // Restart the cycle if map id isn't VALID_MAP_ID
         return mapID;
@@ -37,29 +58,57 @@ public class Client {
 
 
 
-    //Todo Tests for valid longitude & latitude values according to program 2 specification
-    //TODO tests that all values read in are valid. (return msg that says invalid or catch Validation Exception in main?)
-    private static String newOperation(int mapId, Scanner scanner) throws ValidationException {
+    private static byte[] newOperation(int mapId, BufferedReader consoleReader) throws IOException {
 
-        b
+        // Generating Output Variables
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        MessageOutput out = new MessageOutput(byteArrayOutputStream);
 
-        // Reading Longitude
-        String readLongitude = scanner.nextLine();
+        try {
 
-        // Reading Latitude
-        String readLatitude = scanner.nextLine();
-
-
-        String readLocationName = scanner.nextLine();
-
-
-        String readLocationDesc = scanner.nextLine();
-
-        LocationRecord loc = new LocationRecord(VALID_USER_ID, readLongitude, readLatitude, readLocationName, readLocationDesc);
-        NewLocation newLocation = new NewLocation(mapId, loc);
+            System.out.print("User ID > ");
+            String userID = consoleReader.readLine();
+            if(Integer.parseInt(userID) != VALID_USER_ID){
+                ClientErrorMessageHandler.localClientValidation("Invalid User ID");
+                return null;
+            }
 
 
-        return newLocation.encode(buf);
+            // Reading Longitude
+            System.out.print("Longitude > ");
+            String readLongitude = consoleReader.readLine();
+            Validator.validLongitude(readLongitude);
+
+            // Reading Latitude
+            System.out.print("Latitude > ");
+            String readLatitude = consoleReader.readLine();
+            Validator.validLongitude(readLatitude);
+
+            // Reading the Location Name
+            System.out.print("Name > ");
+            String readLocationName = consoleReader.readLine();
+            Validator.validString("Location Name", readLocationName);
+            Validator.validUnsignedInteger("Location Name Size", String.valueOf(readLocationName.length()));
+
+
+            // reading the location description
+            System.out.print("Desc > ");
+            String readLocationDesc = consoleReader.readLine();
+            Validator.validString("Location Description", readLocationDesc);
+            Validator.validUnsignedInteger("Location Description Size", String.valueOf(readLocationDesc.length()));
+
+            LocationRecord loc = new LocationRecord(VALID_USER_ID, readLongitude, readLatitude, readLocationName, readLocationDesc);
+            NewLocation newLocation = new NewLocation(mapId, loc);
+
+            newLocation.encode(out);
+        }
+        catch (ValidationException e){
+            ClientErrorMessageHandler.localClientValidation(e.getMessage());
+            return null;
+        }
+
+        return byteArrayOutputStream.toByteArray();
+
     }
 
 
@@ -68,16 +117,66 @@ public class Client {
 
 
 
-    private static String allOperation(int mapId) throws ValidationException {
+    private static byte[] allOperation(int mapId) throws ValidationException, IOException {
         LocationRequest req = new LocationRequest(mapId);
-        return req.toString();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        MessageOutput out = new MessageOutput(byteArrayOutputStream);
+
+        req.encode(out);
+
+        return byteArrayOutputStream.toByteArray();
     }
 
 
-    private static char askToContinue() throws IOException {
+
+
+
+
+
+    private static boolean wouldLikeToContinue(BufferedReader consoleReader) throws IOException {
         System.out.print("Continue (y/n) > ");
-        return (char) System.in.read();
+        char option = (char) consoleReader.read();
+        return (option == YES);
     }
+
+
+
+    private static boolean getOperation(BufferedReader consoleReader) throws IOException {
+
+        boolean validOperation;
+        boolean isNewOperation = false;
+
+        // Continue to ask the user for the operation
+        // until a valid operation is given.
+        do {
+
+            //prompt user for type of message (ALL OR NEW)
+            System.out.print("Operation > ");
+            String operation = consoleReader.readLine();
+
+
+            switch (operation) {
+                case ALL_OPERATION -> {
+                    validOperation = true;
+                    isNewOperation = false;
+                }
+                case NEW_OPERATION -> {
+                    isNewOperation = true;
+                    validOperation = true;
+                }
+                default -> {
+                    ClientErrorMessageHandler.localClientValidation("Unknown Operation \""+ operation+"\"");
+                    validOperation = false;
+                }
+            }
+        } while (!validOperation);
+
+        return isNewOperation;
+    }
+
+
+
+
 
 
 
@@ -86,10 +185,10 @@ public class Client {
 
     public static void main(String[] args) throws IOException, ValidationException {
 
-        Scanner scanner = new Scanner(System.in);
-        char option = YES;
-        boolean isNewOperation = false, validOperation;
-        String msg, server;
+        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+        boolean isNewOperation = false;
+        byte[] msg;
+        String server;
         int serverPort, mapId;
 
 
@@ -105,81 +204,76 @@ public class Client {
 
 
 
-        while(option != NO) {
-
-            do {
-
-                //prompt user for type of message (ALL OR NEW)
-                System.out.print("Operation > ");
-                String operation = scanner.nextLine();
-
-                // Ask Again if not ALL or NEW
-                switch (operation) {
-                    case ALL_OPERATION -> {
-                        validOperation = true;
-                    }
-                    case NEW_OPERATION -> {
-                        isNewOperation = true;
-                        validOperation = true;
-                    }
-                    default -> {
-                        System.out.println("Invalid Operation: " + operation);
-                        validOperation = false;
-                    }
-                }
-
-            } while (!validOperation);
+        do {
 
 
-            if ((mapId = validMapID(scanner)) == VALID_MAP_ID) {
+            isNewOperation = getOperation(consoleReader);
+
+
+
+            // Test for Valid Map ID
+            if ((mapId = getMapID(consoleReader)) == VALID_MAP_ID) {
 
                 // Call New Operation
-                if(isNewOperation)
-                    msg = newOperation(mapId, scanner);
+                if (isNewOperation){
+                    msg = newOperation(mapId, consoleReader);
+                }
 
-                else
+                // Call All operation
+                else {
                     msg = allOperation(mapId);
+                }
 
 
 
-                // Creating Connection
-                Socket socket = new Socket(server, serverPort);
-                InputStream in = socket.getInputStream();
-                OutputStream out = socket.getOutputStream();
+                if(Objects.isNull(msg)){
+                    // Don't do anything if the message received back is null.
+                    // This is possible due to the new operation & all operation
+                    // methods returning a null byte array if there is a validation
+                    // exception.
+                }
+
+                else {
+
+                    // Creating Connection
+                    Socket socket = new Socket(server, serverPort);
+                    InputStream in = socket.getInputStream();
+                    OutputStream out = socket.getOutputStream();
 
 
-                // Sending the request
-                out.write(msg.getBytes(StandardCharsets.UTF_8));
+                    // Sending the request
+                    out.write(msg);
 
 
-                // print the response / error message to the console
-                BufferedReader socketReader = new BufferedReader(new InputStreamReader(in));
-                String line = socketReader.readLine();    // reads a line of text
-                System.out.println(line);
-
+                    // print the response / error message to the console
+                    BufferedReader socketReader = new BufferedReader(new InputStreamReader(in));
+                    String line = socketReader.readLine();    // reads a line of text
+                    System.out.println(line);
+                }
 
 
             }
 
-
-            // Prompt the User to Continue
-            System.out.print("Continue? (y/n) > ");
-            //option =
-
-
-
-            //todo TEST FOR INVALID INPUT AT OPTION
-        }
+            // Throw an exception if not a valid map ID.
+            else{
+                ClientErrorMessageHandler.localClientValidation("Map ID is Invalid");
+            }
 
 
+        }while(wouldLikeToContinue(consoleReader));
 
 
-        //prompt for operation (switch)
-
-        //
     }
 
 
 
 
 }
+
+
+
+
+
+
+
+
