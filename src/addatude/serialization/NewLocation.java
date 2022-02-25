@@ -6,6 +6,10 @@
  *
  ************************************************/
 
+/*
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
 import java.io.IOException;
@@ -21,7 +25,7 @@ import java.util.Objects;
 public class NewLocation extends Message{
 
     LocationRecord location; // The New Location to be added
-    private static final String OPERATION = "NEW"; // The Operation Describing the Message
+    public static final String OPERATION = "NEW"; // The Operation Describing the Message
 
 
 
@@ -36,12 +40,18 @@ public class NewLocation extends Message{
         super(OPERATION, mapId);
         if(Objects.isNull(location))
             throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
-        LocationRecord copy = new LocationRecord(location);
-        this.location = copy;
+        this.location = new LocationRecord(location);
 
     }
 
 
+    /**
+     * Generates a new location message.
+     * @param mapId the map id associated with the new location
+     * @param in the input stream holding the message
+     * @throws ValidationException
+     *      If a validation error occurs.
+     */
     public NewLocation(long mapId, MessageInput in) throws ValidationException{
         super(OPERATION, mapId);
         location = new LocationRecord(in);
@@ -58,8 +68,7 @@ public class NewLocation extends Message{
     public NewLocation setLocationRecord(LocationRecord location) throws ValidationException {
         if(Objects.isNull(location))
             throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
-        LocationRecord copy = new LocationRecord(location);
-        this.location = copy;
+        this.location = new LocationRecord(location);
         return this;
     }
 

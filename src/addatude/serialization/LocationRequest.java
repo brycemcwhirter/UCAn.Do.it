@@ -6,13 +6,17 @@
  *
  ************************************************/
 
+/*
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
 import java.io.IOException;
 
 public class LocationRequest extends Message{
 
-    private static final String OPERATION = "ALL";
+    public static final String OPERATION = "ALL";
 
 
     /**

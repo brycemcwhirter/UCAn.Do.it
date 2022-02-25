@@ -6,7 +6,7 @@
  *
  ************************************************/
 
-/**
+/*
  * Testing Partner: John Harrison
  */
 
@@ -73,8 +73,6 @@ public abstract class Message {
      *      If any of these parameters are invalid
      * @throws NullPointerException
      *      If the input stream is null
-     * @throws IOException
-     *      If a read error occurs
      */
     public static Message decode(MessageInput in) throws ValidationException, NullPointerException {
         Objects.requireNonNull(in);
@@ -83,7 +81,7 @@ public abstract class Message {
         // Read the Header & Make Sure it Matches
         String header = in.readUntilSpace();
         if(!header.equals(HEADER)){
-            throw new ValidationException("Invalid Protocol stream", "Protocol: "+ HEADER);
+            throw new ValidationException("aDDATUDEv1", "Invalid Protocol specified: " + header);
         }
 
 
@@ -101,12 +99,12 @@ public abstract class Message {
 
         //Switch Operation
         switch (operation) {
-            case "NEW" -> a = new NewLocation(mapIdVal, in);
-            case "ALL" -> a = new LocationRequest(mapIdVal, in);
-            case "RESPONSE" -> a = new LocationResponse(mapIdVal, in);
-            case "ERROR" -> a = new Error(mapIdVal, in);
-            default -> throw new ValidationException("Invalid Operation", "Cannot Perform "+ operation);
-        };
+            case  NewLocation.OPERATION -> a = new NewLocation(mapIdVal, in);
+            case LocationRequest.OPERATION -> a = new LocationRequest(mapIdVal, in);
+            case LocationResponse.OPERATION -> a = new LocationResponse(mapIdVal, in);
+            case Error.OPERATION -> a = new Error(mapIdVal, in);
+            default -> throw new ValidationException("NW", "Invalid Operation: "+ operation);
+        }
 
 
         String footer = new String(in.readNumOfValues(2));

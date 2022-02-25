@@ -6,6 +6,10 @@
  *
  ************************************************/
 
+/*
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
 import java.io.IOException;
@@ -20,7 +24,7 @@ import java.util.Objects;
 public class Error extends Message{
 
     String errorMessage; //The Specific Messaged tied to the Error
-    private static final String OPERATION = "ERROR"; // The Operation of the Error Message
+    public static final String OPERATION = "ERROR"; // The Operation of the Error Message
 
 
 
@@ -52,9 +56,10 @@ public class Error extends Message{
 
     /**
      * Creates a new error message from an input stream.
-     * @param mapID
-     * @param in
+     * @param mapID The Map ID of the Error Message
+     * @param in The Message Input holding the message
      * @throws ValidationException
+     *      if an invalid parameter is within the message
      */
     public Error(long mapID, MessageInput in) throws ValidationException {
         super(OPERATION, mapID);

@@ -6,6 +6,10 @@
  *
  ************************************************/
 
+/*
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
 import java.io.IOException;
@@ -23,7 +27,7 @@ public class LocationResponse extends Message{
 
     List<LocationRecord> locationRecordList = new ArrayList<>(); // A List of Location Record tied to the response
     String mapName; // The Name of the Map tied to the Location Response
-    private static final String OPERATION = "RESPONSE"; // The Operation of the Location Response
+    public static final String OPERATION = "RESPONSE"; // The Operation of the Location Response
 
 
     /**

@@ -374,7 +374,7 @@ public class Client {
     public static void main(String[] args) {
 
         // The Input Reader from the console
-        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader consoleReader;
 
 
         // Describes if the user would like to execute the new operation
@@ -401,6 +401,7 @@ public class Client {
 
 
         do {
+            consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
             // Get the Operation & MapID
             isNewOperation = getOperation(consoleReader);
