@@ -14,8 +14,16 @@ package addatude.serialization;
 
 import java.io.IOException;
 
+/**
+ * A Location Request is used for
+ * asking for a set of locations
+ * specified by the ALL operation
+ */
 public class LocationRequest extends Message{
 
+    /**
+     * The Specified Operation for the location request
+     */
     public static final String OPERATION = "ALL";
 
 
@@ -43,10 +51,9 @@ public class LocationRequest extends Message{
     }
 
 
-
-
-
-
+    /**
+     * @return The operation tied to the location request
+     */
     @Override
     public String getOperation() {
         return OPERATION;

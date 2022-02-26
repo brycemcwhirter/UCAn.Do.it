@@ -108,7 +108,8 @@ public class ErrorTest {
                     arguments(0, ""),
                     arguments(5 ,"there"),
                     arguments(12, "hello there!"),
-                    arguments(12345, "1234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345")
+                    arguments(12345, "1234512345123451234512345123451234512345123451234512345123451234512345123451234512345123451234512345"),
+                    arguments(99999, "hello there\u00AE")
             );
         }
 
@@ -178,13 +179,6 @@ public class ErrorTest {
             assertEquals("Error Message", a.getErrorMessage());
         }
 
-        // Invalid Set (everything throws validation exception)
-        @ParameterizedTest(name="{0} is invalid")
-        @Ignore
-        @ValueSource(strings = {"1111111111111111111111111111111111111111111111111111111111111111111111111111"})
-        void invalidErrorMessage(String bad){
-            assertThrows(ValidationException.class, ()-> a.setErrorMessage(bad));
-        }
 
     }
 

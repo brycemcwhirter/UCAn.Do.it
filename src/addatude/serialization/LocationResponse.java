@@ -25,9 +25,22 @@ import java.util.Objects;
  */
 public class LocationResponse extends Message{
 
-    List<LocationRecord> locationRecordList = new ArrayList<>(); // A List of Location Record tied to the response
-    String mapName; // The Name of the Map tied to the Location Response
-    public static final String OPERATION = "RESPONSE"; // The Operation of the Location Response
+    /**
+     *  A List of Location Record tied to the response
+     */
+    List<LocationRecord> locationRecordList = new ArrayList<>();
+
+
+    /**
+     * The Name of the Map tied to the Location Response
+     */
+    String mapName;
+
+
+    /**
+     * The Operation of the Location Response
+     */
+    public static final String OPERATION = "RESPONSE";
 
 
     /**
@@ -64,7 +77,7 @@ public class LocationResponse extends Message{
 
         int size = in.readIntegerValue();
         String mapName = new String(in.readNumOfValues(size), StandardCharsets.UTF_8);
-        Validator.validString("Param", mapName);
+        Validator.validString("Map Name", mapName);
 
         int numOfLocation = in.readIntegerValue();
 

@@ -17,14 +17,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+
 /**
  * This class Validates the types
  * specific to the Addatude Protocol.
  */
 public class Validator {
 
+
+    /**
+     * The maximum size for a double
+     */
     static final int MAX_DOUBLE_SIZE = 10;
-    private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR"); //
+
+    /**
+     * A list of operations.
+     */
+    private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR");
 
 
 

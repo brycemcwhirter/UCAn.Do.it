@@ -109,25 +109,11 @@ public class failingTest {
         ErrorTest() throws ValidationException {
         }
 
-        //repeated 1's?
-        @ParameterizedTest(name="{0} is invalid")
-        @ValueSource(strings = {"1111111111111111111111111111111111111111111111111111111111111111111111111111"})
-        void invalidErrorMessage(String bad){
-            assertThrows(ValidationException.class, ()-> a.setErrorMessage(bad));
-        }
 
 
 
 
-        // Premature EOS [byte array?]
-        @Test
-        void prematureEOS() throws ValidationException, IOException {
-            byte[] valid = "ADDATUDEv1 12345 ERROR 100 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789\r\n".getBytes(StandardCharsets.UTF_8);
-            ByteArrayInputStream bais = new ByteArrayInputStream(valid);
-            MessageInput in = new MessageInput(bais);
-            in.closeMessageInputStream();
-            var a = Message.decode(in);
-        }
+
 
     }
 
@@ -135,9 +121,7 @@ public class failingTest {
     static
     class LocationResponseTest{
 
-        // Premature EOS [byte array?]
 
-        //[36m| | |   '--[0m [31mmapid = 0 LRs = [1:NAM-Des p (-5.3,9.7), 2:NAME-Desc (-5.3,9.7), 34567:012345678...[0m [31m[X][0m [31mProtocol: ADDATUDEv1[0m
 
 
 

@@ -14,6 +14,7 @@ package addatude.serialization;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -26,9 +27,31 @@ public class MessageInput {
 
 
     /**
-     * The Input Stream Used for reading input.
+     * The Input Stream Used for holding input
      */
     private final InputStream in;
+
+
+    /**
+     * The Input Stream Reader used for
+     * helping in reading input
+     */
+    InputStreamReader inputStreamReader;
+
+
+
+    /**
+     * Creates a new Message Input Object
+     *
+     * @param in The Input Stream associated with the message input object
+     * @throws NullPointerException
+     *      if the 'in' parameter is null
+     */
+    public MessageInput(InputStream in) throws NullPointerException{
+        Objects.requireNonNull(in, "Input Stream Cannot Be Null");
+        this.in = in;
+        this.inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
+    }
 
 
 
@@ -44,7 +67,7 @@ public class MessageInput {
     public char readVal() throws IOException {
         int i;
 
-        i = in.read();
+        i = inputStreamReader.read();
 
         if (i == -1){
             throw new IOException("Invalid Read");
@@ -61,17 +84,7 @@ public class MessageInput {
 
 
 
-    /**
-     * Creates a new Message Input Object
-     *
-     * @param in The Input Stream associated with the message input object
-     * @throws NullPointerException
-     *      if the 'in' parameter is null
-     */
-    public MessageInput(InputStream in) throws NullPointerException{
-        Objects.requireNonNull(in, "Input Stream Cannot Be Null");
-        this.in = in;
-    }
+
 
 
 
@@ -160,31 +173,31 @@ public class MessageInput {
      */
     public byte[] readNumOfValues(int size) throws ValidationException {
         StringBuilder sb = new StringBuilder();
-        boolean onUnicode=false;
+        Validator.validUnsignedInteger("Reading Size", String.valueOf(size));
 
         try {
 
             for (int i = 0; i < size; i++) {
                 char j = readVal();
-
-                /*if (j <= 0x7f) {
-                    onUnicode = false;
-                } else if (j <= 0x7ff && !onUnicode) {
-                    size++;
-                    onUnicode = true;
-                }*/
-
                 sb.append(j);
             }
+
         }
+
+
         catch (IOException e){
             throw new ValidationException(sb.toString(), "Size specified is larger than bytes on stream", e);
         }
 
         return sb.toString().getBytes(StandardCharsets.UTF_8);
-
-
     }
+
+
+
+
+
+
+
 
 
     /**
@@ -193,7 +206,7 @@ public class MessageInput {
      *      If an error occurs
      */
     public void closeMessageInputStream() throws IOException {
-        in.close();
+        inputStreamReader.close();
     }
 
 

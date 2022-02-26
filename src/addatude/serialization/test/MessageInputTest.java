@@ -6,16 +6,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import addatude.serialization.*;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.common.ArgumentUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class MessageInputTest {
 
@@ -61,7 +67,7 @@ public class MessageInputTest {
         @ParameterizedTest
         @DisplayName("Read Integer Value")
         @ValueSource(strings = {"12345 ", "1234 "})
-        void testReadIntegerValue(String string) throws ValidationException, IOException {
+        void testReadIntegerValue(String string) throws ValidationException {
             byte[] buf = string.getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream bais = new ByteArrayInputStream(buf);
             MessageInput in1 = new MessageInput(bais);
@@ -69,6 +75,27 @@ public class MessageInputTest {
         }
 
 
+        /*@ParameterizedTest
+        @DisplayName("EOS Stream")
+        @MethodSource("EOSStream")
+        void blockingEOSStream(String value) throws ValidationException {
+            byte[] buf = value.getBytes(StandardCharsets.UTF_8);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
+            BlockingInputStream blockingInputStream = new BlockingInputStream(byteArrayInputStream);
+            MessageInput in = new MessageInput(blockingInputStream);
+
+
+            var decode = Message.decode(in);
+
+        }
+
+        public static Stream<Arguments> EOSStream(){
+            return Stream.of(
+                    arguments("ADDATUDEv1 99999 NEW 99999 180.0 -90.0 5 O N E12 hello there!\r\n")
+            );
+        }
+*/
+
 
 
 
@@ -77,26 +104,33 @@ public class MessageInputTest {
 
     }
 
-    @DisplayName("Equals & Hashcode")
-    class equalsAndHashCode{
+   static class BlockingInputStream extends InputStream{
 
+        private InputStream in;
 
-
-        @Test
-        void testEqualObjects() {
-
+        BlockingInputStream(InputStream in){
+            this.in = in;
         }
 
-        @Test
-        void testUnequalObjects() {
+       @Override
+       public int read() throws IOException {
+           int rv = in.read();
+           if(rv == -1){
+               try {
+                   block();
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+           }
+           return rv;
+       }
 
-        }
-
-        @Test
-        void testHashCode() {
-
-        }
-    }
+       private synchronized void block() throws InterruptedException {
+            while(true) {
+                wait();
+            }
+       }
+   }
 
 
 

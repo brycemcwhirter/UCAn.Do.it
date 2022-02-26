@@ -26,9 +26,22 @@ import java.util.Objects;
 public abstract class Message {
 
 
-    long mapId; // The MapID Related to the message of the ADDATUDE Protocol
-    private static final String HEADER = "ADDATUDEv1"; // The Header of the Message
-    private static final String FOOTER = "\r\n"; // The Footer of the Message
+    /**
+     * The MapID Related to the message of the ADDATUDE Protocol
+     */
+    long mapId;
+
+
+    /**
+     * The Header of the Message
+     */
+    private static final String HEADER = "ADDATUDEv1";
+
+
+    /**
+     * The Footer of the Message
+     */
+    private static final String FOOTER = "\r\n";
 
 
     /**
@@ -97,19 +110,19 @@ public abstract class Message {
 
         //Switch Operation
         switch (operation) {
-            case  NewLocation.OPERATION -> a = new NewLocation(mapIdVal, in);
+            case NewLocation.OPERATION -> a = new NewLocation(mapIdVal, in);
             case LocationRequest.OPERATION -> a = new LocationRequest(mapIdVal);
             case LocationResponse.OPERATION -> a = new LocationResponse(mapIdVal, in);
             case Error.OPERATION -> a = new Error(mapIdVal, in);
-            default -> throw new ValidationException(operation, "Invalid Operation: "+ operation);
+            default -> throw new ValidationException(operation, "Invalid Operation");
         }
 
 
+        // Test Valid Ending
         String footer = new String(in.readNumOfValues(2));
         if(!footer.equals(FOOTER)){
-            throw new ValidationException(footer, "Invalid Stream Ending");
+            throw new ValidationException(footer, "Invalid Stream Ending: " + footer);
         }
-
 
         return a;
     }

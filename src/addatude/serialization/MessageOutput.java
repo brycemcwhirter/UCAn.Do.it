@@ -17,6 +17,10 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+/**
+ * This class specifies the methods
+ * for outputting data to an output stream.
+ */
 public class MessageOutput {
 
     /**

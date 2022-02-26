@@ -12,17 +12,45 @@
 
 package addatude.serialization;
 
-import javax.xml.stream.Location;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+/**
+ * The Location Record is a
+ * record of a specific location
+ * with an associated latitude & longitude
+ * and name & description.
+ */
 public class LocationRecord {
 
+    /**
+     * The User ID responsible of the location
+     */
     long userID;
+
+
+    /**
+     * The Longitude of the location
+     */
     String longitude;
+
+
+    /**
+     * The Latitude of the Location
+     */
     String latitude;
+
+
+    /**
+     * The name of the location
+     */
     String locationName;
+
+
+    /**
+     * The Description of the location
+     */
     String locationDescription;
 
     public static final int LOCATION_NAME_AND_DESCRIPTION = 2;
@@ -62,45 +90,49 @@ public class LocationRecord {
         Objects.requireNonNull(in, "Message Cannot be Null");
         String readIN;
 
-        //try {
-
-            //Read the UserID & Validating
-            readIN = in.readUntilSpace();
-            Validator.validUnsignedInteger("UserID", readIN);
-            long readUserID = Long.parseLong(readIN);
-            setUserId(readUserID);
+        //Read the UserID & Validating
+        readIN = in.readUntilSpace();
+        Validator.validUnsignedInteger("UserID", readIN);
+        long readUserID = Long.parseLong(readIN);
+        setUserId(readUserID);
 
 
-            //Read the Longitude
-            String readLongitude = in.readUntilSpace();
-            setLongitude(readLongitude);
+        //Read the Longitude
+        String readLongitude = in.readUntilSpace();
+        setLongitude(readLongitude);
 
 
-            //Read the Latitude
-            String readLatitude = in.readUntilSpace();
-            setLatitude(readLatitude);
+        //Read the Latitude
+        String readLatitude = in.readUntilSpace();
+        setLatitude(readLatitude);
 
 
-            String[] tokens = new String[2];
+        String[] tokens = new String[2];
 
 
 
-            //For The Location Name and Description
-            // Read the Size of the Value
-            // Read 'Size' number of chars for Value
-            for (int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++) {
-                int size = in.readIntegerValue();
-                byte[] buf = in.readNumOfValues(size);
-                String read = new String(buf, StandardCharsets.UTF_8);
-                tokens[i] = read;
-            }
+        //For The Location Name and Description
+        // Read the Size of the Value
+        // Read 'Size' number of chars for Value
+        for (int i = 0; i < LOCATION_NAME_AND_DESCRIPTION; i++) {
+            int size = in.readIntegerValue();
+            byte[] buf = in.readNumOfValues(size);
+            String read = new String(buf, StandardCharsets.UTF_8);
+            tokens[i] = read;
+        }
 
 
-            setLocationName(tokens[0]);
-            setLocationDescription(tokens[1]);
+        setLocationName(tokens[0]);
+        setLocationDescription(tokens[1]);
     }
 
 
+    /**
+     * Generates a copy of a location record.
+     * @param loc the copied location record
+     * @throws ValidationException
+     *      if any parameter is invalid
+     */
     LocationRecord(LocationRecord loc) throws ValidationException {
         this(loc.getUserId(), loc.getLongitude(), loc.getLatitude(), loc.getLocationName(), loc.getLocationDescription());
     }

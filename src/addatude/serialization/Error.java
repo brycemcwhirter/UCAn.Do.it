@@ -23,8 +23,16 @@ import java.util.Objects;
  */
 public class Error extends Message{
 
-    String errorMessage; //The Specific Messaged tied to the Error
-    public static final String OPERATION = "ERROR"; // The Operation of the Error Message
+    /**
+     * The Specific Messaged tied to the Error
+     */
+    String errorMessage;
+
+
+    /**
+     * The Operation of the Error Message
+     */
+    public static final String OPERATION = "ERROR";
 
 
 
@@ -64,12 +72,11 @@ public class Error extends Message{
      */
     public Error(long mapID, MessageInput in) throws ValidationException {
         super(OPERATION, mapID);
-        String msgSize = in.readUntilSpace();
-        Validator.validUnsignedInteger("Error Message Size", msgSize);
+        int msgSize = in.readIntegerValue();
+        Validator.validUnsignedInteger("Error Message Size", String.valueOf(msgSize));
 
 
-        int size = Integer.parseInt(msgSize);
-        String testMsg = new String(in.readNumOfValues(size));
+        String testMsg = new String(in.readNumOfValues(msgSize));
         Validator.validString("Error Message", testMsg);
         Validator.validUnsignedInteger("Error Message Size", String.valueOf(testMsg.length()));
 

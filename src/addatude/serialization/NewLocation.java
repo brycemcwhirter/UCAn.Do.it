@@ -24,8 +24,16 @@ import java.util.Objects;
  */
 public class NewLocation extends Message{
 
-    LocationRecord location; // The New Location to be added
-    public static final String OPERATION = "NEW"; // The Operation Describing the Message
+    /**
+     * The New Location to be added
+     */
+    LocationRecord location;
+
+
+    /**
+     * The Operation Describing the Message
+     */
+    public static final String OPERATION = "NEW";
 
 
 
@@ -41,7 +49,6 @@ public class NewLocation extends Message{
         if(Objects.isNull(location))
             throw new ValidationException(null, "Location Record cannot be null in New Location Instance");
         this.location = new LocationRecord(location);
-
     }
 
 
