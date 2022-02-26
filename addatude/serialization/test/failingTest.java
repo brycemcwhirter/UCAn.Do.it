@@ -1,14 +1,12 @@
-import addatude.serialization.*;
-import addatude.serialization.Error;
+import serialization.*;
+import serialization.Error;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-import javax.xml.stream.Location;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +30,7 @@ public class failingTest {
         public void testDecode(String decodeStream) throws IOException, ValidationException {
             var in = new MessageInput(new ByteArrayInputStream(
                     decodeStream.getBytes(StandardCharsets.UTF_8)));
-            var msg = new addatude.serialization.LocationRecord(in);
+            var msg = new LocationRecord(in);
 
         }
 

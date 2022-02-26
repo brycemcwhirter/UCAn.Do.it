@@ -1,6 +1,7 @@
-package addatude.serialization.test;
 
-import addatude.serialization.*;
+package serialization.test;
+
+import serialization.*;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -10,7 +10,7 @@
  * Testing Partner: John Harrison
  */
 
-package addatude.serialization;
+package serialization;
 
 import java.io.IOException;
 import java.io.InputStream;
