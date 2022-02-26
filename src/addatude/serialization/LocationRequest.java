@@ -31,11 +31,6 @@ public class LocationRequest extends Message{
 
 
 
-    public LocationRequest(long mapId, MessageInput in) throws ValidationException{
-        super(OPERATION, mapId);
-    }
-
-
     /**
      * String Implementation of a Location
      * Request
@@ -46,6 +41,11 @@ public class LocationRequest extends Message{
     public String toString() {
         return "LocationRequest: map="+ getMapId();
     }
+
+
+
+
+
 
     @Override
     public String getOperation() {

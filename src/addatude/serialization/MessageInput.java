@@ -99,7 +99,7 @@ public class MessageInput {
         }
 
         catch (IOException e) {
-            throw new ValidationException("Invalid Read", "A space was never reached", e);
+            throw new ValidationException(stringBuilder.toString(), "A space was never reached", e);
         }
 
 
@@ -133,7 +133,7 @@ public class MessageInput {
 
         }
         catch (NumberFormatException e){
-            throw new ValidationException("InvalidRead", "Value on stream must be Integer Value", e);
+            throw new ValidationException(stringBuilder.toString(), "Value on stream must be Integer Value", e);
         }
 
 
@@ -167,18 +167,18 @@ public class MessageInput {
             for (int i = 0; i < size; i++) {
                 char j = readVal();
 
-                if (j <= 0x7f) {
+                /*if (j <= 0x7f) {
                     onUnicode = false;
                 } else if (j <= 0x7ff && !onUnicode) {
                     size++;
                     onUnicode = true;
-                }
+                }*/
 
                 sb.append(j);
             }
         }
         catch (IOException e){
-            throw new ValidationException("Invalid Read", "Size specified is larger than bytes on stream", e);
+            throw new ValidationException(sb.toString(), "Size specified is larger than bytes on stream", e);
         }
 
         return sb.toString().getBytes(StandardCharsets.UTF_8);

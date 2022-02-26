@@ -14,8 +14,6 @@ package addatude.serialization;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -81,7 +79,7 @@ public abstract class Message {
         // Read the Header & Make Sure it Matches
         String header = in.readUntilSpace();
         if(!header.equals(HEADER)){
-            throw new ValidationException("aDDATUDEv1", "Invalid Protocol specified: " + header);
+            throw new ValidationException(header, "Invalid Protocol specified: ");
         }
 
 
@@ -100,16 +98,16 @@ public abstract class Message {
         //Switch Operation
         switch (operation) {
             case  NewLocation.OPERATION -> a = new NewLocation(mapIdVal, in);
-            case LocationRequest.OPERATION -> a = new LocationRequest(mapIdVal, in);
+            case LocationRequest.OPERATION -> a = new LocationRequest(mapIdVal);
             case LocationResponse.OPERATION -> a = new LocationResponse(mapIdVal, in);
             case Error.OPERATION -> a = new Error(mapIdVal, in);
-            default -> throw new ValidationException("NW", "Invalid Operation: "+ operation);
+            default -> throw new ValidationException(operation, "Invalid Operation: "+ operation);
         }
 
 
         String footer = new String(in.readNumOfValues(2));
         if(!footer.equals(FOOTER)){
-            throw new ValidationException("Invalid Message Stream", "Footer not found in message");
+            throw new ValidationException(footer, "Invalid Stream Ending");
         }
 
 

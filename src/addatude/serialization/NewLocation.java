@@ -39,7 +39,7 @@ public class NewLocation extends Message{
     public NewLocation(long mapId, LocationRecord location) throws ValidationException{
         super(OPERATION, mapId);
         if(Objects.isNull(location))
-            throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
+            throw new ValidationException(null, "Location Record cannot be null in New Location Instance");
         this.location = new LocationRecord(location);
 
     }
@@ -67,7 +67,7 @@ public class NewLocation extends Message{
      */
     public NewLocation setLocationRecord(LocationRecord location) throws ValidationException {
         if(Objects.isNull(location))
-            throw new ValidationException("Null Location Record", "Location Record cannot be null in New Location Instance");
+            throw new ValidationException(null, "Location Record cannot be null in New Location Instance");
         this.location = new LocationRecord(location);
         return this;
     }
@@ -79,12 +79,14 @@ public class NewLocation extends Message{
      */
     @Override
     public String toString() {
+
         return "NewLocation: map="+ getMapId()+" "+location;
     }
 
 
     @Override
     public String getOperation() {
+
         return OPERATION;
     }
 
@@ -133,6 +135,7 @@ public class NewLocation extends Message{
      */
     @Override
     public int hashCode() {
+
         return Objects.hash(super.hashCode(), mapId, location);
     }
 }

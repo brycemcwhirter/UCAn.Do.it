@@ -94,7 +94,7 @@ public class LocationResponse extends Message{
      */
     public LocationResponse addLocationRecord(LocationRecord locationRecord) throws ValidationException {
         if(Objects.isNull(locationRecord)){
-            throw new ValidationException("Null Location Record", "Location Record cannot be null in adding to list");
+            throw new ValidationException(null, "Location Record cannot be null in adding to list");
         }
 
         locationRecordList.add(locationRecord);
@@ -113,6 +113,7 @@ public class LocationResponse extends Message{
      * @return a copy of the location record list
      */
     public List<LocationRecord> getLocationRecordList(){
+
         return new ArrayList<>(locationRecordList);
     }
 
@@ -127,6 +128,7 @@ public class LocationResponse extends Message{
      * @return the name of the map
      */
     public String getMapName() {
+
         return mapName;
     }
 
@@ -140,6 +142,7 @@ public class LocationResponse extends Message{
      */
     @Override
     public String getOperation() {
+
         return OPERATION;
     }
 
@@ -253,6 +256,7 @@ public class LocationResponse extends Message{
      */
     @Override
     public int hashCode() {
+
         return Objects.hash(locationRecordList, mapName);
     }
 

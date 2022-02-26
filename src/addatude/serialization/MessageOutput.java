@@ -6,6 +6,10 @@
  *
  ************************************************/
 
+/*
+ * Testing Partner: John Harrison
+ */
+
 package addatude.serialization;
 
 import java.io.IOException;

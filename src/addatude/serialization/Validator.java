@@ -40,18 +40,18 @@ public class Validator {
             Objects.requireNonNull(candidateInteger);
 
             if(!candidateInteger.matches("\\d*")){
-                throw new ValidationException("Invalid UserID", parameter + " must be numeric: "+candidateInteger);
+                throw new ValidationException(candidateInteger, parameter + " must be numeric");
             }
 
             long val = Long.parseLong(candidateInteger);
 
             if(val < 0 || val > 99999){
-                throw new ValidationException("Invalid Unsigned Integer", parameter + " must be Unsigned Integer");
+                throw new ValidationException(candidateInteger, parameter + " must be Unsigned Integer");
             }
         }
 
         catch(NullPointerException e){
-            throw new ValidationException("Null Unsigned Int", parameter + " cannot be null", e);
+            throw new ValidationException(null, parameter + " cannot be null", e);
         }
     }
 
@@ -67,8 +67,8 @@ public class Validator {
      */
     public static void validString(String parameter, String testString) throws ValidationException {
 
-        if(testString == null){
-            throw new ValidationException("null string", parameter+" cannot be null: " + testString);
+        if(Objects.isNull(testString)){
+            throw new ValidationException(null, parameter+" cannot be null");
         }
 
         if(testString.isEmpty())
@@ -77,10 +77,8 @@ public class Validator {
 
 
         if(!Pattern.matches("\\P{C}*", testString)){
-            throw new ValidationException("Invalid String", parameter + " Contains Unprintable Characters: "+testString);
+            throw new ValidationException(testString, parameter + " Contains Unprintable Characters");
         }
-
-
     }
 
 
@@ -92,13 +90,13 @@ public class Validator {
      */
     public static void validDouble(String parameter, String valString) throws ValidationException{
 
-        if(valString == null){
-            throw new ValidationException("Null String", parameter+ " Cannot be null: "+valString);
+        if(Objects.isNull(valString)){
+            throw new ValidationException(null, parameter+ " Cannot be null ");
         }
 
 
         if(!Pattern.matches("^-?[0-9]+\\.[0-9]+$", valString) || valString.length() > MAX_DOUBLE_SIZE){
-            throw new ValidationException("Invalid Double", "Double Value for "+parameter+" doesn't match Regex Pattern: "+ valString);
+            throw new ValidationException(valString, "Double Value for "+parameter+" is not a valid double");
         }
 
 
@@ -116,7 +114,7 @@ public class Validator {
         validDouble("Latitude", latitude);
 
         if(Double.parseDouble(latitude) > 90 || Double.parseDouble(latitude) < -90){
-            throw new ValidationException("Invalid Latitude", "Latitude must be between -90 & 90");
+            throw new ValidationException(latitude, "Latitude must be between -90 & 90");
         }
     }
 
@@ -132,7 +130,7 @@ public class Validator {
         validDouble("Longitude", longitude);
 
         if(Double.parseDouble(longitude) > 180 || Double.parseDouble(longitude)  < -180){
-            throw new ValidationException("Invalid Longitude", "Longitude must be between -180 & 180");
+            throw new ValidationException(longitude, "Longitude must be between -180 & 180");
         }
     }
 
@@ -145,7 +143,7 @@ public class Validator {
      */
     public static void validOperation(String operation) throws ValidationException {
         if (!Operations.contains(operation)){
-            throw new ValidationException("Invalid Operation", "Operation "+ operation+" not permitable");
+            throw new ValidationException(operation, "Operation not allowed");
         }
     }
 

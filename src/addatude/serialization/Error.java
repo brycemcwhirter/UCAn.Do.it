@@ -40,9 +40,10 @@ public class Error extends Message{
     public Error(long mapId, String errorMessage) throws ValidationException{
         super(OPERATION, mapId);
         if(errorMessage == null){
-            throw new ValidationException("Null Error Message", "Error Message Cannot be null");
+            throw new ValidationException(null, "Error Message Cannot be null");
         }
         Validator.validString("Error Message", errorMessage);
+        Validator.validUnsignedInteger("Error Message Size", String.valueOf(errorMessage.length()));
         this.errorMessage = errorMessage;
 
     }
