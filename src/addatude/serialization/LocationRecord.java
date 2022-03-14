@@ -10,7 +10,7 @@
  * Testing Partner: John Harrison
  */
 
-package serialization;
+package addatude.serialization;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -83,7 +83,7 @@ public class LocationRecord {
      * @param in The Input Stream to Deserialize the Location Record from
      * @throws ValidationException
      *      If any of these parameters read are invalid
-     * @throws IOException
+     * @throws ValidationException
      *      If an error occurred during reading
      */
     public LocationRecord(MessageInput in) throws ValidationException {

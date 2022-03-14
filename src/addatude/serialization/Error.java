@@ -10,7 +10,7 @@
  * Testing Partner: John Harrison
  */
 
-package serialization;
+package addatude.serialization;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -149,9 +149,9 @@ public class Error extends Message{
      */
     @Override
     public void encode(MessageOutput out) throws IOException {
-        Message.writeMessageHeader(getMapId(), getOperation(), out);
+        writeMessageHeader(getMapId(), getOperation(), out);
         out.writeString(errorMessage);
-        Message.writeMessageFooter(out);
+        writeMessageFooter(out);
     }
 
 

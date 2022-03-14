@@ -10,10 +10,10 @@
  * Programming Compadre: John Harrison
  */
 
-package app.client;
+package addatude.app.client;
 
-import serialization.*;
-import serialization.Error;
+import addatude.serialization.*;
+import addatude.serialization.Error;
 
 import java.io.*;
 import java.net.Socket;

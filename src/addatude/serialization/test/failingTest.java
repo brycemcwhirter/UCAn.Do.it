@@ -1,5 +1,5 @@
-import serialization.*;
-import serialization.Error;
+import addatude.serialization.*;
+import addatude.serialization.Error;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,14 +20,13 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class failingTest {
 
     @Nested
-    static
     class LocationRecordTest{
 
         //Decode Test
         // todo you are failing this (passing right now but instance you're not thinking of)
         @ParameterizedTest(name = "Basic Decode")
         @MethodSource("validDecodeStreams")
-        public void testDecode(String decodeStream) throws IOException, ValidationException {
+        public void testDecode(String decodeStream) throws ValidationException {
             var in = new MessageInput(new ByteArrayInputStream(
                     decodeStream.getBytes(StandardCharsets.UTF_8)));
             var msg = new LocationRecord(in);
@@ -51,7 +50,6 @@ public class failingTest {
     }
 
     @Nested
-    static
     class NewLocationTest{
 
         // Equals Test
@@ -99,7 +97,6 @@ public class failingTest {
     }
 
     @Nested
-    static
     class ErrorTest{
 
         Error a = new Error(123, "errormsg");
@@ -116,7 +113,6 @@ public class failingTest {
     }
 
     @Nested
-    static
     class LocationResponseTest{
 
 

@@ -10,7 +10,7 @@
  * Testing Partner: John Harrison
  */
 
-package serialization;
+package addatude.serialization;
 
 import java.util.Arrays;
 import java.util.List;
@@ -147,8 +147,6 @@ public class Validator {
     /**
      * Tests to make a sure an operation is valid
      * @param operation the operation to test on
-     * @return a boolean describing if an operation
-     *  is valid.
      */
     public static void validOperation(String operation) throws ValidationException {
         if (!Operations.contains(operation)){

@@ -10,7 +10,7 @@
  * Testing Partner: John Harrison
  */
 
-package serialization;
+package addatude.serialization;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,7 +92,7 @@ public class MessageInput {
      * Reads the characters from the Byte Stream Until a ' ' occurs
      *
      * @return A string that is read from the Message Input Stream
-     * @throws IOException
+     * @throws ValidationException
      *      If a reading error occurs
      */
     public String readUntilSpace() throws ValidationException {
@@ -137,7 +137,7 @@ public class MessageInput {
 
 
         String val = readUntilSpace();
-        val.trim();
+        val = val.trim(); //TODO change this if necessary
         stringBuilder.append(val);
 
         int value;

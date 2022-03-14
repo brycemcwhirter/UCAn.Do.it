@@ -10,8 +10,10 @@
  * Testing Partner: John Harrison
  */
 
-package serialization;
+package addatude.serialization;
 
+
+import java.io.Serial;
 
 /**
  * A validation exception is thrown when a
@@ -21,6 +23,7 @@ package serialization;
 public class ValidationException extends Exception {
 
     String invalidToken;
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
 
@@ -49,7 +52,7 @@ public class ValidationException extends Exception {
 
     /**
      * Returns the invalid Token
-     * @return
+     * @return the Invalid Token of the Validation Exception
      */
     public String getInvalidToken() {
         return invalidToken;

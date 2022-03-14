@@ -1,8 +1,6 @@
-package serialization.test;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import serialization.*;
+import addatude.serialization.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

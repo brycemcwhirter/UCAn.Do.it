@@ -1,6 +1,4 @@
-package serialization.test;
-
-import serialization.*;
+import addatude.serialization.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,7 +10,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -38,7 +35,6 @@ public class LocationRequestTest {
 
     @DisplayName("Decode & Encode")
     @Nested
-    static
     class decodeTest{
 
 
@@ -56,7 +52,7 @@ public class LocationRequestTest {
 
         @Test
         @DisplayName("Decode Test")
-        void decodeTest() throws ValidationException, IOException {
+        void testValidDecode() throws ValidationException {
             byte[] buf = "ADDATUDEv1 123 ALL \r\n".getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in = new MessageInput(byteArrayInputStream);
@@ -98,7 +94,7 @@ public class LocationRequestTest {
             var bOut = new ByteArrayOutputStream();
             var out = new MessageOutput(bOut);
             new LocationRequest(234).encode(out);
-            assertArrayEquals("ADDATUDEv1 234 ALL \r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
+            Assertions.assertArrayEquals("ADDATUDEv1 234 ALL \r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
         }
 
     }
@@ -115,7 +111,7 @@ public class LocationRequestTest {
     class toStringTest{
 
         @Test
-        void toStringTest() throws ValidationException {
+        void toStringTestValid() throws ValidationException {
             LocationRequest lr = new LocationRequest(123);
             String lrString = lr.toString();
             assertEquals("LocationRequest: map=123", lrString);
@@ -141,18 +137,18 @@ public class LocationRequestTest {
 
         @Test
         void testEqualObjects() {
-            assertTrue(a.equals(c));
+            assertEquals(a, c);
 
         }
 
         @Test
         void testUnequalObjects() {
-            assertFalse(a.equals(b));
+            assertNotEquals(a, b);
         }
 
         @Test
         void testHashCode() {
-            assertTrue(a.hashCode() == c.hashCode());
+            assertEquals(a.hashCode(), c.hashCode());
 
         }
     }

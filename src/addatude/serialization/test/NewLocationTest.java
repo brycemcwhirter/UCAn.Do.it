@@ -1,6 +1,4 @@
-package serialization.test;
-
-import serialization.*;
+import addatude.serialization.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -12,7 +10,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -75,7 +72,7 @@ public class NewLocationTest {
 
         @Test
         @DisplayName("Decode Test")
-        void decodeTest() throws ValidationException, IOException {
+        void decodeTestValid() throws ValidationException {
             byte[] buf = "ADDATUDEv1 123 NEW 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in = new MessageInput(byteArrayInputStream);
@@ -118,10 +115,8 @@ public class NewLocationTest {
 
         // null location record (ValidationException)
         @Test
-        void invalidLocationRecordSet() throws ValidationException{
-            assertThrows(ValidationException.class, ()->{
-                a.setLocationRecord(null);
-            });
+        void invalidLocationRecordSet(){
+            assertThrows(ValidationException.class, ()-> a.setLocationRecord(null));
         }
 
     }

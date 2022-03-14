@@ -10,7 +10,7 @@
  * Testing Partner: John Harrison
  */
 
-package serialization;
+package addatude.serialization;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

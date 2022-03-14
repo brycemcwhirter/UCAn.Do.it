@@ -1,20 +1,17 @@
-package serialization.test;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import serialization.*;
+import addatude.serialization.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageInputTest {
 
@@ -27,10 +24,9 @@ public class MessageInputTest {
     }
 
     @Nested
-    static
     class readingFunctions{
 
-        static MessageInput in;
+        MessageInput in;
 
         @BeforeAll
         static void init(){
@@ -41,7 +37,7 @@ public class MessageInputTest {
 
         @Test
         @DisplayName("Read Until Space Valid")
-        void testReadUntilSpaceValid() throws IOException, ValidationException {
+        void testReadUntilSpaceValid() throws ValidationException {
             String test = in.readUntilSpace();
             assertEquals("This", test);
         }

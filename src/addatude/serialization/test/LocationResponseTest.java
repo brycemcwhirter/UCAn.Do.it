@@ -1,6 +1,4 @@
-package serialization.test;
-
-import serialization.*;
+import addatude.serialization.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -72,7 +69,7 @@ public class LocationResponseTest {
 
         @Test
         @DisplayName("Valid Decode")
-        void validDecode() throws ValidationException, IOException {
+        void validDecode() throws ValidationException {
             byte[] buf = "ADDATUDEv1 123 RESPONSE 8 aMapName1 1 1.2 3.4 2 BU6 Baylor\r\n".getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in = new MessageInput(byteArrayInputStream);
@@ -130,7 +127,7 @@ public class LocationResponseTest {
         @DisplayName("Valid Add")
         void happyPath() throws ValidationException {
             locationResponse.addLocationRecord(locationRecord);
-            assertEquals(true, locationResponse.getLocationRecordList().contains(locationRecord));
+            assertTrue(locationResponse.getLocationRecordList().contains(locationRecord));
         }
 
         @Test
