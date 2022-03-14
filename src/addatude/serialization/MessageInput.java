@@ -166,8 +166,6 @@ public class MessageInput {
      * reads a specific size of bytes from a Message Input
      * @param size the number of bytes to read
      * @return the buffer of read bytes
-     * @throws IOException
-     *      if a read error occurs
      * @throws ValidationException
      *      if the stream doesn't read the right number of bytes
      */
@@ -238,6 +236,21 @@ public class MessageInput {
     @Override
     public int hashCode() {
         return Objects.hash(in);
+    }
+
+
+    public String readAllValues() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int val;
+
+        while((val = in.read()) != -1){
+
+            char let = (char) val;
+            sb.append(let);
+
+        }
+
+        return sb.toString();
     }
 
 

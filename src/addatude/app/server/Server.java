@@ -25,9 +25,8 @@ public class Server {
         public void run() {
             while(true){
                 try{
-                    Socket cltnSock = serverSocket.accept();
-
-
+                    Socket clntSocket = serverSocket.accept();
+                    AddatudeProtocol.handleAddatudeClient(clntSocket, logger);
                 } catch (IOException e) {
                     logger.log(Level.WARNING, "Client Accept Failed", e);
                 }

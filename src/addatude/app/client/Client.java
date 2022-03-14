@@ -77,8 +77,9 @@ public class Client {
          * @throws IOException
          *      if a read error occurs.
          */
-        public static void handleUnexpectedMessage(InputStream in) throws IOException {
-            System.out.println("Unexpected Message: "+ new String(in.readAllBytes()));
+        public static void handleUnexpectedMessage(MessageInput in) throws IOException {
+            System.out.println("Unexpected Message: "+ in.readAllValues());
+            //TODO, WHAT TO DO WITH THE INVALID MESSAGE. SHE'S NOT PRINTING TO THE CONSOLE?
         }
 
 
@@ -329,12 +330,13 @@ public class Client {
      *      if a read error occurs.
      */
     private static void handleMessages(InputStream in) throws IOException {
-        try {
-            // Handles the Message with the given input stream
-            MessageInput messageInput = new MessageInput(in);
 
+        // Handles the Message with the given input stream
+        MessageInput messageInput = new MessageInput(in);
+
+        try {
             // The received message from the input stream.
-            var receivedMessage = Message.decode(messageInput);
+            Message receivedMessage = Message.decode(messageInput);
 
 
             // If you received a Location Response,
@@ -356,7 +358,7 @@ public class Client {
         // catch the validation exception thrown and handle
         // the unexpected message
         catch (ValidationException e){
-            ClientErrorMessageHandler.handleUnexpectedMessage(in);
+            ClientErrorMessageHandler.handleUnexpectedMessage(messageInput);
         }
     }
 
