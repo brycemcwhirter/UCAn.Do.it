@@ -24,9 +24,10 @@ public class MessageInputTest {
     }
 
     @Nested
+    static
     class readingFunctions{
 
-        MessageInput in;
+        static MessageInput in;
 
         @BeforeAll
         static void init(){
@@ -46,7 +47,7 @@ public class MessageInputTest {
         @ParameterizedTest
         @DisplayName("Reading Size & Value")
         @ValueSource(strings = {"2 BU5 Baylor", "8 Arkansas12 FAYETTEVILLE"})
-        void testReadSizeAndValue(String string) throws IOException{
+        void testReadSizeAndValue(String string) {
             byte[] buf = string.getBytes(StandardCharsets.UTF_8);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buf);
             MessageInput in1 = new MessageInput(byteArrayInputStream);

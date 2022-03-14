@@ -34,7 +34,7 @@ public class failingTest {
         }
 
 
-        static public Stream<Arguments> validDecodeStreams() {
+        public Stream<Arguments> validDecodeStreams() {
             return Stream.of(
                     arguments("1 1.2 3.4 2 BU6 Baylor"),
                     arguments("1 1.2 3.4 10 ABCDEFGHIJ16 KLMNOPQRSTUVWXYZ"),
