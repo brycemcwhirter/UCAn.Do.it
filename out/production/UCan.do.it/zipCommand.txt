@@ -1,0 +1,1 @@
+zip -r Prog3.zip addatude -x "*/*.DS_Store" -x "__MACOSX"; mv Prog3.zip ~/Desktop 
