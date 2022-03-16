@@ -10,7 +10,6 @@ public class Server {
 
 
 
-
     static class ServerThread extends Thread{
 
         ServerSocket serverSocket;
@@ -54,7 +53,8 @@ public class Server {
 
         // Create the Socket & Logger
         final ServerSocket serverSocket = new ServerSocket(serverPort);
-        final Logger logger = Logger.getLogger("practical");
+        final Logger logger = Logger.getLogger("Server Log");
+        logger.setLevel(Level.WARNING);
 
 
         for(int i = 0; i < threadPoolSize; i++){
