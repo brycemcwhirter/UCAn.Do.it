@@ -34,6 +34,7 @@ public class Server {
     }
 
 
+    //todo FIGURE OUT WHY I'M NOT GETTING MESSAGES BACK FROM SERVER
 
 
 
@@ -49,6 +50,11 @@ public class Server {
         int serverPort = Integer.parseInt(args[0]);
         int threadPoolSize = Integer.parseInt(args[1]);
         String password = args[2];
+        // todo you may have to define location response here?
+
+
+        //Validate the password
+        validatePasssword(password);
 
 
         // Create the Socket & Logger
@@ -66,5 +72,15 @@ public class Server {
 
 
     }
+
+    //TODO Test Password Method
+    private static void validatePasssword(String password) {
+    }
+
+
+
+
+
+
 
 }
