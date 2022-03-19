@@ -35,21 +35,21 @@ public class AddatudeProtocol implements Runnable{
             // If the mapID is not valid
               // return an error message "No such map: <rcvd mapID>"
             if(clntMessage.getMapId() != VALID_MAP_ID){
-                // todo make sure this follow format "No such map: <rcvd mapID>"
-                Error errorMsg = new Error(clntMessage.getMapId(), "No such map: ");
+                Error errorMsg = new Error(clntMessage.getMapId(), "No such map: " + clntMessage.getMapId());
                 errorMsg.encode(messageOutput);
             }
 
-            else if(clntMessage.getOperation().equals(LocationResponse.OPERATION)){
-                // If you received request for all locations todo IF STATEMENT HERE
+            else if(clntMessage.getOperation().equals(LocationRequest.OPERATION)){
+                // If you received request for all locations
                 // Send Response with all locations
-                handleAllResponse(messageOutput, messageInput, response);
+                handleAllResponse(messageOutput, response);
 
             }
 
             else if(clntMessage.getOperation().equals(NewLocation.OPERATION)){
-                // If you receive a new location request todo ELSE IF STATEMENT HERE
-                handleNewLocationResponse(messageOutput, messageInput, response);
+                // If you receive a new location request
+                NewLocation newLocationRequest = (NewLocation) clntMessage;
+                handleNewLocationResponse(newLocationRequest, response);
             }
 
 
@@ -62,7 +62,7 @@ public class AddatudeProtocol implements Runnable{
 
 
         } catch (IOException  e) {
-            logger.log(Level.WARNING, "Exception thrown in Addatude Protocol: ", e);
+            logger.log(Level.SEVERE, "Exception thrown in Addattude Protocol: ", e);
         }
          catch (ValidationException e){
             // log warning: received a message with a validation exception
@@ -80,36 +80,39 @@ public class AddatudeProtocol implements Runnable{
 
     }
 
+    private static void handleNewLocationResponse(NewLocation newLocationRequest,  LocationResponse response) throws ValidationException {
+        // TODO make sure the list clears the user id along with the location name
+
+        // if the location exists, then delete the old location record
+        if(response.getLocationRecordList().contains(newLocationRequest.getLocationRecord())){
+            response.getLocationRecordList().remove(newLocationRequest.getLocationRecord());
+        }
+
+        // Add the Location Record to Location Response
+        LocationRecord lr = newLocationRequest.getLocationRecord();
+        response.getLocationRecordList().add(newLocationRequest.getLocationRecord());
+    }
+    
+    
+    
+    
+
     private static void handleUnexpectedMessageType(MessageOutput messageOutput, MessageInput messageInput) throws IOException {
 
         // return an error message "Unexpected message type: <rcvd operation>" w/ Map ID
           // from client message
 
-        messageOutput.writeString("POOP");
-
-    }
-
-    private static void handleNewLocationResponse(MessageOutput messageOutput, MessageInput messageInput, LocationResponse response) throws IOException {
-
-        // Generate a new Location Record from the input
-
-        // if the location exists, then delete the old location record
-
-        messageOutput.writeString("new Location response");
-
 
     }
 
 
 
-    private static void handleAllResponse(MessageOutput messageOutput, MessageInput messageInput, LocationResponse response) throws IOException {
+
+
+    private static void handleAllResponse(MessageOutput messageOutput, LocationResponse response) throws IOException {
 
         // Send the list of locations with the list of locations with MapID from the AddATude Message
-
-
-        messageOutput.writeString("All response");
-
-
+        response.encode(messageOutput);
     }
 
 

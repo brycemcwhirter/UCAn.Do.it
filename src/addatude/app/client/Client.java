@@ -58,7 +58,7 @@ public class Client {
          * @param errorMessage the error message to be sent
          */
         static void localClientValidation(String errorMessage){
-            System.out.println("Invalid User Input: " + errorMessage);
+            System.err.println("Invalid User Input: " + errorMessage);
         }
 
 
@@ -78,7 +78,7 @@ public class Client {
          *      if a read error occurs.
          */
         public static void handleUnexpectedMessage(MessageInput in) throws IOException {
-            System.out.println("Unexpected Message: "+ in.readAllValues());
+            //System.err.println("Unexpected Message: "+ in.readAllValues());
             //TODO, WHAT TO DO WITH THE INVALID MESSAGE. SHE'S NOT PRINTING TO THE CONSOLE?
         }
 
@@ -89,7 +89,7 @@ public class Client {
          * @param e the exception with the specific error message
          */
         public static void serverCommunicationError(IOException e) {
-            System.out.println("Unable to Communicate: "+ e.getMessage());
+            //System.err.println("Unable to Communicate: "+ e.getMessage());
         }
 
 
@@ -258,7 +258,6 @@ public class Client {
      *      a boolean describing if the user selected the YES option.
      */
     private static boolean wouldLikeToContinue(BufferedReader consoleReader)  {
-        System.out.print("Continue (y/n) > ");
         char option = 0;
         try {
             option = (char) consoleReader.read();
@@ -446,6 +445,7 @@ public class Client {
                         // Handle The Message Received from the Server
                         handleMessages(in);
                     } catch (IOException e) {
+                        System.err.println("Unable to Communicate: "+ e.getMessage());
                         ClientErrorMessageHandler.serverCommunicationError(e);
                     }
 
@@ -455,6 +455,7 @@ public class Client {
             }
 
 
+        // TODO Figure out Why system error aand print ln are not printing in order
 
 
         // Continue execution if the user

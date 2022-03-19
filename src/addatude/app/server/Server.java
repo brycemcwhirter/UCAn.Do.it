@@ -18,6 +18,7 @@ public class Server {
         ServerThread(ServerSocket serverSocket, Logger logger){
             this.serverSocket = serverSocket;
             this.logger = logger;
+            logger.setUseParentHandlers(false);
         }
 
         @Override
@@ -75,6 +76,7 @@ public class Server {
 
     //TODO Test Password Method
     private static void validatePasssword(String password) {
+
     }
 
 
