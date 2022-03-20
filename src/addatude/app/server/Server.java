@@ -1,5 +1,7 @@
 package addatude.app.server;
 
+import addatude.serialization.ValidationException;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -30,9 +32,13 @@ public class Server {
         validatePasssword(password);
 
 
-        // Create the Socket & Logger
+        // Create the Socket w/ A timeout of 60 seconds
         final ServerSocket serverSocket = new ServerSocket(serverPort);
-        final Logger logger = Logger.getLogger("Server Log");
+        serverSocket.setSoTimeout(60*1000);
+
+
+        // Create the logger without using Parent Handlers
+        final Logger logger = Logger.getLogger("server.log");
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.WARNING);
 
@@ -40,12 +46,15 @@ public class Server {
         for(int i = 0; i < threadPoolSize; i++){
             Thread thread = new Thread(() -> {
                 while(true){
+                    Socket clntSocket = null;
                     try{
-                        Socket clntSocket = serverSocket.accept();
+                        clntSocket = serverSocket.accept();
                         AddatudeProtocol.handleAddatudeClient(clntSocket, logger);
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "Client Accept Failed", e);
                     }
+
+
                 }
             });
             thread.start();

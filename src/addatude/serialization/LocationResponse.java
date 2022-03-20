@@ -222,16 +222,18 @@ public class LocationResponse extends Message{
         Message.writeMessageHeader(getMapId(), getOperation(), out);
         out.writeString(getMapName());
 
+        out.write((locationRecordList.size() + " ").getBytes(StandardCharsets.UTF_8));
 
         if(locationRecordList.size() > 0) {
 
-            out.write((locationRecordList.size() + " ").getBytes(StandardCharsets.UTF_8));
 
             for (LocationRecord lr : locationRecordList) {
                 lr.encode(out);
             }
 
         }
+
+
 
         Message.writeMessageFooter(out);
     }

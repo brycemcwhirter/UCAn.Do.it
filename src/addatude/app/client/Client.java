@@ -250,22 +250,6 @@ public class Client {
 
 
 
-    /**
-     * Asks the user if they would like to continue after adding a new location
-     * or viewing all the location records
-     * @param consoleReader accepts the input from the user
-     * @return
-     *      a boolean describing if the user selected the YES option.
-     */
-    private static boolean wouldLikeToContinue(BufferedReader consoleReader)  {
-        char option = 0;
-        try {
-            option = (char) consoleReader.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return (option == YES);
-    }
 
 
 
@@ -340,7 +324,7 @@ public class Client {
 
             // If you received a Location Response,
             // Output each location record
-            if (receivedMessage.getClass().equals(LocationResponse.class)) {
+            if (receivedMessage.getOperation().equals(LocationResponse.OPERATION)) {
                 for(LocationRecord loc : ((LocationResponse) receivedMessage).getLocationRecordList()){
                     System.out.println(loc);
                 }
@@ -348,7 +332,7 @@ public class Client {
 
             // If you received an Error Message from the server
             // Handle the error message
-            else if (receivedMessage.getClass().equals(Error.class)) {
+            else if (receivedMessage.getOperation().equals(Error.OPERATION)) {
                 ClientErrorMessageHandler.handleErrorMessage(((Error) receivedMessage).getErrorMessage());
             }
         }
@@ -386,6 +370,10 @@ public class Client {
 
         // The Map ID inputted by the user
         int mapId;
+
+        // Option to continue execution
+        char option = 'n';
+
 
 
 
@@ -457,10 +445,18 @@ public class Client {
 
         // TODO Figure out Why system error aand print ln are not printing in order
 
+        try {
+            System.out.print("Would you like to continue? > ");
+            option = (char) consoleReader.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
         // Continue execution if the user
             // inputs an affirmative option
-        }while(wouldLikeToContinue(consoleReader));
+        }while(option == YES);
 
 
     }
