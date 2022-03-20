@@ -10,34 +10,6 @@ public class Server {
 
 
 
-    static class ServerThread extends Thread{
-
-        ServerSocket serverSocket;
-        Logger logger;
-
-        ServerThread(ServerSocket serverSocket, Logger logger){
-            this.serverSocket = serverSocket;
-            this.logger = logger;
-            logger.setUseParentHandlers(false);
-        }
-
-        @Override
-        public void run() {
-            while(true){
-                try{
-                    Socket clntSocket = serverSocket.accept();
-                    AddatudeProtocol.handleAddatudeClient(clntSocket, logger);
-                } catch (IOException e) {
-                    logger.log(Level.WARNING, "Client Accept Failed", e);
-                }
-            }
-        }
-    }
-
-
-    //todo FIGURE OUT WHY I'M NOT GETTING MESSAGES BACK FROM SERVER
-
-
 
     public static void main(String[] args) throws IOException {
 
@@ -61,13 +33,23 @@ public class Server {
         // Create the Socket & Logger
         final ServerSocket serverSocket = new ServerSocket(serverPort);
         final Logger logger = Logger.getLogger("Server Log");
+        logger.setUseParentHandlers(false);
         logger.setLevel(Level.WARNING);
 
 
         for(int i = 0; i < threadPoolSize; i++){
-            ServerThread serverThread = new ServerThread(serverSocket, logger);
-            serverThread.start();
-            logger.info("Created & Started Thread = " + serverThread.getName());
+            Thread thread = new Thread(() -> {
+                while(true){
+                    try{
+                        Socket clntSocket = serverSocket.accept();
+                        AddatudeProtocol.handleAddatudeClient(clntSocket, logger);
+                    } catch (IOException e) {
+                        logger.log(Level.WARNING, "Client Accept Failed", e);
+                    }
+                }
+            });
+            thread.start();
+            logger.info("Created & Started Thread = " + thread.getName());
         }
 
 
@@ -78,11 +60,5 @@ public class Server {
     private static void validatePasssword(String password) {
 
     }
-
-
-
-
-
-
 
 }
