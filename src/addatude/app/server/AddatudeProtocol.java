@@ -1,22 +1,65 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 3
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package addatude.app.server;
 
-import addatude.serialization.*;
 import addatude.serialization.Error;
+import addatude.serialization.*;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mapservice.Location;
+import mapservice.MapBoxObserver;
+import mapservice.MapManager;
+import mapservice.MemoryMapManager;
+
+
+/**
+ * This method handles the client connection
+ * to the server.
+ */
 public class AddatudeProtocol implements Runnable{
 
+    /**
+     * The Valid Map ID 345
+     */
     private static final int VALID_MAP_ID = 345;
 
+    /**
+     * The file to hold all locations implemented
+     */
+    private static final String LOCATIONFILE = "markers.js";
+
+    /**
+     * The Response Message to be returned
+     */
     private static LocationResponse response;
-    private Socket clntSocket;
-    private Logger logger;
-    private Map<Long, Server.User> userListMap;
+
+
+    /**
+     * The client socket
+     */
+    private final Socket clntSocket;
+
+    /**
+     * The Logger
+     */
+    private final Logger logger;
+
+    /**
+     *  The List of Users
+     */
+    private final Map<Long, Server.User> userListMap;
 
 
     static {
@@ -27,6 +70,12 @@ public class AddatudeProtocol implements Runnable{
         }
     }
 
+
+    /**
+     * @param clntSocket The Client Connection
+     * @param logger The logger of the connection
+     * @param userListMap the list of all users
+     */
     public AddatudeProtocol(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) {
         this.clntSocket = clntSocket;
         this.logger = logger;
@@ -34,18 +83,32 @@ public class AddatudeProtocol implements Runnable{
     }
 
 
-    public static void handleAddatudeClient(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) {
+    /** This method handles a client request
+     * @param clntSocket The client socket
+     * @param logger the log to input any loggin information
+     * @param userListMap the list of all users
+     * @throws IOException If an I/O Error Occurs
+     * @throws ValidationException If the Client Message contains a validation exception
+     */
+    public static void handleAddatudeClient(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) throws IOException, ValidationException {
 
+        // Establishing Client Message and Message Input & Output
         Message clntMessage;
+        MessageInput messageInput;
         MessageOutput messageOutput = null;
 
+        // Establishing Map Manager for Storing Locations
+        MapManager mgr = new MemoryMapManager();
+        mgr.register(new MapBoxObserver(LOCATIONFILE, mgr));
+
+
+
+
         try {
-            MessageInput messageInput = new MessageInput(clntSocket.getInputStream());
+
+            // Establishing Message Input & Output & Decode the Message from the client
+            messageInput = new MessageInput(clntSocket.getInputStream());
             messageOutput = new MessageOutput(clntSocket.getOutputStream());
-
-
-
-            // Decode the Message from the client
             clntMessage = Message.decode(messageInput);
 
 
@@ -83,21 +146,31 @@ public class AddatudeProtocol implements Runnable{
                     new Error(clntMessage.getMapId(),"No such user: "+newLocationRecord.getUserId()).encode(messageOutput);
                 }
 
+
+
+
+
                 else{
-                    // Setting the Current User & Attaching the User Name to the Location Record Name
+
+
+                    // Setting the Current User & Attaching the Username to the Location Record Name
                     Server.User currentUser = userListMap.get(newLocationRecord.getUserId());
-                    newLocationRecord.setLocationName(currentUser.getUserName()+": " + newLocationRecord.getLocationName());
+                    newLocationRecord.setLocationName(currentUser.getUserName()+":" + newLocationRecord.getLocationName());
+                    List<LocationRecord> listOfRecords = response.getLocationRecordList();
 
 
                     // if the location exists, then delete the old location record
-                    if(response.getLocationRecordList().contains(newLocationRequest.getLocationRecord())){
+                    if(listOfRecords.contains(newLocationRecord)){
                         logger.log(Level.INFO, "Deleting Previous Location for Client: "+clntSocket.getInetAddress());
-                        response.getLocationRecordList().remove(newLocationRequest.getLocationRecord());
+                        response.removeLocationRecord(newLocationRecord);
+                        mgr.deleteLocation(newLocationRecord.getLocationName());
                     }
 
 
-                    // Add the Location Record to Location Response
+                    // Add the Location Record to Location Response & Location Record List
                     response.addLocationRecord(newLocationRecord);
+                    mgr.addLocation(new Location(newLocationRecord.getLocationName(), newLocationRecord.getLongitude(),
+                            newLocationRecord.getLatitude(), newLocationRecord.getLocationDescription(), Location.Color.BLUE));
                     logger.log(Level.INFO, "Adding New Location to Location Records for Client: "+clntSocket.getInetAddress());
 
 
@@ -122,11 +195,7 @@ public class AddatudeProtocol implements Runnable{
             // log warning: received a message with a validation exception
              logger.log(Level.SEVERE, "Validation Exception Caught: Sending Error Message to Client: " + clntSocket.getInetAddress());
             // Return an error message "Unexpected version: "
-             try {
-                 new Error(0,"Invalid Message: "+e.getMessage()).encode(messageOutput);
-             } catch (IOException | ValidationException e1){
-                 //TODO do we need to worry about this try catch here?
-             }
+             new Error(0,"Invalid Message: "+e.getMessage()).encode(messageOutput);
          }
 
         catch (Exception e){
@@ -136,7 +205,7 @@ public class AddatudeProtocol implements Runnable{
         finally {
             try {
                 clntSocket.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
 
@@ -150,7 +219,11 @@ public class AddatudeProtocol implements Runnable{
 
 
     public void run(){
-        handleAddatudeClient(clntSocket, logger, userListMap);
+        try {
+            handleAddatudeClient(clntSocket, logger, userListMap);
+        } catch (IOException | ValidationException ignore) {
+            //handled by the handleAddatudeClient method
+        }
 
     }
 }

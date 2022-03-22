@@ -155,5 +155,24 @@ public class Validator {
     }
 
 
+    /**
+     * Tests if a password tied to a user is valid
+     * @param pw the password to be tested against
+     * @throws ValidationException
+     *      if the given password is invalid
+     */
+    public static void validPassword(String pw) throws ValidationException {
+        char[] invalid = {':', '\r', '\n'};
 
+        for(int i = 0; i < pw.length(); i++){
+            char ch = pw.charAt(i);
+
+            for (char c : invalid) {
+                if (c == ch) {
+                    throw new ValidationException(pw, "Invalid Password found in Password File");
+                }
+            }
+        }
+
+    }
 }

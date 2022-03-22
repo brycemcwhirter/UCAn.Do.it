@@ -1,21 +1,41 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 3
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package addatude.app.server;
 
-import addatude.serialization.MessageInput;
+
 import addatude.serialization.ValidationException;
+import addatude.serialization.Validator;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * Server
+ *
+ * This is the Sever for the Addatude Protocol
+ */
 public class Server {
 
 
+    /**
+     * User
+     *
+     * This class identifies a specific
+     * user. A User has a username and password
+     */
     static class User{
         private String userName;
         private String password;
@@ -35,11 +55,12 @@ public class Server {
     }
 
 
-
-
-
-
-    public static void main(String[] args) throws IOException {
+    /** The Main Method for the Server to Execute
+     * @param args Port, Number of Threads, Password File
+     * @throws IOException if an I/O error occurs
+     * @throws ValidationException if a validation exception occurred
+     */
+    public static void main(String[] args) throws IOException, ValidationException {
 
         // Get the Arguments
         if(args.length != 3){
@@ -51,7 +72,6 @@ public class Server {
         // Set Values
         int serverPort = Integer.parseInt(args[0]);
         int threadPoolSize = Integer.parseInt(args[1]);
-
         File passwordFile = new File(args[2]);
 
 
@@ -76,12 +96,15 @@ public class Server {
         for(int i = 0; i < threadPoolSize; i++){
             Thread thread = new Thread(() -> {
                 while(true){
-                    Socket clntSocket = null;
+                    Socket clntSocket;
                     try{
                         clntSocket = serverSocket.accept();
                         AddatudeProtocol.handleAddatudeClient(clntSocket, logger, userListMap);
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "Client Accept Failed", e);
+                    }
+                    catch (ValidationException e){
+                        logger.log(Level.WARNING, "Validation Exception in Client", e);
                     }
 
 
@@ -90,12 +113,17 @@ public class Server {
             thread.start();
             logger.info("Created & Started Thread = " + thread.getName());
         }
-
-
-
     }
 
-    private static HashMap<Long, User> readUsers(File passwordFile) throws IOException {
+
+    /**
+     * This method is used to read users from a password File
+     * @param passwordFile The password file containing the users
+     * @return The map of UserIDs to Users
+     * @throws IOException If an I/O error occurs
+     * @throws ValidationException If the UserID, username, or password is invalid
+     */
+    private static HashMap<Long, User> readUsers(File passwordFile) throws IOException, ValidationException {
         HashMap<Long, User> userMap = new HashMap<>();
         BufferedReader br = new BufferedReader(new FileReader(passwordFile));
 
@@ -107,14 +135,11 @@ public class Server {
             long id = sc.nextLong();
             String name = sc.next();
             String pw = sc.next();
+            Validator.validUnsignedInteger("User ID", Long.toString(id));
+            Validator.validString("User Name", name);
+            Validator.validPassword(pw);
             userMap.put(id, new User(name, pw));
-
         }
-
-
-
-
-
 
         return userMap;
     }

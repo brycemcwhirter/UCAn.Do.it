@@ -117,6 +117,19 @@ public class LocationResponse extends Message{
 
 
 
+    /**
+     * This method removes a location record
+     * from the location response
+     * @param locationRecord The Location Record to be removed
+     */
+    public void removeLocationRecord(LocationRecord locationRecord) {
+        Objects.requireNonNull(locationRecord);
+        locationRecordList.remove(locationRecord);
+    }
+
+
+
+
 
 
 

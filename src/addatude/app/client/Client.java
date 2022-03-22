@@ -242,6 +242,7 @@ public class Client {
 
             switch (Objects.requireNonNull(operation)) {
                 case ALL_OPERATION -> validOperation = true;
+
                 case NEW_OPERATION -> {
                     isNewOperation = true;
                     validOperation = true;
