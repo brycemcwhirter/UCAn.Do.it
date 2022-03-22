@@ -46,55 +46,8 @@ public class Client {
     private static final String NEW_OPERATION = "NEW";
 
 
-    /**
-     * This Class handles the different error messages
-     * that occur within the client.
-     */
-    static class ClientErrorMessageHandler{
 
 
-        /**
-         * Handles when the user inputs invalid input.
-         * @param errorMessage the error message to be sent
-         */
-        static void localClientValidation(String errorMessage){
-            System.err.println("Invalid User Input: " + errorMessage);
-        }
-
-
-        /**
-         * Handles when an error message is received.
-         * @param errorMessage the error message to be sent
-         */
-        static void handleErrorMessage(String errorMessage){
-            System.out.println("Error: " + errorMessage);
-        }
-
-
-        /**
-         * handles the unexpected message error
-         * @param in the input stream with the bytes returned
-         * @throws IOException
-         *      if a read error occurs.
-         */
-        public static void handleUnexpectedMessage(MessageInput in) throws IOException {
-            //System.err.println("Unexpected Message: "+ in.readAllValues());
-            //TODO, WHAT TO DO WITH THE INVALID MESSAGE. SHE'S NOT PRINTING TO THE CONSOLE?
-        }
-
-
-        /**
-         * Executed when there was an error communicating
-         * with the server
-         * @param e the exception with the specific error message
-         */
-        public static void serverCommunicationError(IOException e) {
-            //System.err.println("Unable to Communicate: "+ e.getMessage());
-        }
-
-
-
-    }
 
 
 
@@ -122,9 +75,11 @@ public class Client {
         }
 
         catch (ValidationException e){
-            ClientErrorMessageHandler.localClientValidation(e.getMessage());
+            System.err.println("Invalid User Input: " + e.getMessage());
+            System.err.flush();
             return -1;
         }
+
         catch(IOException e) {
             e.printStackTrace();
         }
@@ -149,7 +104,7 @@ public class Client {
      * @return
      *      The encoded new operation message or NULL if a validation exception occurs.
      */
-    private static byte[] newOperation(int mapId, BufferedReader consoleReader)  {
+    private static byte[] newOperation(int mapId, BufferedReader consoleReader) throws IOException {
 
         // Generating Output Variables
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -197,12 +152,12 @@ public class Client {
 
         catch (ValidationException e){
             // If a Validation Error Occurs on the client side
-            ClientErrorMessageHandler.localClientValidation(e.getMessage());
+            System.err.println("Invalid User Input: " + e.getMessage());
+            System.err.flush();
             return null;
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
 
         return byteArrayOutputStream.toByteArray();
 
@@ -228,7 +183,8 @@ public class Client {
             req = new LocationRequest(mapId);
         } catch (ValidationException e) {
             // If a Validation Error Occurs on the client side
-            ClientErrorMessageHandler.localClientValidation(e.getMessage());
+            System.err.println("Invalid User Input: " + e.getMessage());
+            System.err.flush();
             return null;
         }
 
@@ -291,7 +247,8 @@ public class Client {
                     validOperation = true;
                 }
                 default -> {
-                    ClientErrorMessageHandler.localClientValidation("Unknown Operation \""+ operation+"\"");
+                    System.err.println("Invalid User Input: " + "Unknown Operation \""+ operation+"\"");
+                    System.err.flush();
                     validOperation = false;
                 }
             }
@@ -305,58 +262,13 @@ public class Client {
 
 
     /**
-     * This method handles the received message from the server.
-     *
-     *
-     * @param in the input stream holding the message
-     * @throws IOException
-     *      if a read error occurs.
-     */
-    private static void handleMessages(InputStream in) throws IOException {
-
-        // Handles the Message with the given input stream
-        MessageInput messageInput = new MessageInput(in);
-
-        try {
-            // The received message from the input stream.
-            Message receivedMessage = Message.decode(messageInput);
-
-
-            // If you received a Location Response,
-            // Output each location record
-            if (receivedMessage.getOperation().equals(LocationResponse.OPERATION)) {
-                for(LocationRecord loc : ((LocationResponse) receivedMessage).getLocationRecordList()){
-                    System.out.println(loc);
-                }
-            }
-
-            // If you received an Error Message from the server
-            // Handle the error message
-            else if (receivedMessage.getOperation().equals(Error.OPERATION)) {
-                ClientErrorMessageHandler.handleErrorMessage(((Error) receivedMessage).getErrorMessage());
-            }
-        }
-
-        // If you received an unexpected message,
-        // catch the validation exception thrown and handle
-        // the unexpected message
-        catch (ValidationException e){
-            ClientErrorMessageHandler.handleUnexpectedMessage(messageInput);
-        }
-    }
-
-
-
-
-
-    /**
      * The Main Method describes the process between
      * the user adding & viewing location records from a specified
      * server.
      *
      * @param args The arguments to the program (server identity) (server port)
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         // The Input Reader from the console
         BufferedReader consoleReader;
@@ -431,10 +343,42 @@ public class Client {
 
 
                         // Handle The Message Received from the Server
-                        handleMessages(in);
+                        // Handles the Message with the given input stream
+                        MessageInput messageInput = new MessageInput(in);
+
+                        try {
+                            // The received message from the input stream.
+                            Message receivedMessage = Message.decode(messageInput);
+
+
+                            // If you received a Location Response,
+                            // Output each location record
+                            if (receivedMessage.getOperation().equals(LocationResponse.OPERATION)) {
+                                for(LocationRecord loc : ((LocationResponse) receivedMessage).getLocationRecordList()){
+                                    System.out.println(loc);
+                                }
+                            }
+
+                            // If you received an Error Message from the server
+                            // Handle the error message
+                            else if (receivedMessage.getOperation().equals(Error.OPERATION)) {
+                                Error error = (Error) receivedMessage;
+                                System.out.println("Error: " + error.getErrorMessage());
+                            }
+                        }
+
+                        // If you received an unexpected message,
+                        // catch the validation exception thrown and handle
+                        // the unexpected message
+                        catch (ValidationException e){
+                            System.err.println("Invalid User Input: " + messageInput);
+                            System.err.flush();
+                        }
+
+
                     } catch (IOException e) {
                         System.err.println("Unable to Communicate: "+ e.getMessage());
-                        ClientErrorMessageHandler.serverCommunicationError(e);
+                        System.err.flush();
                     }
 
                 }

@@ -239,19 +239,6 @@ public class MessageInput {
     }
 
 
-    public String readAllValues() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int val;
-
-        while((val = in.read()) != -1){
-
-            char let = (char) val;
-            sb.append(let);
-
-        }
-
-        return sb.toString();
-    }
 
 
 

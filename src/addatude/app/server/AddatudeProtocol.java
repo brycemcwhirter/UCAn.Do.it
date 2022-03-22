@@ -3,11 +3,9 @@ package addatude.app.server;
 import addatude.serialization.*;
 import addatude.serialization.Error;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,15 +13,28 @@ public class AddatudeProtocol implements Runnable{
 
     private static final int VALID_MAP_ID = 345;
 
+    private static LocationResponse response;
     private Socket clntSocket;
     private Logger logger;
+    private Map<Long, Server.User> userListMap;
 
-    public AddatudeProtocol(Socket clntSocket, Logger logger) {
-        this.clntSocket = clntSocket;
-        this.logger = logger;
+
+    static {
+        try {
+            response = new LocationResponse(345, "Class Map");
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void handleAddatudeClient(Socket clntSocket, Logger logger) {
+    public AddatudeProtocol(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) {
+        this.clntSocket = clntSocket;
+        this.logger = logger;
+        this.userListMap = userListMap;
+    }
+
+
+    public static void handleAddatudeClient(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) {
 
         Message clntMessage;
         MessageOutput messageOutput = null;
@@ -31,7 +42,7 @@ public class AddatudeProtocol implements Runnable{
         try {
             MessageInput messageInput = new MessageInput(clntSocket.getInputStream());
             messageOutput = new MessageOutput(clntSocket.getOutputStream());
-            LocationResponse response = new LocationResponse(345, "Class Map");
+
 
 
             // Decode the Message from the client
@@ -39,57 +50,61 @@ public class AddatudeProtocol implements Runnable{
 
 
             // If the mapID is not valid
+            // return an error message "No such map: <rcvd mapID>"
             if(clntMessage.getMapId() != VALID_MAP_ID){
-
                 logger.log(Level.WARNING, "Invalid MAP ID Received. Sending Error Message to Client: " + clntSocket.getInetAddress());
-
-
-                // return an error message "No such map: <rcvd mapID>"
                 Error errorMsg = new Error(clntMessage.getMapId(), "No such map: " + clntMessage.getMapId());
                 errorMsg.encode(messageOutput);
             }
 
 
 
+
             // If you received request for all locations
+            // Send the list of locations with the list of locations with MapID from the AddATude Message
             else if(clntMessage.getOperation().equals(LocationRequest.OPERATION)){
-
                 logger.log(Level.INFO, "Received request for all locations. Sending Locations to Client: "+clntSocket.getInetAddress());
-
-
-                // Send the list of locations with the list of locations with MapID from the AddATude Message
                 response.encode(messageOutput);
             }
 
 
-
+            // If you receive a new location request
             else if(clntMessage.getOperation().equals(NewLocation.OPERATION)){
-
                 logger.log(Level.INFO, "Received New Location Request from Client: "+clntSocket.getInetAddress());
-
-
-                // If you receive a new location request
                 NewLocation newLocationRequest = (NewLocation) clntMessage;
+                LocationRecord newLocationRecord = newLocationRequest.getLocationRecord();
 
 
-                // if the location exists, then delete the old location record
-                if(response.getLocationRecordList().contains(newLocationRequest.getLocationRecord())){
-                    logger.log(Level.INFO, "Deleting Previous Location for Client: "+clntSocket.getInetAddress());
 
-                    //TODO Location Names have User ID's attached to them. Searching may be harder then
-                    response.getLocationRecordList().remove(newLocationRequest.getLocationRecord());
+                // If the current user does not exist
+                // send an error message w/ the User ID
+                if(!userListMap.containsKey(newLocationRecord.getUserId())){
+                    logger.log(Level.WARNING, "Unexpected User ID. Sending Error Message to Client: "+clntSocket.getInetAddress());
+                    new Error(clntMessage.getMapId(),"No such user: "+newLocationRecord.getUserId()).encode(messageOutput);
                 }
 
-                // Add the Location Record to Location Response
-                LocationRecord newLocationRecord = newLocationRequest.getLocationRecord();
-                //TODO Remove the "Name:" and tag the username along with the location name
-                newLocationRecord.setLocationName("Name: " + newLocationRecord.getLocationName());
-
-                response.addLocationRecord(newLocationRecord);
-                logger.log(Level.INFO, "Adding New Location to Location Records for Client: "+clntSocket.getInetAddress());
+                else{
+                    // Setting the Current User & Attaching the User Name to the Location Record Name
+                    Server.User currentUser = userListMap.get(newLocationRecord.getUserId());
+                    newLocationRecord.setLocationName(currentUser.getUserName()+": " + newLocationRecord.getLocationName());
 
 
-                response.encode(messageOutput);
+                    // if the location exists, then delete the old location record
+                    if(response.getLocationRecordList().contains(newLocationRequest.getLocationRecord())){
+                        logger.log(Level.INFO, "Deleting Previous Location for Client: "+clntSocket.getInetAddress());
+                        response.getLocationRecordList().remove(newLocationRequest.getLocationRecord());
+                    }
+
+
+                    // Add the Location Record to Location Response
+                    response.addLocationRecord(newLocationRecord);
+                    logger.log(Level.INFO, "Adding New Location to Location Records for Client: "+clntSocket.getInetAddress());
+
+
+                    // Sending Locations Back to User
+                    response.encode(messageOutput);
+                }
+
             }
 
 
@@ -135,7 +150,7 @@ public class AddatudeProtocol implements Runnable{
 
 
     public void run(){
-        handleAddatudeClient(clntSocket, logger);
+        handleAddatudeClient(clntSocket, logger, userListMap);
 
     }
 }
