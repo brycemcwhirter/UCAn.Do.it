@@ -3,6 +3,10 @@ package notifi.serialization;
 import addatude.serialization.ValidationException;
 import addatude.serialization.Validator;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+
 /**
  * The NoTiFi Location Addition is a notification for a new
  * location record addition.
@@ -83,6 +87,58 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
 
 
+
+    public static NoTiFiLocationAddition decode(int msgID, ByteBuffer byteBuffer) {
+
+        // Read the User ID
+        int readUserID = byteBuffer.getInt();
+
+
+
+        // Read the Longitude
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        double readLongitude = byteBuffer.getDouble();
+
+
+
+        // Read the Latitude
+        double readLatitude = byteBuffer.getDouble();
+
+
+
+        // Read the Length of Location Name
+        short length = byteBuffer.getShort();
+        byte[] buffer = new byte[length];
+
+
+        // Read Location Name
+        byteBuffer.get(buffer, 0, length);
+        String readName = new String(buffer, StandardCharsets.US_ASCII);
+
+
+
+        // Read the Length of Location Description
+        length = byteBuffer.getShort();
+
+
+        // Read Location Description
+        byteBuffer.get(buffer, 0, length);
+        String readDesc = new String(buffer, StandardCharsets.US_ASCII);
+
+
+
+
+        // Return a new NoTiFiLocationAddition
+        return new NoTiFiLocationAddition(msgID, readUserID, readLongitude, readLatitude, readName, readDesc);
+
+    }
+
+
+
+
+
+
+
     /** Returns a String Representation
      * @return String Representation
      */
@@ -149,7 +205,6 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      * @return longitude
      */
     public double getLongitude() {
-
         return longitude;
     }
 
@@ -185,7 +240,6 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      * @return the latitude
      */
     public double getLatitude() {
-
         return latitude;
     }
 

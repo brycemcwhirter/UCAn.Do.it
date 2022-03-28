@@ -21,7 +21,7 @@ public abstract class NoTiFiMessage {
     /**
      * The Current NoTiFi Message Version
      */
-    static final short VALID_VERSION = 3;
+    static final byte VALID_VERSION = 3;
 
     /**
      * The Operation Code of the Message
@@ -62,10 +62,10 @@ public abstract class NoTiFiMessage {
     // TODO write decode implementation
     public static NoTiFiMessage decode(byte[] pkt) throws IOException, ValidationException {
         ByteBuffer byteBuffer = ByteBuffer.wrap(pkt);
-        NoTiFiMessage message = null;
+        NoTiFiMessage message;
 
         // Read the Version
-        short version = byteBuffer.getShort();
+        byte version = byteBuffer.get();
         
         // Test if Valid Version
         testValidVersion(version);
@@ -73,7 +73,7 @@ public abstract class NoTiFiMessage {
 
 
         // Read the Code
-        short code = byteBuffer.getShort();
+        byte code = byteBuffer.get();
 
         // Validate Code
         testValidOpCode(code);
@@ -81,7 +81,7 @@ public abstract class NoTiFiMessage {
 
 
         // Read the Message ID
-        int readID = byteBuffer.getInt();
+        short readID = byteBuffer.getShort();
 
         // Validate the Message ID
         testMessageID(readID);
@@ -90,37 +90,22 @@ public abstract class NoTiFiMessage {
         // Switch Statement Based On Code
         switch(code){
             case NoTiFiRegister.REGISTER_CODE -> {
-                byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                byte[] readAddress = new byte[32];
-                byteBuffer.get(readAddress, 0, 32);
-                byteBuffer.order(ByteOrder.BIG_ENDIAN);
-                int port = byteBuffer.getShort();
-
-
-                return new NoTiFiRegister(readID, (Inet4Address) Inet4Address.getByAddress(readAddress), port);
-
-
-
+                message = NoTiFiRegister.decode(readID, byteBuffer);
             }
             case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> {
-
-
+                message = NoTiFiLocationAddition.decode(readID, byteBuffer);
             }
             case NoTiFiError.ERROR_CODE -> {
-                byte[] b = new byte[byteBuffer.remaining()];
-                byteBuffer.get(b);
-                return new NoTiFiError(readID, new String(b, StandardCharsets.US_ASCII));
+                message =  NoTiFiError.decode(readID, byteBuffer);
             }
             case NoTiFiACK.ACK_CODE -> {
-                return new NoTiFiACK(readID);
+                message = new NoTiFiACK(readID);
             }
             default -> {
-                return null;
+                throw new IllegalArgumentException("Invalid Code on Notification Message: " + code);
             }
         }
 
-
-        // Return the Generated Message
         return message;
     }
 
@@ -221,7 +206,7 @@ public abstract class NoTiFiMessage {
 
     private static void testValidVersion(short versionCandidate) {
         if(versionCandidate != VALID_VERSION){
-            throw new IllegalArgumentException("Invalid Version Read for notification: " + versionCandidate);
+            throw new IllegalArgumentException("Invalid Version For Notification: " + versionCandidate);
         }
 
     }

@@ -1,6 +1,8 @@
 package notifi.serialization;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * The NoTiFiError is a type of NoTiFiMessage that
@@ -36,6 +38,15 @@ public class NoTiFiError extends NoTiFiMessage{
 
         this.errorMessage = errorMessage;
     }
+
+
+    public static NoTiFiError decode(int msgID, ByteBuffer byteBuffer){
+        byte[] b = new byte[byteBuffer.remaining()];
+        byteBuffer.get(b);
+        return new NoTiFiError(msgID, new String(b, StandardCharsets.US_ASCII));
+    }
+
+
 
 
     /** Returns the String Representation of the NoTiFi Error

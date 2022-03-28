@@ -2,6 +2,9 @@ package notifi.serialization;
 
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * The NoTiFi Register is a notification message that
@@ -12,7 +15,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
     /**
      * The Operation Code of the NoTiFi Register
      */
-    static final short REGISTER_CODE = 0;
+    static final byte REGISTER_CODE = 0;
 
 
     /**
@@ -25,6 +28,8 @@ public class NoTiFiRegister extends NoTiFiMessage{
      * The Client port of the Message
      */
     int port;
+
+
 
 
     /** Constructs a NoTiFi Register message
@@ -44,6 +49,22 @@ public class NoTiFiRegister extends NoTiFiMessage{
         this.address = address;
         this.port = port;
     }
+
+
+
+
+
+    public static NoTiFiRegister decode(int readID, ByteBuffer byteBuffer) throws IllegalArgumentException, UnknownHostException {
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        byte[] readAddress = new byte[4];
+        byteBuffer.get(readAddress, 0, 4);
+        byteBuffer.order(ByteOrder.BIG_ENDIAN);
+        int port = byteBuffer.getShort();
+        return new NoTiFiRegister(readID, (Inet4Address) Inet4Address.getByAddress(readAddress), port);
+    }
+
+
+
 
 
 
@@ -107,7 +128,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
      */
     public InetSocketAddress getSocketAddress(){
         return new InetSocketAddress(address, port);
-        //TODO I don't know if this is right?
     }
 
 
@@ -116,8 +136,21 @@ public class NoTiFiRegister extends NoTiFiMessage{
 
     @Override
     public byte[] encode() {
-        return new byte[0];
-        //todo overwrite
+        ByteBuffer b = ByteBuffer.allocate(20);
+
+        b.put(VALID_VERSION);
+
+        b.put(REGISTER_CODE);
+
+        b.putShort((short) msgId);
+
+        // Todo How to put address?
+        //b.putLong()
+
+        // Put Port
+
+
+        return b.array();
     }
 
 
