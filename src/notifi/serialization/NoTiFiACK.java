@@ -9,6 +9,8 @@
 package notifi.serialization;
 
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * The NoTiFi Ack is a type of NoTiFi Message
  * that represents an acknowledgement of a received
@@ -20,7 +22,7 @@ public class NoTiFiACK extends NoTiFiMessage{
     /**
      * The Operation Code Specifying an ACK
      */
-    static final int ACK_OPERATION_CODE = 3;
+    public static final short ACK_CODE = 3;
 
 
     /**
@@ -30,14 +32,19 @@ public class NoTiFiACK extends NoTiFiMessage{
      *      if invalid message id
      */
     public NoTiFiACK(int msgId) throws IllegalArgumentException{
-        super(msgId, ACK_OPERATION_CODE);
+        super(msgId, ACK_CODE);
     }
 
 
     //TODO Encode Implementation
     @Override
     public byte[] encode() {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+
         //Write Message Header
+
+
 
         //ACK has no payload
 

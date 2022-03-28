@@ -12,7 +12,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
     /**
      * The Operation Code of the NoTiFi Register
      */
-    static final int REGISTER_CODE = 0;
+    static final short REGISTER_CODE = 0;
 
 
     /**

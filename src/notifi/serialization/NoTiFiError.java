@@ -12,7 +12,7 @@ public class NoTiFiError extends NoTiFiMessage{
      * The Operation Code for the Error
      * Message
      */
-    static final int ERROR_ACK_CODE = 2;
+    static final short ERROR_CODE = 2;
 
 
     /**
@@ -29,7 +29,7 @@ public class NoTiFiError extends NoTiFiMessage{
      *      if any of these parameters are invalid
      */
     NoTiFiError(int msgId, String errorMessage) throws IllegalArgumentException{
-        super(msgId, ERROR_ACK_CODE);
+        super(msgId, ERROR_CODE);
 
         // Test Invalid errorMessage
         testErrorMessage(errorMessage);
@@ -67,6 +67,7 @@ public class NoTiFiError extends NoTiFiMessage{
      * @return error message
      */
     public String getErrorMessage() {
+
         return errorMessage;
     }
 

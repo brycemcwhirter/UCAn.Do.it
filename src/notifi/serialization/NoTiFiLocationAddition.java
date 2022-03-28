@@ -12,7 +12,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     /**
      * The Operation Code for the NoTiFi Location Addition
      */
-    static final int LOCATION_ADDITION_CODE = 1;
+    static final short LOCATION_ADDITION_CODE = 1;
 
 
     /**
@@ -98,6 +98,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     //TODO Encode implementation
     @Override
     public byte[] encode() {
+
         return new byte[0];
     }
 
