@@ -91,13 +91,14 @@ public abstract class NoTiFiMessage {
         switch(code){
             case NoTiFiRegister.REGISTER_CODE -> {
                 byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                int readAddress = byteBuffer.getInt();
+                byte[] readAddress = new byte[32];
+                byteBuffer.get(readAddress, 0, 32);
                 byteBuffer.order(ByteOrder.BIG_ENDIAN);
                 int port = byteBuffer.getShort();
 
-                // todo how to set address for NoTiFiRegister Constructor
-                /*Inet4Address inet4Address = new Inet4Address(readAddress);
-                return new NoTiFiRegister(readID, new Inet4Address(readAddress), port);*/
+
+                return new NoTiFiRegister(readID, (Inet4Address) Inet4Address.getByAddress(readAddress), port);
+
 
 
             }
@@ -108,11 +109,13 @@ public abstract class NoTiFiMessage {
             case NoTiFiError.ERROR_CODE -> {
                 byte[] b = new byte[byteBuffer.remaining()];
                 byteBuffer.get(b);
-                // TODO Should we ignore values that are not US_ASCII?
                 return new NoTiFiError(readID, new String(b, StandardCharsets.US_ASCII));
             }
             case NoTiFiACK.ACK_CODE -> {
                 return new NoTiFiACK(readID);
+            }
+            default -> {
+                return null;
             }
         }
 

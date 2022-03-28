@@ -1,30 +1,31 @@
 package notifi.serialization.test;
 
-import addatude.serialization.*;
+import addatude.serialization.ValidationException;
 import notifi.serialization.NoTiFiACK;
 import notifi.serialization.NoTiFiError;
 import notifi.serialization.NoTiFiMessage;
-import org.junit.jupiter.api.*;
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class NoTiFiTest {
 
-    public static final int VERSION = 0x03;
 
     @DisplayName("ACK Test")
     static class ackTest{
 
         static byte[] pkt;
-        public static final int CODE = 0x03;
 
 
         @BeforeAll
@@ -41,6 +42,7 @@ public class NoTiFiTest {
         @Test
         void decodeTest() throws IOException, ValidationException {
             NoTiFiACK message = (NoTiFiACK) NoTiFiMessage.decode(pkt);
+            assert message != null;
             assertEquals(123, message.getMsgId());
         }
 
@@ -67,7 +69,7 @@ public class NoTiFiTest {
 
         @BeforeAll
         static void init(){
-            ByteBuffer b = ByteBuffer.allocate(100);
+            ByteBuffer b = ByteBuffer.allocate(32);
             b.putShort((short) 3);
             b.putShort((short) 2);
             b.putInt(123);
@@ -78,9 +80,13 @@ public class NoTiFiTest {
         @Test
         void decodeTest() throws IOException, ValidationException {
             NoTiFiError message = (NoTiFiError) NoTiFiMessage.decode(pkt);
+            assert message != null;
             assertEquals(123, message.getMsgId());
             assertEquals(errorMessage, message.getErrorMessage());
         }
+
+        // TODO Error Message should only contain ASCII Characters make a test for so
+
 
 
 
@@ -121,11 +127,25 @@ public class NoTiFiTest {
         static byte[] pkt;
 
         @BeforeAll
-        static void init(){
-            String hexRep = "3301";
-            int it = Integer.parseInt(hexRep, 16);
-            BigInteger bigInt = BigInteger.valueOf(it);
-            pkt = (bigInt.toByteArray());
+        static void init() throws UnknownHostException {
+            ByteBuffer b = ByteBuffer.allocate(32);
+            b.putShort((short) 3);
+            b.putShort((short) 0);
+
+            b.putInt(123);
+
+            Inet4Address ip = (Inet4Address) Inet4Address.getByName("127.0.0.1");
+            byte[] addressBytes = ip.getAddress();
+            b.order(ByteOrder.LITTLE_ENDIAN);
+            b.put(addressBytes);
+
+            b.order(ByteOrder.BIG_ENDIAN);
+            b.putShort((short) 1234);
+
+
+            //TODO make sure this test works.
+
+            pkt = b.array();
         }
 
 
