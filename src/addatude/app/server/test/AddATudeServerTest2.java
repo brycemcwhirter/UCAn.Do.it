@@ -83,6 +83,11 @@ public class AddATudeServerTest2 {
                 List.of(new LocationRecord(56, "-97.12", "31.55", "Bob Smith: FortWorth", "Down town")));
     }
 
+
+
+
+
+
     @DisplayName("Replace Location (3)")
     @Test
     @Order(3)
@@ -94,6 +99,11 @@ public class AddATudeServerTest2 {
         testMatch(r, MAPID, MAPNAME,
                 List.of(new LocationRecord(56, "-97.3", "32.72", "Bob Smith: Fort Worth", "Downtown")));
     }
+
+
+
+
+
 
     @DisplayName("Second Location (3)")
     @Test
@@ -108,6 +118,11 @@ public class AddATudeServerTest2 {
                         new LocationRecord(0, "-80.0", "30.0", "Earl: Waco", "Baylor!")));
     }
 
+
+
+
+
+
     @DisplayName("All Location (3)")
     @Test
     @Order(5)
@@ -119,6 +134,11 @@ public class AddATudeServerTest2 {
                 List.of(new LocationRecord(56, "-97.3", "32.72", "Bob Smith: Fort Worth", "Downtown"),
                         new LocationRecord(0, "-80.0", "30.0", "Earl: Waco", "Baylor!")));
     }
+
+
+
+
+
 
     @DisplayName("Bad user (3)")
     @Test
@@ -133,6 +153,11 @@ public class AddATudeServerTest2 {
                 () -> assertTrue(r.getErrorMessage().contains("57")));
     }
 
+
+
+
+
+
     @DisplayName("Bad map id (3)")
     @Test
     @Order(7)
@@ -145,6 +170,11 @@ public class AddATudeServerTest2 {
                 () -> assertTrue(r.getErrorMessage().contains("348")));
     }
 
+
+
+
+
+
     @DisplayName("Unexpected type (2)")
     @Test
     @Order(8)
@@ -155,6 +185,11 @@ public class AddATudeServerTest2 {
                 () -> assertTrue(r.getErrorMessage().contains("Unexpected message type")));
     }
 
+
+
+
+
+
     @DisplayName("Invalid message (2)")
     @Test
     @Order(9)
@@ -164,6 +199,11 @@ public class AddATudeServerTest2 {
         assertAll(() -> assertEquals(0, r.getMapId()),
                 () -> assertTrue(r.getErrorMessage().contains("Invalid message")));
     }
+
+
+
+
+
 
     @DisplayName("Race Condition (3)")
     @Test

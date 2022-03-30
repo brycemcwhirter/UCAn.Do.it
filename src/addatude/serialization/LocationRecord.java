@@ -314,7 +314,7 @@ public class LocationRecord {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         LocationRecord that = (LocationRecord) o;
-        return userID == that.userID && longitude.equals(that.longitude) && latitude.equals(that.latitude) && locationName.equals(that.locationName) && locationDescription.equals(that.locationDescription);
+        return userID == that.userID;
     }
 
 

@@ -60,7 +60,7 @@ public class Server {
      * @throws IOException if an I/O error occurs
      * @throws ValidationException if a validation exception occurred
      */
-    public static void main(String[] args) throws IOException, ValidationException {
+    public static void main(String[] args) throws IOException, ValidationException, InterruptedException {
 
         // Get the Arguments
         if(args.length != 3){
@@ -112,6 +112,7 @@ public class Server {
             });
             thread.start();
             logger.info("Created & Started Thread = " + thread.getName());
+            thread.join();
         }
     }
 

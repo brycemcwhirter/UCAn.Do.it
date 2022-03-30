@@ -195,7 +195,7 @@ public class AddatudeProtocol implements Runnable{
             // log warning: received a message with a validation exception
              logger.log(Level.SEVERE, "Validation Exception Caught: Sending Error Message to Client: " + clntSocket.getInetAddress());
             // Return an error message "Unexpected version: "
-             new Error(0,"Invalid Message: "+e.getMessage()).encode(messageOutput);
+             new Error(0,"Invalid message").encode(messageOutput);
          }
 
         catch (Exception e){

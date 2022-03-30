@@ -24,7 +24,7 @@ public abstract class NoTiFiMessage {
     /**
      * A Set of Valid OP Codes for the NoTiFiMessage
      */
-    static final short[] VALID_OP_CODE = {0,1,2,3};
+    static final short[] VALID_OP_CODES = {0,1,2,3};
 
 
     /**
@@ -98,9 +98,6 @@ public abstract class NoTiFiMessage {
 
         // Validate the Version
         testValidVersion(version);
-
-        // Validate The Code
-        testValidOpCode(code);
 
         // Read the Message ID
         byte readID = byteBuffer.get();
@@ -209,7 +206,7 @@ public abstract class NoTiFiMessage {
      *      if the operation code is invalid
      */
     private static void testValidOpCode(int operationCode) throws IllegalArgumentException{
-        for (int val: VALID_OP_CODE) {
+        for (int val: VALID_OP_CODES) {
             if(operationCode == val) {
                 return;
             }
