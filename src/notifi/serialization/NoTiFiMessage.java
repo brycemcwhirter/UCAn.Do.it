@@ -1,27 +1,38 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 4
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package notifi.serialization;
 
 
-import addatude.serialization.ValidationException;
-
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 
+import java.nio.ByteBuffer;
+
+
+/**
+ * The NoTiFi Message is a Message to send
+ * Notifications of interesting events in
+ * the AddATude Protocol
+ */
 public abstract class NoTiFiMessage {
 
     /**
      * A Set of Valid OP Codes for the NoTiFiMessage
      */
-    static final short VALID_OP_CODE[] = {0,1,2,3};
+    static final short[] VALID_OP_CODE = {0,1,2,3};
 
 
     /**
      * The Current NoTiFi Message Version
      */
-    static final byte VALID_VERSION = 3;
+    static final byte VALID_VERSION = 0x30;
+
+
 
     /**
      * The Operation Code of the Message
@@ -32,6 +43,16 @@ public abstract class NoTiFiMessage {
      *  The Message ID of the Message
      */
     int msgId;
+
+
+
+
+
+    /**
+     * The Mask used to receive the NoTiFi Message Type
+     */
+    static final int CODE_MASK = 0x0f;
+
 
 
     /**
@@ -56,32 +77,33 @@ public abstract class NoTiFiMessage {
     }
 
 
-
-
-
-    // TODO write decode implementation
-    public static NoTiFiMessage decode(byte[] pkt) throws IOException, ValidationException {
+    /**
+     * Deserializes a message
+     * @param pkt the serialized message
+     * @return the new message
+     * @throws IOException
+     *      If a read error occurs
+     *
+     */
+    public static NoTiFiMessage decode(byte[] pkt) throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.wrap(pkt);
         NoTiFiMessage message;
 
-        // Read the Version
-        byte version = byteBuffer.get();
-        
-        // Test if Valid Version
+        // Read the Version & code
+        byte versionAndCode = byteBuffer.get();
+
+        // Split the Version & The Code
+        byte version = (byte) (versionAndCode >>> 4);
+        byte code = (byte) (versionAndCode & CODE_MASK);
+
+        // Validate the Version
         testValidVersion(version);
 
-
-
-        // Read the Code
-        byte code = byteBuffer.get();
-
-        // Validate Code
+        // Validate The Code
         testValidOpCode(code);
 
-
-
         // Read the Message ID
-        short readID = byteBuffer.getShort();
+        byte readID = byteBuffer.get();
 
         // Validate the Message ID
         testMessageID(readID);
@@ -89,21 +111,19 @@ public abstract class NoTiFiMessage {
 
         // Switch Statement Based On Code
         switch(code){
-            case NoTiFiRegister.REGISTER_CODE -> {
-                message = NoTiFiRegister.decode(readID, byteBuffer);
-            }
-            case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> {
-                message = NoTiFiLocationAddition.decode(readID, byteBuffer);
-            }
-            case NoTiFiError.ERROR_CODE -> {
-                message =  NoTiFiError.decode(readID, byteBuffer);
-            }
-            case NoTiFiACK.ACK_CODE -> {
-                message = new NoTiFiACK(readID);
-            }
-            default -> {
-                throw new IllegalArgumentException("Invalid Code on Notification Message: " + code);
-            }
+            case NoTiFiRegister.REGISTER_CODE -> message = NoTiFiRegister.decode(readID, byteBuffer);
+
+
+            case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> message = NoTiFiLocationAddition.decode(readID, byteBuffer);
+
+
+            case NoTiFiError.ERROR_CODE -> message =  NoTiFiError.decode(readID, byteBuffer);
+
+
+            case NoTiFiACK.ACK_CODE -> message = new NoTiFiACK(readID);
+
+
+            default -> throw new IllegalArgumentException("Invalid Code on Notification Message: " + code);
         }
 
         return message;
@@ -112,7 +132,8 @@ public abstract class NoTiFiMessage {
 
 
 
-    /** Serializes Message
+    /**
+     * Serializes Message
      * Declared abstract with respect to specific
      * NoTiFi Messages
      * @return the serialized byte message
@@ -126,7 +147,8 @@ public abstract class NoTiFiMessage {
 
 
 
-    /** Gets the operation code
+    /**
+     * Gets the operation code
      * @return operation code
      */
     public int getCode() {
@@ -140,7 +162,8 @@ public abstract class NoTiFiMessage {
 
 
 
-    /** Gets the Message ID
+    /**
+     * Gets the Message ID
      * @return the message id
      */
     public int getMsgId() {
@@ -154,7 +177,8 @@ public abstract class NoTiFiMessage {
 
 
 
-    /** Sets the message ID
+    /**
+     * Sets the message ID
      * @param msgId the message id
      * @return this object with the new message id
      * @throws IllegalArgumentException
@@ -167,13 +191,10 @@ public abstract class NoTiFiMessage {
     }
 
 
-
-
-
-
-
-
-
+    /**
+     * Tests if the message id is valid
+     * @param msgId the message id
+     */
     static void testMessageID(int msgId){
         if(msgId < 0 || msgId > 255){
             throw new IllegalArgumentException("Illegal Message ID Value: "+ msgId);
@@ -181,14 +202,13 @@ public abstract class NoTiFiMessage {
     }
 
 
-
-
-
-
-
-
-
-    static void testValidOpCode(short operationCode) throws IllegalArgumentException{
+    /**
+     * Tests if the operation code is valid
+     * @param operationCode the operation code
+     * @throws IllegalArgumentException
+     *      if the operation code is invalid
+     */
+    private static void testValidOpCode(int operationCode) throws IllegalArgumentException{
         for (int val: VALID_OP_CODE) {
             if(operationCode == val) {
                 return;
@@ -199,16 +219,30 @@ public abstract class NoTiFiMessage {
     }
 
 
-
-
-
-
-
-    private static void testValidVersion(short versionCandidate) {
-        if(versionCandidate != VALID_VERSION){
+    /**
+     * Tests if the Message Version is currently valid
+     * @param versionCandidate the version of the received message
+     */
+    private static void testValidVersion(int versionCandidate) {
+        byte version = (byte) (VALID_VERSION >>> 4);
+        if(versionCandidate != version){
             throw new IllegalArgumentException("Invalid Version For Notification: " + versionCandidate);
         }
 
+    }
+
+
+    /**
+     * Writes the NoTiFi Header on the Byte Buffer
+     * @param b the byte buffer
+     * @param OP_CODE the Op Code of the respected Message
+     */
+    public void writeNoTiFiHeader(ByteBuffer b, byte OP_CODE){
+        byte versionAndCode = (byte) (VALID_VERSION | OP_CODE);
+
+        //Write Message Header
+        b.put(versionAndCode);
+        b.put((byte) msgId);
     }
 
 

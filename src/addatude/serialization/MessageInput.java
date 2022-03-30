@@ -137,7 +137,7 @@ public class MessageInput {
 
 
         String val = readUntilSpace();
-        val = val.trim(); //TODO change this if necessary
+        val = val.trim();
         stringBuilder.append(val);
 
         int value;

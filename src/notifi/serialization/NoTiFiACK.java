@@ -9,7 +9,7 @@
 package notifi.serialization;
 
 
-import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * The NoTiFi Ack is a type of NoTiFi Message
@@ -22,7 +22,7 @@ public class NoTiFiACK extends NoTiFiMessage{
     /**
      * The Operation Code Specifying an ACK
      */
-    public static final short ACK_CODE = 3;
+    public static final byte ACK_CODE = 0x03;
 
 
     /**
@@ -36,20 +36,26 @@ public class NoTiFiACK extends NoTiFiMessage{
     }
 
 
-    //TODO Encode Implementation
+    /**
+     * Serializes a NoTiFiAck
+     * @return a serialized NoTiFiAck
+     */
     @Override
     public byte[] encode() {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        ByteBuffer b = ByteBuffer.allocate(2);
+
+        // Write Message Header
+        writeNoTiFiHeader(b, ACK_CODE);
 
 
-        //Write Message Header
-
-
-
-        //ACK has no payload
-
-        return null;
+        // ACK has no payload so write nothing else
+        return b.array();
     }
+
+
+
+
 
 
     /** Returns a string representation of an ACK message

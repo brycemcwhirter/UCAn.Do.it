@@ -1,1 +1,1 @@
-zip -r Prog3.zip addatude -x "*/*.DS_Store" -x "__MACOSX"; mv Prog3.zip ~/Desktop 
+zip -r Prog4.zip addatude notifi -x "*/*.DS_Store" -x "__MACOSX"; mv Prog4.zip ~/Desktop 

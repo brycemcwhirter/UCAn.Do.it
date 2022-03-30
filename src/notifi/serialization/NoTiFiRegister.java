@@ -1,3 +1,11 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 4
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package notifi.serialization;
 
 import java.net.Inet4Address;
@@ -32,7 +40,8 @@ public class NoTiFiRegister extends NoTiFiMessage{
 
 
 
-    /** Constructs a NoTiFi Register message
+    /**
+     * Constructs a NoTiFi Register message
      * @param msgId the message id
      * @param address the address to register
      * @param port the port to register
@@ -54,12 +63,26 @@ public class NoTiFiRegister extends NoTiFiMessage{
 
 
 
+
+
+
+
+    /**
+     * Decodes a NoTiFi Register Message
+     * @param readID the message id
+     * @param byteBuffer the byte buffer containing the message
+     * @return a new NoTiFi Register Message
+     * @throws IllegalArgumentException
+     *      If any illegal parameters
+     * @throws UnknownHostException
+     *      If the readAddress is an Unknown Host
+     */
     public static NoTiFiRegister decode(int readID, ByteBuffer byteBuffer) throws IllegalArgumentException, UnknownHostException {
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         byte[] readAddress = new byte[4];
         byteBuffer.get(readAddress, 0, 4);
         byteBuffer.order(ByteOrder.BIG_ENDIAN);
-        int port = byteBuffer.getShort();
+        int port = byteBuffer.getInt();
         return new NoTiFiRegister(readID, (Inet4Address) Inet4Address.getByAddress(readAddress), port);
     }
 
@@ -72,7 +95,8 @@ public class NoTiFiRegister extends NoTiFiMessage{
 
 
 
-    /** Returns a String Representation
+    /**
+     * Returns a String Representation
      * @return string representation
      */
     @Override
@@ -81,7 +105,11 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-    /** Get the register address
+
+
+
+    /**
+     * Get the register address
      * @return register address
      */
     public Inet4Address getAddress() {
@@ -89,7 +117,12 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-    /** Sets the register address
+
+
+
+
+    /**
+     * Sets the register address
      * @param address the address
      * @return this object with the new register address
      * @throws IllegalArgumentException
@@ -102,7 +135,12 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-    /** Gets the register port
+
+
+
+
+    /**
+     * Gets the register port
      * @return register port
      */
     public int getPort() {
@@ -110,7 +148,12 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-    /** Sets the register port
+
+
+
+
+    /**
+     * Sets the register port
      * @param port the register port
      * @return this object with new value
      * @throws IllegalArgumentException
@@ -123,7 +166,12 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-    /** Get Address
+
+
+
+
+    /**
+     * Get Address
      * @return register address
      */
     public InetSocketAddress getSocketAddress(){
@@ -134,30 +182,38 @@ public class NoTiFiRegister extends NoTiFiMessage{
 
 
 
+
+    /**
+     * Serializes a NoTiFi Register Message
+     * @return the serialized message
+     */
     @Override
     public byte[] encode() {
-        ByteBuffer b = ByteBuffer.allocate(20);
+        ByteBuffer b = ByteBuffer.allocate(10);
 
-        b.put(VALID_VERSION);
+        // Write Message Header
+        writeNoTiFiHeader(b, REGISTER_CODE);
 
-        b.put(REGISTER_CODE);
+        // Put Address
+        b.order(ByteOrder.LITTLE_ENDIAN);
+        b.put(address.getAddress());
+        b.order(ByteOrder.BIG_ENDIAN);
 
-        b.putShort((short) msgId);
-
-        // Todo How to put address?
-        //b.putLong()
 
         // Put Port
+        b.putInt(port);
 
 
         return b.array();
     }
 
 
-
-
-
-
+    /**
+     * Test if a port value is valid
+     * @param port the port
+     * @throws IllegalArgumentException
+     *      if the port is invalid
+     */
     public void testPort(int port) throws IllegalArgumentException{
         if(port < 0 || port > 65535){
             throw new IllegalArgumentException("Port is out of Range");
@@ -165,10 +221,12 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-
-
-
-
+    /**
+     * Test if an Address is valid
+     * @param address the address
+     * @throws IllegalArgumentException
+     *      if the address is invalid
+     */
     public void testAddress(Inet4Address address) throws IllegalArgumentException{
         if(address == null){
             throw new IllegalArgumentException("Address cannot be null");

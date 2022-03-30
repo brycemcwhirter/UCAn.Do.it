@@ -23,7 +23,7 @@ public class failingTest {
     class LocationRecordTest{
 
         //Decode Test
-        // todo you are failing this (passing right now but instance you're not thinking of)
+        // to do you are failing this (passing right now but instance you're not thinking of)
         @ParameterizedTest(name = "Basic Decode")
         @MethodSource("validDecodeStreams")
         public void testDecode(String decodeStream) throws ValidationException {
@@ -34,7 +34,7 @@ public class failingTest {
         }
 
 
-        public Stream<Arguments> validDecodeStreams() {
+        public static Stream<Arguments> validDecodeStreams() {
             return Stream.of(
                     arguments("1 1.2 3.4 2 BU6 Baylor"),
                     arguments("1 1.2 3.4 10 ABCDEFGHIJ16 KLMNOPQRSTUVWXYZ"),

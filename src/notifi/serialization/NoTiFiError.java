@@ -1,7 +1,14 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 4
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package notifi.serialization;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -14,7 +21,7 @@ public class NoTiFiError extends NoTiFiMessage{
      * The Operation Code for the Error
      * Message
      */
-    static final short ERROR_CODE = 2;
+    static final byte ERROR_CODE = 2;
 
 
     /**
@@ -30,7 +37,7 @@ public class NoTiFiError extends NoTiFiMessage{
      * @throws IllegalArgumentException
      *      if any of these parameters are invalid
      */
-    NoTiFiError(int msgId, String errorMessage) throws IllegalArgumentException{
+    public NoTiFiError(int msgId, String errorMessage) throws IllegalArgumentException{
         super(msgId, ERROR_CODE);
 
         // Test Invalid errorMessage
@@ -40,11 +47,19 @@ public class NoTiFiError extends NoTiFiMessage{
     }
 
 
+    /**
+     * Deserializes a NoTiFi Error Message
+     * @param msgID the message id
+     * @param byteBuffer the buffer holding the message
+     * @return the new NoTiFi Error Message
+     */
     public static NoTiFiError decode(int msgID, ByteBuffer byteBuffer){
         byte[] b = new byte[byteBuffer.remaining()];
         byteBuffer.get(b);
         return new NoTiFiError(msgID, new String(b, StandardCharsets.US_ASCII));
     }
+
+
 
 
 
@@ -56,6 +71,10 @@ public class NoTiFiError extends NoTiFiMessage{
     public String toString() {
         return "Error: msgid="+msgId+' '+errorMessage;
     }
+
+
+
+
 
 
     /**
@@ -73,6 +92,11 @@ public class NoTiFiError extends NoTiFiMessage{
     }
 
 
+
+
+
+
+
     /**
      * gets the error message
      * @return error message
@@ -83,28 +107,32 @@ public class NoTiFiError extends NoTiFiMessage{
     }
 
 
-
-
-
-
-
-
-
-    //TODO Encode Implementation
+    /**
+     * Serializes a NoTiFi Error Message
+     * @return the serialized message
+     */
     @Override
     public byte[] encode() {
 
-        return new byte[0];
+        ByteBuffer b = ByteBuffer.allocate(2+errorMessage.length());
+
+        // Write Message Header
+        writeNoTiFiHeader(b, ERROR_CODE);
+
+
+        // Write the error message
+        b.put(errorMessage.getBytes(StandardCharsets.US_ASCII));
+
+        return b.array();
     }
 
 
-
-
-
-
-
+    /**
+     * Test if a NoTiFi Error Message is valid
+     * @param errorMessage the error message
+     */
     private void testErrorMessage(String errorMessage) {
-        if(Charset.forName("US-ASCII").newEncoder().canEncode(errorMessage)){
+        if(StandardCharsets.US_ASCII.newEncoder().canEncode(errorMessage)){
             return;
         }
         throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ errorMessage);

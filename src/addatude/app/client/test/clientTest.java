@@ -12,11 +12,11 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class clientTest {
 
 
-    //TODO make binary input/output streams
+    //TO DO make binary input/output streams
 
-    //todo use SYStem.setIN / System.setOut to set streams to compare
+    //to do use SYStem.setIN / System.setOut to set streams to compare
 
-    // TODO set up different servers to send bad input
+    // TO DO set up different servers to send bad input
 
 
     @Nested

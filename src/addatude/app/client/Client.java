@@ -388,7 +388,7 @@ public class Client {
             }
 
 
-        // TODO Figure out Why system error aand print ln are not printing in order
+        // TO DO Figure out Why system error aand print ln are not printing in order
 
         try {
             System.out.print("Would you like to continue? > ");

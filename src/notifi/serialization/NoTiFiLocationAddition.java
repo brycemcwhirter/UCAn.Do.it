@@ -1,3 +1,11 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 4
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package notifi.serialization;
 
 import addatude.serialization.ValidationException;
@@ -16,7 +24,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     /**
      * The Operation Code for the NoTiFi Location Addition
      */
-    static final short LOCATION_ADDITION_CODE = 1;
+    static final byte LOCATION_ADDITION_CODE = 1;
 
 
     /**
@@ -49,7 +57,8 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     String locationDescription;
 
 
-    /** Constructs a NoTiFi add location message
+    /**
+     * Constructs a NoTiFi Add location message
      * @param msgId message id
      * @param userId user id
      * @param longitude longitude of the new location
@@ -83,11 +92,12 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     }
 
 
-
-
-
-
-
+    /**
+     * Deserializes a NoTiFi Location Addition Message
+     * @param msgID the message id
+     * @param byteBuffer the byte buffer holding the message
+     * @return the new NoTiFiLocationAddition Message
+     */
     public static NoTiFiLocationAddition decode(int msgID, ByteBuffer byteBuffer) {
 
         // Read the User ID
@@ -97,33 +107,36 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
         // Read the Longitude
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        double readLongitude = byteBuffer.getDouble();
+        double readLongitude = Double.parseDouble(String.format("%.02f", byteBuffer.getFloat()));
 
 
 
         // Read the Latitude
-        double readLatitude = byteBuffer.getDouble();
+        double readLatitude = Double.parseDouble(String.format("%.02f", byteBuffer.getFloat()));
+        byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
 
 
         // Read the Length of Location Name
         short length = byteBuffer.getShort();
-        byte[] buffer = new byte[length];
+        byte[] readNameBuf = new byte[length];
 
 
         // Read Location Name
-        byteBuffer.get(buffer, 0, length);
-        String readName = new String(buffer, StandardCharsets.US_ASCII);
+        byteBuffer.get(readNameBuf, 0, length);
+        String readName = new String(readNameBuf, StandardCharsets.US_ASCII);
 
 
 
         // Read the Length of Location Description
         length = byteBuffer.getShort();
+        byte[] readDescBuf = new byte[length];
+
 
 
         // Read Location Description
-        byteBuffer.get(buffer, 0, length);
-        String readDesc = new String(buffer, StandardCharsets.US_ASCII);
+        byteBuffer.get(readDescBuf, 0, length);
+        String readDesc = new String(readDescBuf, StandardCharsets.US_ASCII);
 
 
 
@@ -139,7 +152,8 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
 
 
-    /** Returns a String Representation
+    /**
+     * Returns a String Representation
      * @return String Representation
      */
     @Override
@@ -151,12 +165,41 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
 
 
-    //TODO Encode implementation
+    /**
+     * Serializes a NoTiFi Location Addition Message
+     * @return the serialized message
+     */
     @Override
     public byte[] encode() {
 
-        return new byte[0];
+        ByteBuffer b = ByteBuffer.allocate(22 + locationDescription.length() + locationName.length());
+
+        // Write The NoTiFi Header
+        writeNoTiFiHeader(b, LOCATION_ADDITION_CODE);
+
+        // Write the UserID
+        b.putInt(userId);
+
+
+        // Write the Longitude & Latitude
+        b.order(ByteOrder.LITTLE_ENDIAN);
+        b.putFloat((float) longitude);
+        b.putFloat((float) latitude);
+        b.order(ByteOrder.BIG_ENDIAN);
+
+        // Write down the length of name and name
+        b.putShort((short) locationName.length());
+        b.put(locationName.getBytes(StandardCharsets.US_ASCII));
+
+        // Write down the length of desc and desc
+        b.putShort((short) locationDescription.length());
+        b.put(locationDescription.getBytes(StandardCharsets.US_ASCII));
+
+
+        return b.array();
+
     }
+
 
 
 
@@ -253,7 +296,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
 
     /** Sets the latitude
-     * @param latitude
+     * @param latitude the latitude
      * @return this object with the new latitude
      * @throws IllegalArgumentException
      *      if the latitude is invalid
@@ -288,6 +331,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
 
 
+
     /** sets the location name
      * @param locationName the location name
      * @return this object with the new location name
@@ -307,6 +351,11 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     }
 
 
+
+
+
+
+
     /**
      * Returns the location description
      * @return location description
@@ -314,6 +363,11 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     public String getLocationDescription() {
         return locationDescription;
     }
+
+
+
+
+
 
 
     /**

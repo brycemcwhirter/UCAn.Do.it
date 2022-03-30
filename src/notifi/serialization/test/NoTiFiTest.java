@@ -1,30 +1,23 @@
 package notifi.serialization.test;
 
-import addatude.serialization.ValidationException;
 import notifi.serialization.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
+@Nested
 public class NoTiFiTest {
 
 
-    static final byte VERSION = 3;
-    static final byte REG_CODE = 0;
-    static final byte LOC_ADD_CODE = 1;
-    static final byte ERROR_CODE = 2;
-    static final byte ACK_CODE = 3;
+    static final byte VERSION = 0x30;
+
 
     static final short MSG_ID = 123;
 
@@ -32,43 +25,34 @@ public class NoTiFiTest {
 
 
     @DisplayName("ACK Test")
-    static class ackTest{
-
-        static byte[] pkt;
-        static ByteBuffer b = ByteBuffer.allocate(8);
-
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class ackTest{
 
 
-        @BeforeAll
-        static void init(){
 
-            // Place the Version
-            b.put(VERSION);
-
-            // Place the OP Code
-            b.put(ACK_CODE);
-
-            // Place the ID
-            b.putShort(MSG_ID);
-
-            // Create the Byte Array
-            pkt = b.array();
-        }
 
 
 
         @Test
-        void decodeTest() throws IOException, ValidationException {
-            NoTiFiACK message = (NoTiFiACK) NoTiFiMessage.decode(pkt);
-            assert message != null;
-            assertEquals(123, message.getMsgId());
+        void encodeTest() throws  IOException {
+            byte[] a = new NoTiFiACK(123).encode();
+            NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(a);
+            assertEquals(123, ack.getMsgId());
+            assertEquals(3, ack.getCode());
         }
 
+        @Test
+        void decode() throws IOException {
+            NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(new byte[] {0x33, 1});
+            assertEquals(1, ack.getMsgId());
+            assertEquals(3, ack.getCode());
+        }
 
         @Test
-        void encodeTest(){
-
-
+        void toStringTest() throws IOException {
+            NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(new byte[] {0x33, 1});
+            assertEquals("ACK: msgid="+1, ack.toString());
         }
 
 
@@ -80,36 +64,37 @@ public class NoTiFiTest {
 
 
     @DisplayName("Error Test")
-    static class errorTest{
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class errorTest{
 
-        static byte[] pkt;
-        static String errorMessage = "This is an error message";
-
-        @BeforeAll
-        static void init(){
-            ByteBuffer b = ByteBuffer.allocate(28);
+        static String errorMessage = "This might work";
 
 
-            // Place the Version
-            b.put(VERSION);
 
-            // Place the OP Code
-            b.put(ERROR_CODE);
+        @Test
+        void encodeTest() throws IOException{
+            byte[] pkt = new NoTiFiError(1, errorMessage).encode();
+            NoTiFiError message = (NoTiFiError) NoTiFiMessage.decode(pkt);
+            assert message != null;
+            assertEquals(1, message.getMsgId());
+            assertEquals(errorMessage, message.getErrorMessage());
+        }
 
-            // Place the ID
-            b.putShort(MSG_ID);
 
-            // Place the Error Message
-            b.put(errorMessage.getBytes(StandardCharsets.US_ASCII));
-            pkt = b.array();
+
+        @Test
+        void decode() throws IOException {
+            NoTiFiError noTiFiError = (NoTiFiError) NoTiFiMessage.decode(new byte[] {0x32, 1, 'T', 'h', 'i', 's', ' ', 'm', 'i', 'g', 'h', 't', ' ', 'w', 'o', 'r', 'k'});
+            assertEquals(1, noTiFiError.getMsgId());
+            assertEquals(2, noTiFiError.getCode());
+            assertEquals(errorMessage, noTiFiError.getErrorMessage());
         }
 
         @Test
-        void decodeTest() throws IOException, ValidationException {
-            NoTiFiError message = (NoTiFiError) NoTiFiMessage.decode(pkt);
-            assert message != null;
-            assertEquals(123, message.getMsgId());
-            assertEquals(errorMessage, message.getErrorMessage());
+        void toStringTest() throws IOException {
+            NoTiFiError noTiFiError = (NoTiFiError) NoTiFiMessage.decode(new byte[] {0x32, 1, 'T', 'h', 'i', 's', ' ', 'm', 'i', 'g', 'h', 't', ' ', 'w', 'o', 'r', 'k'});
+            assertEquals("Error: msgid="+1+' '+"This might work", noTiFiError.toString());
         }
 
         // TODO Error Message should only contain ASCII Characters make a test for so
@@ -126,16 +111,24 @@ public class NoTiFiTest {
 
 
     @DisplayName("Location Addition Test")
-    static class addLocationTest{
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class addLocationTest{
 
-        static byte[] pkt;
 
-        @BeforeAll
-        static void init(){
-            ByteBuffer b = ByteBuffer.allocate(32);
-            b.putShort(LOC_ADD_CODE);
-            b.putInt(123);
-            pkt = b.array();
+
+
+        @Test
+        void encodeTest() throws IOException {
+            byte[] pkt = new NoTiFiLocationAddition(1, 321, 100.2, 89.0, "This", "Place").encode();
+            NoTiFiLocationAddition message = (NoTiFiLocationAddition) NoTiFiMessage.decode(pkt);
+            assert message != null;
+            assertEquals(1, message.getMsgId());
+            assertEquals(321, message.getUserId());
+            assertEquals(100.2, message.getLongitude());
+            assertEquals(89.0, message.getLatitude());
+            assertEquals("This", message.getLocationName());
+            assertEquals("Place", message.getLocationDescription());
         }
 
 
@@ -149,24 +142,28 @@ public class NoTiFiTest {
 
 
     @DisplayName("Register Test")
-    static class registerTest{
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class registerTest{
 
         static byte[] pkt;
         static Inet4Address ip;
         static final String address = "127.0.0.1";
 
+        static final byte REG_CODE = 0;
+
+
         @BeforeAll
         static void init() throws UnknownHostException {
-            ByteBuffer b = ByteBuffer.allocate(32);
+            ByteBuffer b = ByteBuffer.allocate(10);
 
-            // Place the Version
-            b.put(VERSION);
+            byte versionAndCode = (byte) (VERSION | REG_CODE);
 
-            // Place the OP Code
-            b.put(REG_CODE);
+            // Place the Version & REG Code
+            b.put(versionAndCode);
 
             // Place the ID
-            b.putShort(MSG_ID);
+            b.put((byte)MSG_ID);
 
             // Place the IP Address
             ip = (Inet4Address) Inet4Address.getByName(address);
@@ -178,19 +175,25 @@ public class NoTiFiTest {
             b.order(ByteOrder.BIG_ENDIAN);
             b.putInt(1234);
 
-
-            //TODO make sure this test works.
-
             pkt = b.array();
         }
 
         @Test
-        void testDecode() throws ValidationException, IOException {
+        void testDecode() throws IOException {
             NoTiFiRegister test = (NoTiFiRegister) NoTiFiMessage.decode(pkt);
             assertEquals(123, test.getMsgId());
             assertEquals(1234, test.getPort());
             assertEquals(ip.getHostAddress(), address);
+        }
 
+        @Test
+        void encodeTest() throws IOException{
+            byte[] pkt = new NoTiFiRegister(1, ip, 1234).encode();
+            NoTiFiRegister message = (NoTiFiRegister) NoTiFiMessage.decode(pkt);
+            assert message != null;
+            assertEquals(1, message.getMsgId());
+            assertEquals(1234, message.getPort());
+            assertEquals(address, message.getAddress().getHostAddress());
         }
 
 
