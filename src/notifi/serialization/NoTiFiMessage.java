@@ -10,7 +10,6 @@ package notifi.serialization;
 
 
 import java.io.IOException;
-
 import java.nio.ByteBuffer;
 
 

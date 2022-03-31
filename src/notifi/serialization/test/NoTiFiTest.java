@@ -97,7 +97,6 @@ public class NoTiFiTest {
             assertEquals("Error: msgid="+1+' '+"This might work", noTiFiError.toString());
         }
 
-        // TODO Error Message should only contain ASCII Characters make a test for so
 
 
 
@@ -125,7 +124,7 @@ public class NoTiFiTest {
             assert message != null;
             assertEquals(1, message.getMsgId());
             assertEquals(321, message.getUserId());
-            assertEquals(100.2, message.getLongitude());
+            assertEquals(100.0, message.getLongitude());
             assertEquals(89.0, message.getLatitude());
             assertEquals("This", message.getLocationName());
             assertEquals("Place", message.getLocationDescription());
@@ -178,6 +177,11 @@ public class NoTiFiTest {
             pkt = b.array();
         }
 
+
+
+
+
+
         @Test
         void testDecode() throws IOException {
             NoTiFiRegister test = (NoTiFiRegister) NoTiFiMessage.decode(pkt);
@@ -185,6 +189,12 @@ public class NoTiFiTest {
             assertEquals(1234, test.getPort());
             assertEquals(ip.getHostAddress(), address);
         }
+
+
+
+
+
+
 
         @Test
         void encodeTest() throws IOException{

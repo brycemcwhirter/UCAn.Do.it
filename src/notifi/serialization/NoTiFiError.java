@@ -119,7 +119,6 @@ public class NoTiFiError extends NoTiFiMessage{
         // Write Message Header
         writeNoTiFiHeader(b, ERROR_CODE);
 
-
         // Write the error message
         b.put(errorMessage.getBytes(StandardCharsets.US_ASCII));
 
@@ -132,7 +131,7 @@ public class NoTiFiError extends NoTiFiMessage{
      * @param errorMessage the error message
      */
     private void testErrorMessage(String errorMessage) {
-        if(StandardCharsets.US_ASCII.newEncoder().canEncode(errorMessage)){
+        if(errorMessage.matches("\\A\\p{ASCII}*\\z")){
             return;
         }
         throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ errorMessage);

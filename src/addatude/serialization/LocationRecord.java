@@ -86,9 +86,10 @@ public class LocationRecord {
      * @throws ValidationException
      *      If an error occurred during reading
      */
-    public LocationRecord(MessageInput in) throws ValidationException {
+    public LocationRecord(MessageInput in) throws ValidationException, NullPointerException {
         Objects.requireNonNull(in, "Message Cannot be Null");
         String readIN;
+
 
         //Read the UserID & Validating
         readIN = in.readUntilSpace();
@@ -110,7 +111,6 @@ public class LocationRecord {
         String[] tokens = new String[2];
 
 
-
         //For The Location Name and Description
         // Read the Size of the Value
         // Read 'Size' number of chars for Value
@@ -120,10 +120,12 @@ public class LocationRecord {
             String read = new String(buf, StandardCharsets.UTF_8);
             tokens[i] = read;
         }
-
-
         setLocationName(tokens[0]);
         setLocationDescription(tokens[1]);
+
+
+
+
     }
 
 

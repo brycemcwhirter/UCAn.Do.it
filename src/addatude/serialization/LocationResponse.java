@@ -72,21 +72,26 @@ public class LocationResponse extends Message{
      * @throws ValidationException
      *      If Any Parameters are deemed invalid.
      */
-    public LocationResponse(long mapID, MessageInput in) throws ValidationException{
+    public LocationResponse(long mapID, MessageInput in) throws ValidationException {
         super(OPERATION, mapID);
 
         int size = in.readIntegerValue();
         String mapName = new String(in.readNumOfValues(size), StandardCharsets.UTF_8);
         Validator.validString("Map Name", mapName);
 
+        this.mapName = mapName;
+
+
+
+
         int numOfLocation = in.readIntegerValue();
 
-        this.mapName = mapName;
 
         for (int i = 0; i < numOfLocation; i++) {
             LocationRecord lr = new LocationRecord(in);
             this.addLocationRecord(lr);
         }
+
 
 
     }
@@ -235,12 +240,10 @@ public class LocationResponse extends Message{
         Message.writeMessageHeader(getMapId(), getOperation(), out);
         out.writeString(getMapName());
 
+        out.write((locationRecordList.size() + " ").getBytes(StandardCharsets.UTF_8));
+
 
         if(locationRecordList.size() > 0) {
-
-            out.write((locationRecordList.size() + " ").getBytes(StandardCharsets.UTF_8));
-
-
 
             for (LocationRecord lr : locationRecordList) {
                 lr.encode(out);

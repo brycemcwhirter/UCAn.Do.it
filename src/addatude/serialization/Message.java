@@ -228,5 +228,7 @@ public abstract class Message {
     }
 
 
-
+    public static String getFOOTER() {
+        return FOOTER;
+    }
 }

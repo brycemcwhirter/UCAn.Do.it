@@ -49,6 +49,10 @@ public class AddATudeServerTest2 {
     private MessageInput in;
     private MessageOutput out;
 
+
+
+
+
     @BeforeEach
     protected void before() throws IOException {
         clientSocket = new Socket(SERVER, PORT);
@@ -56,10 +60,21 @@ public class AddATudeServerTest2 {
         out = new MessageOutput(getSlowOutput(clientSocket.getOutputStream(), DELAY));
     }
 
+
+
+
+
+
     @AfterEach
     protected void after() throws IOException {
         clientSocket.close();
     }
+
+
+
+
+
+
 
     @DisplayName("Empty (3)")
     @Test
@@ -70,6 +85,11 @@ public class AddATudeServerTest2 {
         var r = (LocationResponse) decode(in);
         testMatch(r, MAPID, MAPNAME, List.of());
     }
+
+
+
+
+
 
     @DisplayName("New Location (3)")
     @Test

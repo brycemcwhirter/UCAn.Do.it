@@ -76,14 +76,7 @@ public class LocationResponseTest {
             LocationResponse test = (LocationResponse) Message.decode(in);
         }
 
-        @Test
-        @DisplayName("Encode Test No Locations")
-        void encodeNoLocationsTest() throws ValidationException, IOException{
-            var bOut = new ByteArrayOutputStream();
-            var out = new MessageOutput(bOut);
-            new LocationResponse(123, "aMap").encode(out);
-            assertArrayEquals("ADDATUDEv1 123 RESPONSE 4 aMap\r\n".getBytes(StandardCharsets.UTF_8), bOut.toByteArray());
-        }
+
 
         @Test
         @DisplayName("Encode Test with Locations")

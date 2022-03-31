@@ -57,6 +57,11 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     String locationDescription;
 
 
+
+
+
+
+
     /**
      * Constructs a NoTiFi Add location message
      * @param msgId message id
@@ -92,6 +97,11 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     }
 
 
+
+
+
+
+
     /**
      * Deserializes a NoTiFi Location Addition Message
      * @param msgID the message id
@@ -107,12 +117,12 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
         // Read the Longitude
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        double readLongitude = Double.parseDouble(String.format("%.02f", byteBuffer.getFloat()));
+        double readLongitude = Math.round(byteBuffer.getFloat());
 
 
 
         // Read the Latitude
-        double readLatitude = Double.parseDouble(String.format("%.02f", byteBuffer.getFloat()));
+        double readLatitude = Math.round(byteBuffer.getFloat());
         byteBuffer.order(ByteOrder.BIG_ENDIAN);
 
 
@@ -341,7 +351,6 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     public NoTiFiLocationAddition setLocationName(String locationName) throws IllegalArgumentException{
         try{
             Validator.validString("Location Name", locationName);
-            // TODO test for invalid length?
         }
         catch (ValidationException e){
             throw new IllegalArgumentException("Invalid Location Name: ", e);
@@ -382,7 +391,6 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
         // Test Valid Location Description
         try{
             Validator.validString("Location Description", locationDescription);
-            // TODO test for invalid length?
         }
         catch(ValidationException e){
             throw new IllegalArgumentException("Invalid Location Description: ", e);
