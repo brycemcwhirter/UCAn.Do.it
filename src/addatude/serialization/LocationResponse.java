@@ -110,22 +110,22 @@ public class LocationResponse extends Message{
             throw new ValidationException(null, "Location Record cannot be null in adding to list");
         }
 
+        for (LocationRecord entry: locationRecordList) {
+            if(entry.getUserId() == locationRecord.getUserId()){
+                locationRecordList.remove(entry);
+                break;
+            }
+        }
+
         locationRecordList.add(locationRecord);
+
         return this;
     }
 
 
 
 
-    /**
-     * This method removes a location record
-     * from the location response
-     * @param locationRecord The Location Record to be removed
-     */
-    public void removeLocationRecord(LocationRecord locationRecord) {
-        Objects.requireNonNull(locationRecord);
-        locationRecordList.remove(locationRecord);
-    }
+
 
 
 
@@ -235,9 +235,11 @@ public class LocationResponse extends Message{
         Message.writeMessageHeader(getMapId(), getOperation(), out);
         out.writeString(getMapName());
 
-        out.write((locationRecordList.size() + " ").getBytes(StandardCharsets.UTF_8));
 
         if(locationRecordList.size() > 0) {
+
+            out.write((locationRecordList.size() + " ").getBytes(StandardCharsets.UTF_8));
+
 
 
             for (LocationRecord lr : locationRecordList) {

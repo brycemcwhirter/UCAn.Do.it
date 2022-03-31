@@ -48,10 +48,6 @@ public class Server {
         public String getUserName() {
             return userName;
         }
-
-        public String getPassword(){
-            return password;
-        }
     }
 
 
@@ -112,7 +108,6 @@ public class Server {
             });
             thread.start();
             logger.info("Created & Started Thread = " + thread.getName());
-            thread.join();
         }
     }
 

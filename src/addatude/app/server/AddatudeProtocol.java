@@ -151,20 +151,9 @@ public class AddatudeProtocol implements Runnable{
 
 
                 else{
-
-
                     // Setting the Current User & Attaching the Username to the Location Record Name
                     Server.User currentUser = userListMap.get(newLocationRecord.getUserId());
                     newLocationRecord.setLocationName(currentUser.getUserName()+":" + newLocationRecord.getLocationName());
-                    List<LocationRecord> listOfRecords = response.getLocationRecordList();
-
-
-                    // if the location exists, then delete the old location record
-                    if(listOfRecords.contains(newLocationRecord)){
-                        logger.log(Level.INFO, "Deleting Previous Location for Client: "+clntSocket.getInetAddress());
-                        response.removeLocationRecord(newLocationRecord);
-                        mgr.deleteLocation(newLocationRecord.getLocationName());
-                    }
 
 
                     // Add the Location Record to Location Response & Location Record List

@@ -69,13 +69,15 @@ public class MessageInput {
 
         i = inputStreamReader.read();
 
-        if (i == -1){
+        if(i == -1){
             throw new IOException("Invalid Read");
         }
 
-
         return (char) i;
     }
+
+
+
 
 
 
@@ -112,11 +114,12 @@ public class MessageInput {
         }
 
         catch (IOException e) {
-            throw new ValidationException(stringBuilder.toString(), "A space was never reached", e);
+            throw new ValidationException(stringBuilder.toString(), "An I/O Error Occurred", e);
         }
 
+        String string = new String(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
-        return stringBuilder.toString();
+        return string;
     }
 
 

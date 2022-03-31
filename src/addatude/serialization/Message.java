@@ -92,7 +92,7 @@ public abstract class Message {
         // Read the Header & Make Sure it Matches
         String header = in.readUntilSpace();
         if(!header.equals(HEADER)){
-            throw new ValidationException(header, "Invalid Protocol specified: ");
+            throw new ValidationException(header, "Invalid Protocol specified: " + header);
         }
 
 
@@ -119,10 +119,11 @@ public abstract class Message {
 
 
         // Test Valid Ending
-        String footer = new String(in.readNumOfValues(2));
+        String footer = new String(in.readNumOfValues(2), StandardCharsets.UTF_8);
         if(!footer.equals(FOOTER)){
-            throw new ValidationException(footer, "Invalid Stream Ending: " + footer);
+            throw new ValidationException(footer, "Invalid Stream Ending: " + new String(footer.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
         }
+
 
         return a;
     }

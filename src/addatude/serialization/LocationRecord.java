@@ -312,11 +312,11 @@ public class LocationRecord {
      */
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LocationRecord that = (LocationRecord) o;
-        return userID == that.userID;
+        return userID == that.userID && longitude.equals(that.longitude) && latitude.equals(that.latitude) && locationName.equals(that.locationName) && locationDescription.equals(that.locationDescription);
     }
-
 
     /**
      * Hash Code implementation

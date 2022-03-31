@@ -13,6 +13,7 @@
 package addatude.serialization;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 
@@ -76,7 +77,7 @@ public class Error extends Message{
         Validator.validUnsignedInteger("Error Message Size", String.valueOf(msgSize));
 
 
-        String testMsg = new String(in.readNumOfValues(msgSize));
+        String testMsg = new String(in.readNumOfValues(msgSize), StandardCharsets.UTF_8);
         Validator.validString("Error Message", testMsg);
         Validator.validUnsignedInteger("Error Message Size", String.valueOf(testMsg.length()));
 
@@ -97,6 +98,7 @@ public class Error extends Message{
     public String getErrorMessage() {
         return errorMessage;
     }
+
 
 
 
@@ -153,6 +155,11 @@ public class Error extends Message{
         out.writeString(errorMessage);
         writeMessageFooter(out);
     }
+
+
+
+
+
 
 
     /**

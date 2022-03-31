@@ -75,7 +75,7 @@ public class LocationRequestTest {
             });
         }
 
-        public Stream<Arguments> invalidDecodeStreams(){
+        public static Stream<Arguments> invalidDecodeStreams(){
             return Stream.of(
                     arguments("ADDATUDEv1 5 ALL ADDATUDEv1 345 ALL")
             );
