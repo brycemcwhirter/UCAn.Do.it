@@ -10,6 +10,7 @@ package notifi.serialization;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * The NoTiFiError is a type of NoTiFiMessage that
@@ -135,5 +136,21 @@ public class NoTiFiError extends NoTiFiMessage{
             return;
         }
         throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ errorMessage);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NoTiFiError that = (NoTiFiError) o;
+        return errorMessage.equals(that.errorMessage);
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(errorMessage);
     }
 }

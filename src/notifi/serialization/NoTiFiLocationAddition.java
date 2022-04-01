@@ -14,6 +14,7 @@ import addatude.serialization.Validator;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * The NoTiFi Location Addition is a notification for a new
@@ -405,8 +406,16 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NoTiFiLocationAddition that = (NoTiFiLocationAddition) o;
+        return userId == that.userId && Double.compare(that.longitude, longitude) == 0 && Double.compare(that.latitude, latitude) == 0 && locationName.equals(that.locationName) && locationDescription.equals(that.locationDescription);
+    }
 
-
-
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, longitude, latitude, locationName, locationDescription);
+    }
 }

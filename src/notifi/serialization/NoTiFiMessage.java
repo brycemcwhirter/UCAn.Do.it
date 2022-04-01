@@ -11,6 +11,7 @@ package notifi.serialization;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 
 /**
@@ -242,5 +243,18 @@ public abstract class NoTiFiMessage {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NoTiFiMessage that = (NoTiFiMessage) o;
+        return operationCode == that.operationCode && msgId == that.msgId;
+    }
 
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(operationCode, msgId);
+    }
 }

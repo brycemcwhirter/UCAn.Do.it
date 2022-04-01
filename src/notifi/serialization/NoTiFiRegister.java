@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Objects;
 
 /**
  * The NoTiFi Register is a notification message that
@@ -101,7 +102,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
      */
     @Override
     public String toString() {
-        return "Register msgid="+msgId+" address="+address+"_port="+port;
+        return "Register: msgid="+msgId+" address="+address+" port="+port;
     }
 
 
@@ -189,7 +190,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
      */
     @Override
     public byte[] encode() {
-        ByteBuffer b = ByteBuffer.allocate(10);
+        ByteBuffer b = ByteBuffer.allocate(8);
 
         // Write Message Header
         writeNoTiFiHeader(b, REGISTER_CODE);
@@ -231,5 +232,20 @@ public class NoTiFiRegister extends NoTiFiMessage{
         if(address == null){
             throw new IllegalArgumentException("Address cannot be null");
         }
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        NoTiFiRegister that = (NoTiFiRegister) o;
+        return port == that.port && address.equals(that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), address, port);
     }
 }
