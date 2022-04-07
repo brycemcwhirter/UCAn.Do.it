@@ -8,6 +8,10 @@
 
 package notifi.serialization;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -71,20 +75,28 @@ public class NoTiFiRegister extends NoTiFiMessage{
     /**
      * Decodes a NoTiFi Register Message
      * @param readID the message id
-     * @param byteBuffer the byte buffer containing the message
+     * @param in the data input stream containing the message
      * @return a new NoTiFi Register Message
      * @throws IllegalArgumentException
      *      If any illegal parameters
      * @throws UnknownHostException
      *      If the readAddress is an Unknown Host
      */
-    public static NoTiFiRegister decode(int readID, ByteBuffer byteBuffer) throws IllegalArgumentException, UnknownHostException {
+    public static NoTiFiRegister decode(int readID, DataInputStream in) throws IllegalArgumentException, IOException {
+
+        byte[] addressBuffer = new byte[4];
+        in.read(addressBuffer, 0, 4);
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(addressBuffer);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
         byte[] readAddress = new byte[4];
         byteBuffer.get(readAddress, 0, 4);
-        byteBuffer.order(ByteOrder.BIG_ENDIAN);
-        int port = byteBuffer.getInt();
+
+
+        int port = in.readUnsignedShort();
         return new NoTiFiRegister(readID, (Inet4Address) Inet4Address.getByAddress(readAddress), port);
+
     }
 
 
@@ -102,7 +114,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
      */
     @Override
     public String toString() {
-        return "Register: msgid="+msgId+" address="+address+" port="+port;
+        return "Register: msgid="+msgId+" address="+address.toString().substring(1)+" port="+port;
     }
 
 
@@ -190,22 +202,23 @@ public class NoTiFiRegister extends NoTiFiMessage{
      */
     @Override
     public byte[] encode() {
-        ByteBuffer b = ByteBuffer.allocate(8);
+
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(byteStream);
 
         // Write Message Header
-        writeNoTiFiHeader(b, REGISTER_CODE);
-
-        // Put Address
-        b.order(ByteOrder.LITTLE_ENDIAN);
-        b.put(address.getAddress());
-        b.order(ByteOrder.BIG_ENDIAN);
-
-
-        // Put Port
-        b.putInt(port);
+        try {
+            writeNoTiFiHeader(out, REGISTER_CODE);
+            out.write(address.getAddress());
+            out.writeShort(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
-        return b.array();
+        return byteStream.toByteArray();
+
+
     }
 
 

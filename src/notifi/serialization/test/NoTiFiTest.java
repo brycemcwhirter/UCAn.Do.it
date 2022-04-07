@@ -2,6 +2,10 @@ package notifi.serialization.test;
 
 import notifi.serialization.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -9,6 +13,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -98,6 +103,17 @@ public class NoTiFiTest {
         }
 
 
+        @Test
+        void invalidDecodeStream(){
+            assertThrows(IllegalArgumentException.class, ()-> NoTiFiMessage.decode(new byte[] {50,0,49,10,51}));
+        }
+
+
+
+
+
+
+
 
 
 
@@ -113,7 +129,13 @@ public class NoTiFiTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class addLocationTest{
+        NoTiFiLocationAddition noTiFiLocationAddition;
 
+        @BeforeAll
+        void init(){
+            noTiFiLocationAddition = new NoTiFiLocationAddition(5, 1010, -75.0, 65.0, "here", "the re");
+
+        }
 
 
 
@@ -131,6 +153,18 @@ public class NoTiFiTest {
         }
 
 
+
+        @Test
+        void toStringTest(){
+            assertEquals("Addition: msgid=5 1010:here-the re (-75,65)", noTiFiLocationAddition.toString());
+        }
+
+
+        @ParameterizedTest
+        @ValueSource(strings = {"s\u007fring" })
+        void invalidSetName(String badName){
+            assertThrows(IllegalArgumentException.class, ()-> noTiFiLocationAddition.setLocationName(badName));
+        }
 
 
     }
@@ -172,7 +206,7 @@ public class NoTiFiTest {
 
             // Place the port
             b.order(ByteOrder.BIG_ENDIAN);
-            b.putInt(1234);
+            b.putShort((short) 1234);
 
             pkt = b.array();
         }
@@ -189,6 +223,9 @@ public class NoTiFiTest {
             assertEquals(1234, test.getPort());
             assertEquals(ip.getHostAddress(), address);
         }
+
+
+
 
 
 

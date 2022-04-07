@@ -70,7 +70,7 @@ public class Client {
 
         try {
             String candidate = consoleReader.readLine();
-            Validator.validUnsignedInteger("Map ID", candidate);
+            AddatudeValidator.validUnsignedInteger("Map ID", candidate);
             mapID = Integer.parseInt(candidate);
         }
 
@@ -116,31 +116,31 @@ public class Client {
             System.out.print("User ID > ");
             String userID;
             userID = consoleReader.readLine();
-            Validator.validUnsignedInteger("User ID", userID);
+            AddatudeValidator.validUnsignedInteger("User ID", userID);
 
 
             // Reading Longitude
             System.out.print("Longitude > ");
             String readLongitude = consoleReader.readLine();
-            Validator.validLongitude(readLongitude);
+            AddatudeValidator.validLongitude(readLongitude);
 
             // Reading Latitude
             System.out.print("Latitude > ");
             String readLatitude = consoleReader.readLine();
-            Validator.validLongitude(readLatitude);
+            AddatudeValidator.validLongitude(readLatitude);
 
             // Reading the Location Name
             System.out.print("Name > ");
             String readLocationName = consoleReader.readLine();
-            Validator.validString("Location Name", readLocationName);
-            Validator.validUnsignedInteger("Location Name Size", String.valueOf(readLocationName.length()));
+            AddatudeValidator.validString("Location Name", readLocationName);
+            AddatudeValidator.validUnsignedInteger("Location Name Size", String.valueOf(readLocationName.length()));
 
 
             // reading the location description
             System.out.print("Desc > ");
             String readLocationDesc = consoleReader.readLine();
-            Validator.validString("Location Description", readLocationDesc);
-            Validator.validUnsignedInteger("Location Description Size", String.valueOf(readLocationDesc.length()));
+            AddatudeValidator.validString("Location Description", readLocationDesc);
+            AddatudeValidator.validUnsignedInteger("Location Description Size", String.valueOf(readLocationDesc.length()));
 
             // Generating the Location Record & the New Location.
             LocationRecord loc = new LocationRecord(Long.parseLong(userID), readLongitude, readLatitude, readLocationName, readLocationDesc);

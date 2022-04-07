@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.Assert.assertThrows;
 
-public class ValidatorTest {
+public class AddatudeValidatorTest {
 
 
     @Nested
@@ -17,7 +17,7 @@ public class ValidatorTest {
         @DisplayName("Valid Unsigned Integer")
         @ValueSource(strings = {"0", "1", "56", "150", "99999"})
         void validUnsignedIntegerTest(String testString) throws ValidationException {
-            Validator.validUnsignedInteger("test", testString);
+            AddatudeValidator.validUnsignedInteger("test", testString);
 
 
         }
@@ -26,13 +26,13 @@ public class ValidatorTest {
         @DisplayName("Invalid Unsigned Integer")
         @ValueSource(strings = {"A", "-1", "100000L", "-999999", "999999"})
         void invalidUnsignedInteger(String invalidString){
-            assertThrows(ValidationException.class, ()-> Validator.validUnsignedInteger("test", invalidString));
+            assertThrows(ValidationException.class, ()-> AddatudeValidator.validUnsignedInteger("test", invalidString));
         }
 
         @Test
         @DisplayName("Null Unsigned Integer")
         void nullUnsignedInteger(){
-            assertThrows(ValidationException.class, ()-> Validator.validUnsignedInteger("null", null));
+            assertThrows(ValidationException.class, ()-> AddatudeValidator.validUnsignedInteger("null", null));
         }
     }
 
@@ -43,13 +43,13 @@ public class ValidatorTest {
         @ParameterizedTest(name="{0} is valid")
         @ValueSource(strings = {"string", ""})
         void validStringTest(String s) throws ValidationException {
-            Validator.validString("Param", s);
+            AddatudeValidator.validString("Param", s);
         }
 
         @ParameterizedTest(name="{0} is invalid")
         @ValueSource(strings = {"\u00d6\u008dring"})
         void invalidStringTest(String s)  {
-            assertThrows(ValidationException.class, ()->Validator.validString("Param", s));
+            assertThrows(ValidationException.class, ()-> AddatudeValidator.validString("Param", s));
         }
 
 
@@ -61,13 +61,13 @@ public class ValidatorTest {
         @ParameterizedTest(name="{0} is valid")
         @ValueSource(strings = {"10.8", "4.2"})
         void validStringTest(String s) throws ValidationException {
-            Validator.validDouble("Param", s);
+            AddatudeValidator.validDouble("Param", s);
         }
 
         @ParameterizedTest(name="{0} is invalid")
         @ValueSource(strings = {"10.123456789123"})
         void invalidStringTest(String s)  {
-            assertThrows(ValidationException.class, ()->Validator.validDouble("Param", s));
+            assertThrows(ValidationException.class, ()-> AddatudeValidator.validDouble("Param", s));
         }
 
 

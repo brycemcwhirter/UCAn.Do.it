@@ -174,7 +174,7 @@ public class MessageInput {
      */
     public byte[] readNumOfValues(int size) throws ValidationException {
         StringBuilder sb = new StringBuilder();
-        Validator.validUnsignedInteger("Reading Size", String.valueOf(size));
+        AddatudeValidator.validUnsignedInteger("Reading Size", String.valueOf(size));
 
         try {
 

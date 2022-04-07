@@ -51,8 +51,8 @@ public class Error extends Message{
         if(errorMessage == null){
             throw new ValidationException(null, "Error Message Cannot be null");
         }
-        Validator.validString("Error Message", errorMessage);
-        Validator.validUnsignedInteger("Error Message Size", String.valueOf(errorMessage.length()));
+        AddatudeValidator.validString("Error Message", errorMessage);
+        AddatudeValidator.validUnsignedInteger("Error Message Size", String.valueOf(errorMessage.length()));
         this.errorMessage = errorMessage;
 
     }
@@ -74,12 +74,12 @@ public class Error extends Message{
     public Error(long mapID, MessageInput in) throws ValidationException {
         super(OPERATION, mapID);
         int msgSize = in.readIntegerValue();
-        Validator.validUnsignedInteger("Error Message Size", String.valueOf(msgSize));
+        AddatudeValidator.validUnsignedInteger("Error Message Size", String.valueOf(msgSize));
 
 
         String testMsg = new String(in.readNumOfValues(msgSize), StandardCharsets.UTF_8);
-        Validator.validString("Error Message", testMsg);
-        Validator.validUnsignedInteger("Error Message Size", String.valueOf(testMsg.length()));
+        AddatudeValidator.validString("Error Message", testMsg);
+        AddatudeValidator.validUnsignedInteger("Error Message Size", String.valueOf(testMsg.length()));
 
 
         this.errorMessage = testMsg;
@@ -113,8 +113,8 @@ public class Error extends Message{
      * @return the associate error with the new message
      */
     public Error setErrorMessage(String errorMessage) throws ValidationException {
-        Validator.validString("Error Message", errorMessage);
-        Validator.validUnsignedInteger("Error Message Size", String.valueOf(errorMessage.length()));
+        AddatudeValidator.validString("Error Message", errorMessage);
+        AddatudeValidator.validUnsignedInteger("Error Message Size", String.valueOf(errorMessage.length()));
         this.errorMessage = errorMessage;
         return this;
     }

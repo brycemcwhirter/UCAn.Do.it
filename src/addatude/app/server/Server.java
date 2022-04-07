@@ -10,7 +10,7 @@ package addatude.app.server;
 
 
 import addatude.serialization.ValidationException;
-import addatude.serialization.Validator;
+import addatude.serialization.AddatudeValidator;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -131,9 +131,9 @@ public class Server {
             long id = sc.nextLong();
             String name = sc.next();
             String pw = sc.next();
-            Validator.validUnsignedInteger("User ID", Long.toString(id));
-            Validator.validString("User Name", name);
-            Validator.validPassword(pw);
+            AddatudeValidator.validUnsignedInteger("User ID", Long.toString(id));
+            AddatudeValidator.validString("User Name", name);
+            AddatudeValidator.validPassword(pw);
             userMap.put(id, new User(name, pw));
         }
 

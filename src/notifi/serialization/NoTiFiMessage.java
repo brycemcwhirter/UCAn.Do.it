@@ -9,7 +9,7 @@
 package notifi.serialization;
 
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -43,6 +43,10 @@ public abstract class NoTiFiMessage {
      *  The Message ID of the Message
      */
     int msgId;
+
+
+    public static final int MIN_ENCODE_LENGTH = 8;
+
 
 
 
@@ -85,12 +89,20 @@ public abstract class NoTiFiMessage {
      *      If a read error occurs
      *
      */
-    public static NoTiFiMessage decode(byte[] pkt) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(pkt);
-        NoTiFiMessage message;
+    public static NoTiFiMessage decode(byte[] pkt)  {
+
+        ByteArrayInputStream bs = new ByteArrayInputStream(pkt);
+        DataInputStream in = new DataInputStream(bs);
+        NoTiFiMessage message = null;
+
 
         // Read the Version & code
-        byte versionAndCode = byteBuffer.get();
+        byte versionAndCode = 0;
+
+
+        try {
+            versionAndCode = in.readByte();
+
 
         // Split the Version & The Code
         byte version = (byte) (versionAndCode >>> 4);
@@ -100,21 +112,23 @@ public abstract class NoTiFiMessage {
         testValidVersion(version);
 
         // Read the Message ID
-        byte readID = byteBuffer.get();
+        int readID = in.readUnsignedByte();
 
         // Validate the Message ID
         testMessageID(readID);
 
 
+
+
         // Switch Statement Based On Code
         switch(code){
-            case NoTiFiRegister.REGISTER_CODE -> message = NoTiFiRegister.decode(readID, byteBuffer);
+            case NoTiFiRegister.REGISTER_CODE -> message = NoTiFiRegister.decode(readID, in);
 
 
-            case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> message = NoTiFiLocationAddition.decode(readID, byteBuffer);
+            case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> message = NoTiFiLocationAddition.decode(readID, in);
 
 
-            case NoTiFiError.ERROR_CODE -> message =  NoTiFiError.decode(readID, byteBuffer);
+            case NoTiFiError.ERROR_CODE -> message =  NoTiFiError.decode(readID, in);
 
 
             case NoTiFiACK.ACK_CODE -> message = new NoTiFiACK(readID);
@@ -122,6 +136,14 @@ public abstract class NoTiFiMessage {
 
             default -> throw new IllegalArgumentException("Invalid Code on Notification Message: " + code);
         }
+
+        } catch (IOException e) {
+            throw new IllegalArgumentException("A Bad Read Occurred. Message: "+ e.getMessage());
+
+        }
+
+
+
 
         return message;
     }
@@ -231,15 +253,15 @@ public abstract class NoTiFiMessage {
 
     /**
      * Writes the NoTiFi Header on the Byte Buffer
-     * @param b the byte buffer
+     * @param daous The Data Output Stream
      * @param OP_CODE the Op Code of the respected Message
      */
-    public void writeNoTiFiHeader(ByteBuffer b, byte OP_CODE){
+    public void writeNoTiFiHeader(DataOutputStream daous, byte OP_CODE) throws IOException {
         byte versionAndCode = (byte) (VALID_VERSION | OP_CODE);
 
         //Write Message Header
-        b.put(versionAndCode);
-        b.put((byte) msgId);
+        daous.write(versionAndCode);
+        daous.write((byte) msgId);
     }
 
 

@@ -93,7 +93,7 @@ public class LocationRecord {
 
         //Read the UserID & Validating
         readIN = in.readUntilSpace();
-        Validator.validUnsignedInteger("UserID", readIN);
+        AddatudeValidator.validUnsignedInteger("UserID", readIN);
         long readUserID = Long.parseLong(readIN);
         setUserId(readUserID);
 
@@ -207,7 +207,7 @@ public class LocationRecord {
      *      If the new userID is invalid
      */
     public LocationRecord setUserId(long userID) throws ValidationException {
-        Validator.validUnsignedInteger("UserID", String.valueOf(userID));
+        AddatudeValidator.validUnsignedInteger("UserID", String.valueOf(userID));
         this.userID = userID;
         return this;
     }
@@ -231,7 +231,7 @@ public class LocationRecord {
      *      If the new longitude is invalid
      */
     public LocationRecord setLongitude(String longitude) throws ValidationException {
-        Validator.validLongitude(longitude);
+        AddatudeValidator.validLongitude(longitude);
         this.longitude = longitude;
         return this;
     }
@@ -253,7 +253,7 @@ public class LocationRecord {
      *      if the latitude is invalid
      */
     public LocationRecord setLatitude(String latitude) throws ValidationException {
-        Validator.validLatitude(latitude);
+        AddatudeValidator.validLatitude(latitude);
         this.latitude = latitude;
         return this;
     }
@@ -275,8 +275,8 @@ public class LocationRecord {
      *      if the location name is invalid
      */
     public LocationRecord setLocationName(String locationName) throws ValidationException {
-        Validator.validString("Location Name", locationName);
-        Validator.validUnsignedInteger("Location Name Size", String.valueOf(locationName.length()));
+        AddatudeValidator.validString("Location Name", locationName);
+        AddatudeValidator.validUnsignedInteger("Location Name Size", String.valueOf(locationName.length()));
         this.locationName = locationName;
         return this;
     }
@@ -299,8 +299,8 @@ public class LocationRecord {
      *      if the location description is invalid
      */
     public LocationRecord setLocationDescription(String locationDescription) throws ValidationException {
-        Validator.validString("Location Description", locationDescription);
-        Validator.validUnsignedInteger("Location Description Size", String.valueOf(locationDescription.length()));
+        AddatudeValidator.validString("Location Description", locationDescription);
+        AddatudeValidator.validUnsignedInteger("Location Description Size", String.valueOf(locationDescription.length()));
         this.locationDescription = locationDescription;
         return this;
     }

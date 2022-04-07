@@ -9,6 +9,11 @@
 package notifi.serialization;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 /**
@@ -43,14 +48,19 @@ public class NoTiFiACK extends NoTiFiMessage{
     @Override
     public byte[] encode() {
 
-        ByteBuffer b = ByteBuffer.allocate(2);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(byteStream);
 
-        // Write Message Header
-        writeNoTiFiHeader(b, ACK_CODE);
+        try {
+            writeNoTiFiHeader(out, ACK_CODE);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        byte[] data = byteStream.toByteArray();
+        return data;
 
-        // ACK has no payload so write nothing else
-        return b.array();
     }
 
 

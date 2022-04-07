@@ -8,6 +8,10 @@
 
 package notifi.serialization;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -51,13 +55,12 @@ public class NoTiFiError extends NoTiFiMessage{
     /**
      * Deserializes a NoTiFi Error Message
      * @param msgID the message id
-     * @param byteBuffer the buffer holding the message
+     * @param in the Data Input Stream holding the message
      * @return the new NoTiFi Error Message
      */
-    public static NoTiFiError decode(int msgID, ByteBuffer byteBuffer){
-        byte[] b = new byte[byteBuffer.remaining()];
-        byteBuffer.get(b);
-        return new NoTiFiError(msgID, new String(b, StandardCharsets.US_ASCII));
+    public static NoTiFiError decode(int msgID, DataInputStream in) throws IOException {
+        String errorMessage = new String(in.readAllBytes(), StandardCharsets.US_ASCII);
+        return new NoTiFiError(msgID, errorMessage);
     }
 
 
@@ -115,15 +118,20 @@ public class NoTiFiError extends NoTiFiMessage{
     @Override
     public byte[] encode() {
 
-        ByteBuffer b = ByteBuffer.allocate(2+errorMessage.length());
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(byteStream);
 
-        // Write Message Header
-        writeNoTiFiHeader(b, ERROR_CODE);
+        try {
+            writeNoTiFiHeader(out, ERROR_CODE);
+            out.write(errorMessage.getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        // Write the error message
-        b.put(errorMessage.getBytes(StandardCharsets.US_ASCII));
+        byte[] data = byteStream.toByteArray();
+        return data;
 
-        return b.array();
     }
 
 
@@ -132,9 +140,15 @@ public class NoTiFiError extends NoTiFiMessage{
      * @param errorMessage the error message
      */
     private void testErrorMessage(String errorMessage) {
+
+        if(errorMessage == null){
+            throw new IllegalArgumentException("Error Message cannot be null");
+        }
+
         if(errorMessage.matches("\\A\\p{ASCII}*\\z")){
             return;
         }
+
         throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ errorMessage);
     }
 
@@ -143,6 +157,7 @@ public class NoTiFiError extends NoTiFiMessage{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         NoTiFiError that = (NoTiFiError) o;
         return errorMessage.equals(that.errorMessage);
     }
@@ -151,6 +166,6 @@ public class NoTiFiError extends NoTiFiMessage{
 
     @Override
     public int hashCode() {
-        return Objects.hash(errorMessage);
+        return Objects.hash(super.hashCode(), errorMessage);
     }
 }

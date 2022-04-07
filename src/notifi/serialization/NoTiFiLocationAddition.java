@@ -9,8 +9,12 @@
 package notifi.serialization;
 
 import addatude.serialization.ValidationException;
-import addatude.serialization.Validator;
+import addatude.serialization.AddatudeValidator;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -80,11 +84,11 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
         // Test for invalid Params
         try {
-            Validator.validUnsignedInteger("UserId", Long.toString(userId));
-            Validator.validLongitude(Double.toString(longitude));
-            Validator.validLatitude(Double.toString(latitude));
-            Validator.validString("Location Name", locationName);
-            Validator.validString("Location Description", locationDescription);
+            AddatudeValidator.validUnsignedInteger("UserId", Long.toString(userId));
+            AddatudeValidator.validLongitude(Double.toString(longitude));
+            AddatudeValidator.validLatitude(Double.toString(latitude));
+            AddatudeValidator.validString("Location Name", locationName);
+            AddatudeValidator.validString("Location Description", locationDescription);
         } catch (ValidationException e) {
             throw new IllegalArgumentException("Illegal Parameter", e);
         }
@@ -106,51 +110,59 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     /**
      * Deserializes a NoTiFi Location Addition Message
      * @param msgID the message id
-     * @param byteBuffer the byte buffer holding the message
+     * @param in the input stream holding the message
      * @return the new NoTiFiLocationAddition Message
      */
-    public static NoTiFiLocationAddition decode(int msgID, ByteBuffer byteBuffer) {
+    public static NoTiFiLocationAddition decode(int msgID, DataInputStream in) {
 
         // Read the User ID
-        int readUserID = byteBuffer.getInt();
+        int readUserID;
+
+        double readLongitude, readLatitude;
+        String readName, readDesc;
+
+        try{
+
+            readUserID = in.readInt();
+
+            byte[] floatBuffer = new byte[8];
+            in.read(floatBuffer, 0, 8);
+            ByteBuffer byteBuffer = ByteBuffer.wrap(floatBuffer, 0, 8);
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+            readLongitude = Math.round(byteBuffer.getFloat());
+            readLatitude = Math.round(byteBuffer.getFloat());
 
 
 
-        // Read the Longitude
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        double readLongitude = Math.round(byteBuffer.getFloat());
+
+
+            // Read the Length of Location Name
+            short length = in.readByte();
+            byte[] readNameBuf = new byte[length];
+
+
+            // Read Location Name
+            in.read(readNameBuf, 0, length);
+            readName = new String(readNameBuf, StandardCharsets.US_ASCII);
 
 
 
-        // Read the Latitude
-        double readLatitude = Math.round(byteBuffer.getFloat());
-        byteBuffer.order(ByteOrder.BIG_ENDIAN);
+            // Read the Length of Location Description
+            length = in.readByte();
+            byte[] readDescBuf = new byte[length];
 
 
 
-        // Read the Length of Location Name
-        short length = byteBuffer.getShort();
-        byte[] readNameBuf = new byte[length];
-
-
-        // Read Location Name
-        byteBuffer.get(readNameBuf, 0, length);
-        String readName = new String(readNameBuf, StandardCharsets.US_ASCII);
+            // Read Location Description
+            in.read(readDescBuf, 0, length);
+            readDesc = new String(readDescBuf, StandardCharsets.US_ASCII);
 
 
 
-        // Read the Length of Location Description
-        length = byteBuffer.getShort();
-        byte[] readDescBuf = new byte[length];
 
-
-
-        // Read Location Description
-        byteBuffer.get(readDescBuf, 0, length);
-        String readDesc = new String(readDescBuf, StandardCharsets.US_ASCII);
-
-
-
+        }catch (IOException e){
+            throw new IllegalArgumentException("Error in Reading Occurred. Message: "+ e.getMessage());
+        }
 
         // Return a new NoTiFiLocationAddition
         return new NoTiFiLocationAddition(msgID, readUserID, readLongitude, readLatitude, readName, readDesc);
@@ -169,7 +181,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      */
     @Override
     public String toString() {
-        return "Addition: msgid="+msgId+" userid="+userId+':'+locationName+'-'+locationDescription+" ("+longitude+','+latitude+")";
+        return "Addition: msgid="+msgId+" "+userId+':'+locationName+'-'+locationDescription+" ("+ (int) Math.ceil(longitude)+','+ (int) Math.ceil(latitude)+")";
     }
 
 
@@ -183,7 +195,37 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     @Override
     public byte[] encode() {
 
-        ByteBuffer b = ByteBuffer.allocate(22 + locationDescription.length() + locationName.length());
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(byteStream);
+
+        try {
+            writeNoTiFiHeader(out, LOCATION_ADDITION_CODE);
+            out.writeInt(userId);
+
+            ByteBuffer b = ByteBuffer.allocate(8);
+            b.order(ByteOrder.LITTLE_ENDIAN);
+            b.putFloat((float) longitude);
+            b.putFloat((float) latitude);
+
+            out.write(b.array());
+
+            out.write((short) locationName.length());
+            out.write(locationName.getBytes(StandardCharsets.US_ASCII));
+
+            out.write((short) locationDescription.length());
+            out.write(locationDescription.getBytes(StandardCharsets.US_ASCII));
+
+
+
+
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return byteStream.toByteArray();
+
+       /* ByteBuffer b = ByteBuffer.allocate(22 + locationDescription.length() + locationName.length());
 
         // Write The NoTiFi Header
         writeNoTiFiHeader(b, LOCATION_ADDITION_CODE);
@@ -207,7 +249,8 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
         b.put(locationDescription.getBytes(StandardCharsets.US_ASCII));
 
 
-        return b.array();
+        return b.array();*/
+
 
     }
 
@@ -240,7 +283,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     public NoTiFiLocationAddition setUserId(int userId) throws IllegalArgumentException{
         this.userId = userId;
         try {
-            Validator.validUnsignedInteger("User Id", Long.toString(userId));
+            AddatudeValidator.validUnsignedInteger("User Id", Long.toString(userId));
         } catch (ValidationException e) {
             throw new IllegalArgumentException("Invalid User Id", e);
         }
@@ -276,7 +319,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     public NoTiFiLocationAddition setLongitude(double longitude) {
         this.longitude = longitude;
         try {
-            Validator.validLongitude(Double.toString(longitude));
+            AddatudeValidator.validLongitude(Double.toString(longitude));
         } catch (ValidationException e) {
             throw new IllegalArgumentException("Invalid Longitude", e);
         }
@@ -315,7 +358,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     public NoTiFiLocationAddition setLatitude(double latitude) throws IllegalArgumentException{
         this.latitude = latitude;
         try {
-            Validator.validLatitude(Double.toString(latitude));
+            AddatudeValidator.validLatitude(Double.toString(latitude));
         } catch (ValidationException e) {
             throw new IllegalArgumentException("Invalid Latitude", e);
         }
@@ -351,7 +394,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      */
     public NoTiFiLocationAddition setLocationName(String locationName) throws IllegalArgumentException{
         try{
-            Validator.validString("Location Name", locationName);
+            AddatudeValidator.validString("Location Name", locationName);
         }
         catch (ValidationException e){
             throw new IllegalArgumentException("Invalid Location Name: ", e);
@@ -391,7 +434,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
         // Test Valid Location Description
         try{
-            Validator.validString("Location Description", locationDescription);
+            AddatudeValidator.validString("Location Description", locationDescription);
         }
         catch(ValidationException e){
             throw new IllegalArgumentException("Invalid Location Description: ", e);

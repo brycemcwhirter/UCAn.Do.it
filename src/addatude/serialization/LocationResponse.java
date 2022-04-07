@@ -52,8 +52,8 @@ public class LocationResponse extends Message{
      */
     public LocationResponse(long mapId, String mapName) throws ValidationException{
         super(OPERATION, mapId);
-        Validator.validString("Map Name", mapName);
-        Validator.validUnsignedInteger("Map Name Size", String.valueOf(mapName.length()));
+        AddatudeValidator.validString("Map Name", mapName);
+        AddatudeValidator.validUnsignedInteger("Map Name Size", String.valueOf(mapName.length()));
         this.mapName = mapName;
     }
 
@@ -77,7 +77,7 @@ public class LocationResponse extends Message{
 
         int size = in.readIntegerValue();
         String mapName = new String(in.readNumOfValues(size), StandardCharsets.UTF_8);
-        Validator.validString("Map Name", mapName);
+        AddatudeValidator.validString("Map Name", mapName);
 
         this.mapName = mapName;
 
@@ -192,8 +192,8 @@ public class LocationResponse extends Message{
      *      if the name is invalid
      */
     public LocationResponse setMapName(String mapName) throws ValidationException {
-        Validator.validString("Map Name", mapName);
-        Validator.validUnsignedInteger("Map Name Size", String.valueOf(mapName.length()));
+        AddatudeValidator.validString("Map Name", mapName);
+        AddatudeValidator.validUnsignedInteger("Map Name Size", String.valueOf(mapName.length()));
         this.mapName = mapName;
         return this;
     }

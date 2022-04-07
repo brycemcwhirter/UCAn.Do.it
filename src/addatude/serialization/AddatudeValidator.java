@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * This class Validates the types
  * specific to the Addatude Protocol.
  */
-public class Validator {
+public class AddatudeValidator {
 
 
     /**
