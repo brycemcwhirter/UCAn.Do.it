@@ -8,6 +8,8 @@
 
 package notifi.serialization;
 
+import addatude.serialization.ValidationException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * The NoTiFiError is a type of NoTiFiMessage that
@@ -59,7 +62,15 @@ public class NoTiFiError extends NoTiFiMessage{
      * @return the new NoTiFi Error Message
      */
     public static NoTiFiError decode(int msgID, DataInputStream in) throws IOException {
-        String errorMessage = new String(in.readAllBytes(), StandardCharsets.US_ASCII);
+
+        int val;
+        String errorMessage = "";
+
+        while((val = in.read()) != -1){
+            errorMessage += (char) val;
+        }
+
+
         return new NoTiFiError(msgID, errorMessage);
     }
 
@@ -145,7 +156,7 @@ public class NoTiFiError extends NoTiFiMessage{
             throw new IllegalArgumentException("Error Message cannot be null");
         }
 
-        if(errorMessage.matches("\\A\\p{ASCII}*\\z")){
+        if(errorMessage.matches("\\A\\p{ASCII}*\\z") && errorMessage.length() < 65505){
             return;
         }
 

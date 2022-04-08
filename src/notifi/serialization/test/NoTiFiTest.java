@@ -3,6 +3,7 @@ package notifi.serialization.test;
 import notifi.serialization.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runners.Parameterized;
@@ -12,9 +13,11 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 @Nested
@@ -49,8 +52,8 @@ public class NoTiFiTest {
 
         @Test
         void decode() throws IOException {
-            NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(new byte[] {0x33, 1});
-            assertEquals(1, ack.getMsgId());
+            NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(new byte[] {51, -1});
+            assertEquals(255, ack.getMsgId());
             assertEquals(3, ack.getCode());
         }
 
@@ -73,7 +76,7 @@ public class NoTiFiTest {
     @Nested
     class errorTest{
 
-        static String errorMessage = "This might work";
+        static String errorMessage = "bad";
 
 
 
@@ -88,12 +91,11 @@ public class NoTiFiTest {
 
 
 
-        @Test
-        void decode() throws IOException {
-            NoTiFiError noTiFiError = (NoTiFiError) NoTiFiMessage.decode(new byte[] {0x32, 1, 'T', 'h', 'i', 's', ' ', 'm', 'i', 'g', 'h', 't', ' ', 'w', 'o', 'r', 'k'});
-            assertEquals(1, noTiFiError.getMsgId());
-            assertEquals(2, noTiFiError.getCode());
-            assertEquals(errorMessage, noTiFiError.getErrorMessage());
+        @ParameterizedTest
+        @MethodSource("validBytes")
+        void decode(byte[] valid) throws IOException {
+            NoTiFiError noTiFiError = (NoTiFiError) NoTiFiMessage.decode(valid);
+            
         }
 
         @Test
@@ -106,6 +108,14 @@ public class NoTiFiTest {
         @Test
         void invalidDecodeStream(){
             assertThrows(IllegalArgumentException.class, ()-> NoTiFiMessage.decode(new byte[] {50,0,49,10,51}));
+        }
+
+
+
+        public Stream<Arguments> validBytes(){
+            return Stream.of(
+                    arguments(new byte[] {50,0,49,50,51})
+            );
         }
 
 

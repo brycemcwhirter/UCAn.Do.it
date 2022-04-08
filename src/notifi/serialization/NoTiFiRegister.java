@@ -209,7 +209,14 @@ public class NoTiFiRegister extends NoTiFiMessage{
         // Write Message Header
         try {
             writeNoTiFiHeader(out, REGISTER_CODE);
-            out.write(address.getAddress());
+
+            ByteBuffer b = ByteBuffer.allocate(4);
+            b.order(ByteOrder.BIG_ENDIAN);
+            b.put(address.getAddress());
+            byte[] buf = b.array();
+            out.write(buf);
+
+
             out.writeShort(port);
         } catch (IOException e) {
             e.printStackTrace();

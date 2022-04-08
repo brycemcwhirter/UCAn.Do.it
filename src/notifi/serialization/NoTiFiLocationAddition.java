@@ -133,29 +133,9 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
             readLatitude = Math.round(byteBuffer.getFloat());
 
 
-
-
-
-            // Read the Length of Location Name
-            short length = in.readByte();
-            byte[] readNameBuf = new byte[length];
-
-
-            // Read Location Name
-            in.read(readNameBuf, 0, length);
-            readName = new String(readNameBuf, StandardCharsets.US_ASCII);
-
-
-
-            // Read the Length of Location Description
-            length = in.readByte();
-            byte[] readDescBuf = new byte[length];
-
-
-
-            // Read Location Description
-            in.read(readDescBuf, 0, length);
-            readDesc = new String(readDescBuf, StandardCharsets.US_ASCII);
+            // Read the Name & Description
+            readName = readStringWithLength(in);
+            readDesc = readStringWithLength(in);
 
 
 
@@ -172,7 +152,17 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
 
 
+    private static String readStringWithLength(DataInputStream in) throws IOException {
 
+        short length = in.readByte();
+        byte[] readNameBuf = new byte[length];
+
+
+        // Read Location Name
+        in.read(readNameBuf, 0, length);
+        return new String(readNameBuf, StandardCharsets.US_ASCII);
+
+    }
 
 
     /**

@@ -33,11 +33,12 @@ public abstract class NoTiFiMessage {
     static final byte VALID_VERSION = 0x30;
 
 
-
     /**
      * The Operation Code of the Message
      */
     int operationCode;
+
+
 
     /**
      *  The Message ID of the Message
@@ -45,7 +46,6 @@ public abstract class NoTiFiMessage {
     int msgId;
 
 
-    public static final int MIN_ENCODE_LENGTH = 8;
 
 
 
@@ -56,6 +56,8 @@ public abstract class NoTiFiMessage {
      * The Mask used to receive the NoTiFi Message Type
      */
     static final int CODE_MASK = 0x0f;
+
+
 
 
 
@@ -104,41 +106,41 @@ public abstract class NoTiFiMessage {
             versionAndCode = in.readByte();
 
 
-        // Split the Version & The Code
-        byte version = (byte) (versionAndCode >>> 4);
-        byte code = (byte) (versionAndCode & CODE_MASK);
+            // Split the Version & The Code
+            byte version = (byte) (versionAndCode >>> 4);
+            byte code = (byte) (versionAndCode & CODE_MASK);
 
-        // Validate the Version
-        testValidVersion(version);
+            // Validate the Version
+            testValidVersion(version);
 
-        // Read the Message ID
-        int readID = in.readUnsignedByte();
+            // Read the Message ID
+            int readID = in.readUnsignedByte();
 
-        // Validate the Message ID
-        testMessageID(readID);
-
-
+            // Validate the Message ID
+            testMessageID(readID);
 
 
-        // Switch Statement Based On Code
-        switch(code){
-            case NoTiFiRegister.REGISTER_CODE -> message = NoTiFiRegister.decode(readID, in);
 
 
-            case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> message = NoTiFiLocationAddition.decode(readID, in);
+            // Switch Statement Based On Code
+            switch(code){
+                case NoTiFiRegister.REGISTER_CODE -> message = NoTiFiRegister.decode(readID, in);
 
 
-            case NoTiFiError.ERROR_CODE -> message =  NoTiFiError.decode(readID, in);
+                case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> message = NoTiFiLocationAddition.decode(readID, in);
 
 
-            case NoTiFiACK.ACK_CODE -> message = new NoTiFiACK(readID);
+                case NoTiFiError.ERROR_CODE -> message =  NoTiFiError.decode(readID, in);
 
 
-            default -> throw new IllegalArgumentException("Invalid Code on Notification Message: " + code);
-        }
+                case NoTiFiACK.ACK_CODE -> message = new NoTiFiACK(readID);
+
+
+                default -> throw new IllegalArgumentException("Invalid Code on Notification Message: " + code);
+            }
 
         } catch (IOException e) {
-            throw new IllegalArgumentException("A Bad Read Occurred. Message: "+ e.getMessage());
+            throw new IllegalArgumentException("A Bad Read Occurred. Message: "+ e.getLocalizedMessage());
 
         }
 
@@ -210,6 +212,10 @@ public abstract class NoTiFiMessage {
     }
 
 
+
+
+
+
     /**
      * Tests if the message id is valid
      * @param msgId the message id
@@ -219,6 +225,10 @@ public abstract class NoTiFiMessage {
             throw new IllegalArgumentException("Illegal Message ID Value: "+ msgId);
         }
     }
+
+
+
+
 
 
     /**
@@ -238,6 +248,10 @@ public abstract class NoTiFiMessage {
     }
 
 
+
+
+
+
     /**
      * Tests if the Message Version is currently valid
      * @param versionCandidate the version of the received message
@@ -249,6 +263,11 @@ public abstract class NoTiFiMessage {
         }
 
     }
+
+
+
+
+
 
 
     /**
@@ -265,6 +284,11 @@ public abstract class NoTiFiMessage {
     }
 
 
+
+
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -275,8 +299,14 @@ public abstract class NoTiFiMessage {
 
 
 
+
+
+
     @Override
     public int hashCode() {
         return Objects.hash(operationCode, msgId);
     }
+
+
+
 }
