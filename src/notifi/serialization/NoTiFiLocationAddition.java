@@ -29,7 +29,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     /**
      * The Operation Code for the NoTiFi Location Addition
      */
-    static final byte LOCATION_ADDITION_CODE = 1;
+    public static final byte LOCATION_ADDITION_CODE = 1;
 
 
     /**
@@ -79,7 +79,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      *      If validation fails
      */
     public NoTiFiLocationAddition(int msgId, int userId, double longitude, double latitude, String locationName, String locationDescription) throws IllegalArgumentException{
-        super(msgId, LOCATION_ADDITION_CODE);
+        super(msgId);
 
 
         // Test for invalid Params
@@ -450,5 +450,10 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     @Override
     public int hashCode() {
         return Objects.hash(userId, longitude, latitude, locationName, locationDescription);
+    }
+
+    @Override
+    public int getCode() {
+        return LOCATION_ADDITION_CODE;
     }
 }

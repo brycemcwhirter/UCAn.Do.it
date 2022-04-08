@@ -29,7 +29,7 @@ public class NoTiFiError extends NoTiFiMessage{
      * The Operation Code for the Error
      * Message
      */
-    static final byte ERROR_CODE = 2;
+    public static final byte ERROR_CODE = 2;
 
 
     /**
@@ -46,7 +46,7 @@ public class NoTiFiError extends NoTiFiMessage{
      *      if any of these parameters are invalid
      */
     public NoTiFiError(int msgId, String errorMessage) throws IllegalArgumentException{
-        super(msgId, ERROR_CODE);
+        super(msgId);
 
         // Test Invalid errorMessage
         testErrorMessage(errorMessage);
@@ -178,5 +178,10 @@ public class NoTiFiError extends NoTiFiMessage{
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), errorMessage);
+    }
+
+    @Override
+    public int getCode() {
+        return ERROR_CODE;
     }
 }

@@ -33,20 +33,12 @@ public abstract class NoTiFiMessage {
     static final byte VALID_VERSION = 0x30;
 
 
-    /**
-     * The Operation Code of the Message
-     */
-    int operationCode;
-
 
 
     /**
      *  The Message ID of the Message
      */
     int msgId;
-
-
-
 
 
 
@@ -65,22 +57,21 @@ public abstract class NoTiFiMessage {
      * General Constructor for NoTiFi Message. Sets the Message
      * ID and the Operation Code
      * @param msgId the message id
-     * @param operationCode the operation code
      * @throws IllegalArgumentException
      *      if any of these parameters are invalid
      */
-    public NoTiFiMessage(int msgId, short operationCode) throws IllegalArgumentException{
+    public NoTiFiMessage(int msgId) throws IllegalArgumentException{
 
         // Test Valid msgId
         //Test Valid Operation code
         testMessageID(msgId);
-        testValidOpCode(operationCode);
 
 
         // Set the parameters
         this.msgId = msgId;
-        this.operationCode = operationCode;
     }
+
+
 
 
     /**
@@ -172,9 +163,7 @@ public abstract class NoTiFiMessage {
      * Gets the operation code
      * @return operation code
      */
-    public int getCode() {
-        return operationCode;
-    }
+    public abstract int getCode();
 
 
 
@@ -294,7 +283,7 @@ public abstract class NoTiFiMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NoTiFiMessage that = (NoTiFiMessage) o;
-        return operationCode == that.operationCode && msgId == that.msgId;
+        return msgId == that.msgId;
     }
 
 
@@ -304,7 +293,7 @@ public abstract class NoTiFiMessage {
 
     @Override
     public int hashCode() {
-        return Objects.hash(operationCode, msgId);
+        return Objects.hash(msgId);
     }
 
 

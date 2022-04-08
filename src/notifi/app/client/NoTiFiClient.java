@@ -1,9 +1,7 @@
 package notifi.app.client;
 
 import addatude.serialization.ValidationException;
-import notifi.serialization.NoTiFiACK;
-import notifi.serialization.NoTiFiMessage;
-import notifi.serialization.NoTiFiRegister;
+import notifi.serialization.*;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -31,7 +29,7 @@ public class NoTiFiClient {
             // Server IP or Name, Server Port, & Local Client
         Inet4Address serverAddress = (Inet4Address) Inet4Address.getByName(args[0]);
         int servPort = Integer.parseInt(args[1]);
-        Inet4Address localClientAddress = (Inet4Address) Inet4Address.getByAddress(args[2].getBytes(StandardCharsets.UTF_8));
+        Inet4Address localClientAddress = (Inet4Address) Inet4Address.getByName(args[2]);
         // TODO is type casting allowed here? ^
 
 
@@ -58,6 +56,7 @@ public class NoTiFiClient {
 
         // Datagram Packet to Receive
         // Todo This may need modification. 100 bytes is random
+        // TODO UDP SIZE??
         DatagramPacket receivedPacket = new DatagramPacket(new byte[100], 100);
 
         // Repeatedly (While The User Doesn't Quit or
@@ -72,10 +71,77 @@ public class NoTiFiClient {
                     throw new IOException("Received a packet from an unknown source");
                 }
 
-                NoTiFiACK noTiFiMessage = (NoTiFiACK) NoTiFiMessage.decode(receivedPacket.getData());
+
+                try {
+
+                    // Decode the Message You Received
+                    NoTiFiMessage newMessage = NoTiFiMessage.decode(receivedPacket.getData());
+
+                    // If you received an ACK
+                    if(newMessage.getCode() == NoTiFiACK.ACK_CODE){
+
+                        // test if the received ACK is the same as the sent ACK
+                        // If they are not the same, print error message to console
+                        // & terminate
+
+                        if(newMessage.getMsgId() != noTiFiRegister.getMsgId()){
+                            System.out.println("Unexpected MSG ID");
+                            return;
+                        }
+
+                    }
 
 
-                //TODO we have to do something here??
+
+                    // If you received a Location Addition
+                    // Print the location addition following specification
+                    else if(newMessage.getCode() == NoTiFiLocationAddition.LOCATION_ADDITION_CODE) {
+
+                        NoTiFiLocationAddition LocationAdditionMessage = (NoTiFiLocationAddition) newMessage;
+
+                        System.out.println("Addition");
+                        System.out.println("Latitude & Longitude");
+                        System.out.println(LocationAdditionMessage.getLatitude() + " " + LocationAdditionMessage.getLongitude());
+                        System.out.println("Name & Description");
+                        System.out.println(LocationAdditionMessage.getLocationName() + " " + LocationAdditionMessage.getLocationDescription());
+
+                    }
+
+
+
+
+                    // If you received an Error
+                    // Print the error message to the console
+                    else if(newMessage.getCode() == NoTiFiError.ERROR_CODE) {
+
+                        NoTiFiError error = (NoTiFiError) newMessage;
+                        System.out.println(error.getErrorMessage());
+
+                    }
+
+
+
+
+                    // If you received any other NoTiFi type
+                    // print Unexpected Message type
+                    else {
+
+                        System.out.println("Unexpected Message Type");
+
+                    }
+
+
+
+
+                }
+                // CATCH the parsing/validating error caused by decode
+                    // print "Unexpected message type"
+                // TODO catch validation exception as well?
+                catch(IllegalArgumentException e){
+                    System.out.println("Unable to parse message: "+ e.getMessage());
+
+                }
+
 
 
                 receivedResponse = true;
@@ -88,23 +154,10 @@ public class NoTiFiClient {
         }while((!receivedResponse) && (tries < MAXTRIES));
 
 
-        if(receivedResponse){
 
-            // Decode the Message into its proper type
-
-
-            // Print the Messages to the console until the user quits
-
-        }
-        else{
+        if(!receivedResponse){
             System.out.println("Unable to register");
         }
-
-
-
-
-
-
 
 
     }

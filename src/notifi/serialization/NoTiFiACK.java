@@ -37,7 +37,7 @@ public class NoTiFiACK extends NoTiFiMessage{
      *      if invalid message id
      */
     public NoTiFiACK(int msgId) throws IllegalArgumentException{
-        super(msgId, ACK_CODE);
+        super(msgId);
     }
 
 
@@ -63,9 +63,10 @@ public class NoTiFiACK extends NoTiFiMessage{
 
     }
 
-
-
-
+    @Override
+    public int getCode() {
+        return ACK_CODE;
+    }
 
 
     /** Returns a string representation of an ACK message

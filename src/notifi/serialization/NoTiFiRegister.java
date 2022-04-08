@@ -54,7 +54,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
      *      if any of these parameters are invalid
      */
     public NoTiFiRegister(int msgId, Inet4Address address, int port) throws IllegalArgumentException{
-        super(msgId, REGISTER_CODE);
+        super(msgId);
 
         //Tests invalid parameters
         testAddress(address);
@@ -267,5 +267,10 @@ public class NoTiFiRegister extends NoTiFiMessage{
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), address, port);
+    }
+
+    @Override
+    public int getCode() {
+        return REGISTER_CODE;
     }
 }
