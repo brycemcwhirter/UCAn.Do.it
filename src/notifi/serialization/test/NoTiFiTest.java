@@ -43,7 +43,7 @@ public class NoTiFiTest {
 
 
         @Test
-        void encodeTest() throws  IOException {
+        void encodeTest() {
             byte[] a = new NoTiFiACK(123).encode();
             NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(a);
             assertEquals(123, ack.getMsgId());
@@ -95,7 +95,7 @@ public class NoTiFiTest {
         @MethodSource("validBytes")
         void decode(byte[] valid) throws IOException {
             NoTiFiError noTiFiError = (NoTiFiError) NoTiFiMessage.decode(valid);
-            
+
         }
 
         @Test
@@ -174,6 +174,21 @@ public class NoTiFiTest {
         @ValueSource(strings = {"s\u007fring" })
         void invalidSetName(String badName){
             assertThrows(IllegalArgumentException.class, ()-> noTiFiLocationAddition.setLocationName(badName));
+        }
+
+        @ParameterizedTest
+        @ValueSource(doubles = {-180.5, 180.5})
+        void invalidLatitudeLongitudeSet(Double badVal){
+            assertThrows(IllegalArgumentException.class, ()-> noTiFiLocationAddition.setLatitude(badVal));
+            assertThrows(IllegalArgumentException.class, ()-> noTiFiLocationAddition.setLongitude(badVal));
+
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1, -2147483648, 100000, 2147483647})
+        void invalidUserIDSet(int badVal){
+            assertThrows(IllegalArgumentException.class, ()-> noTiFiLocationAddition.setUserId(badVal));
+
         }
 
 

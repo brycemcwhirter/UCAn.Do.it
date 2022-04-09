@@ -28,6 +28,7 @@ public class NoTiFiACK extends NoTiFiMessage{
      * The Operation Code Specifying an ACK
      */
     public static final byte ACK_CODE = 0x03;
+    private static final int ACK_SIZE = 2;
 
 
     /**
@@ -59,6 +60,12 @@ public class NoTiFiACK extends NoTiFiMessage{
         }
 
         byte[] data = byteStream.toByteArray();
+
+        if(data.length != ACK_SIZE){
+            throw new IllegalArgumentException("Ack is not properly sized");
+        }
+
+
         return data;
 
     }

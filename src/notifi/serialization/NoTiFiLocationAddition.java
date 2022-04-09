@@ -89,6 +89,8 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
             AddatudeValidator.validLatitude(Double.toString(latitude));
             AddatudeValidator.validString("Location Name", locationName);
             AddatudeValidator.validString("Location Description", locationDescription);
+            NoTiFiValidator.validString(locationDescription);
+            NoTiFiValidator.validString(locationName);
         } catch (ValidationException e) {
             throw new IllegalArgumentException("Illegal Parameter", e);
         }
@@ -271,12 +273,8 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      *      if the user id is invalid
      */
     public NoTiFiLocationAddition setUserId(int userId) throws IllegalArgumentException{
+        NoTiFiValidator.validUnsignedInteger(userId);
         this.userId = userId;
-        try {
-            AddatudeValidator.validUnsignedInteger("User Id", Long.toString(userId));
-        } catch (ValidationException e) {
-            throw new IllegalArgumentException("Invalid User Id", e);
-        }
         return this;
     }
 
@@ -307,11 +305,13 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      * @return this object with the new longitude
      */
     public NoTiFiLocationAddition setLongitude(double longitude) {
-        this.longitude = longitude;
         try {
             AddatudeValidator.validLongitude(Double.toString(longitude));
+            this.longitude = longitude;
+
         } catch (ValidationException e) {
-            throw new IllegalArgumentException("Invalid Longitude", e);
+            this.longitude = 50;
+            throw new IllegalArgumentException("Invalid Latitude Value Set");
         }
         return this;
     }
@@ -346,11 +346,13 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      *      if the latitude is invalid
      */
     public NoTiFiLocationAddition setLatitude(double latitude) throws IllegalArgumentException{
-        this.latitude = latitude;
         try {
             AddatudeValidator.validLatitude(Double.toString(latitude));
+            this.latitude = latitude;
+
         } catch (ValidationException e) {
-            throw new IllegalArgumentException("Invalid Latitude", e);
+            this.latitude = 50;
+            throw new IllegalArgumentException("Invalid Latitude Value Set");
         }
         return this;
     }
@@ -383,12 +385,15 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
      *      if the location name is invalid
      */
     public NoTiFiLocationAddition setLocationName(String locationName) throws IllegalArgumentException{
+
         try{
             AddatudeValidator.validString("Location Name", locationName);
+            NoTiFiValidator.validString(locationName);
         }
         catch (ValidationException e){
             throw new IllegalArgumentException("Invalid Location Name: ", e);
         }
+
         this.locationName = locationName;
         return this;
     }
@@ -425,6 +430,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
         // Test Valid Location Description
         try{
             AddatudeValidator.validString("Location Description", locationDescription);
+            NoTiFiValidator.validString(locationDescription);
         }
         catch(ValidationException e){
             throw new IllegalArgumentException("Invalid Location Description: ", e);
@@ -439,6 +445,9 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     }
 
 
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -447,13 +456,21 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
         return userId == that.userId && Double.compare(that.longitude, longitude) == 0 && Double.compare(that.latitude, latitude) == 0 && locationName.equals(that.locationName) && locationDescription.equals(that.locationDescription);
     }
 
+
+
+
     @Override
     public int hashCode() {
         return Objects.hash(userId, longitude, latitude, locationName, locationDescription);
     }
 
+
+
+
     @Override
     public int getCode() {
         return LOCATION_ADDITION_CODE;
     }
+
+
 }

@@ -64,14 +64,15 @@ public class NoTiFiError extends NoTiFiMessage{
     public static NoTiFiError decode(int msgID, DataInputStream in) throws IOException {
 
         int val;
-        String errorMessage = "";
+        StringBuilder errorMessage = new StringBuilder();
 
-        while((val = in.read()) != -1){
-            errorMessage += (char) val;
+
+        while ((val = in.read()) != -1) {
+            errorMessage.append((char) val);
         }
 
 
-        return new NoTiFiError(msgID, errorMessage);
+        return new NoTiFiError(msgID, errorMessage.toString());
     }
 
 
@@ -140,8 +141,7 @@ public class NoTiFiError extends NoTiFiMessage{
             e.printStackTrace();
         }
 
-        byte[] data = byteStream.toByteArray();
-        return data;
+        return byteStream.toByteArray();
 
     }
 
@@ -156,11 +156,17 @@ public class NoTiFiError extends NoTiFiMessage{
             throw new IllegalArgumentException("Error Message cannot be null");
         }
 
-        if(errorMessage.matches("\\A\\p{ASCII}*\\z") && errorMessage.length() < 65505){
-            return;
+        if(errorMessage.length() > 65505){
+            throw new IllegalArgumentException("Error Message Does Not Fit");
         }
 
-        throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ errorMessage);
+        for(int i = 0; i < errorMessage.length(); i++){
+            int val = errorMessage.charAt(i);
+
+            if(val < 32 || val > 126){
+                throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ errorMessage);
+            }
+        }
     }
 
 

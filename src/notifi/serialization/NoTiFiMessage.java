@@ -78,19 +78,19 @@ public abstract class NoTiFiMessage {
      * Deserializes a message
      * @param pkt the serialized message
      * @return the new message
-     * @throws IOException
-     *      If a read error occurs
      *
      */
     public static NoTiFiMessage decode(byte[] pkt)  {
 
         ByteArrayInputStream bs = new ByteArrayInputStream(pkt);
         DataInputStream in = new DataInputStream(bs);
-        NoTiFiMessage message = null;
+        NoTiFiMessage message;
 
 
         // Read the Version & code
-        byte versionAndCode = 0;
+        byte versionAndCode;
+
+
 
 
         try {
