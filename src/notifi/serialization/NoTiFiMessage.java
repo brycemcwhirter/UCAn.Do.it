@@ -10,7 +10,6 @@ package notifi.serialization;
 
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 
@@ -115,16 +114,31 @@ public abstract class NoTiFiMessage {
 
             // Switch Statement Based On Code
             switch(code){
-                case NoTiFiRegister.REGISTER_CODE -> message = NoTiFiRegister.decode(readID, in);
+                case NoTiFiRegister.REGISTER_CODE -> {
+
+                    if(pkt.length != NoTiFiRegister.REGISTER_SIZE){
+                        throw new IllegalArgumentException("Invalid Size of Packet for Register");
+                    }
+
+
+
+                    message = NoTiFiRegister.decode(readID, in);
+                }
 
 
                 case NoTiFiLocationAddition.LOCATION_ADDITION_CODE -> message = NoTiFiLocationAddition.decode(readID, in);
 
-
                 case NoTiFiError.ERROR_CODE -> message =  NoTiFiError.decode(readID, in);
 
 
-                case NoTiFiACK.ACK_CODE -> message = new NoTiFiACK(readID);
+                case NoTiFiACK.ACK_CODE -> {
+
+                    if(pkt.length != NoTiFiACK.ACK_SIZE){
+                        throw new IllegalArgumentException("Invalid Size of Packet for ACK");
+                    }
+
+                    message = new NoTiFiACK(readID);
+                }
 
 
                 default -> throw new IllegalArgumentException("Invalid Code on Notification Message: " + code);
@@ -252,26 +266,6 @@ public abstract class NoTiFiMessage {
         }
 
     }
-
-
-
-
-
-
-
-    /**
-     * Writes the NoTiFi Header on the Byte Buffer
-     * @param daous The Data Output Stream
-     * @param OP_CODE the Op Code of the respected Message
-     */
-    public void writeNoTiFiHeader(DataOutputStream daous, byte OP_CODE) throws IOException {
-        byte versionAndCode = (byte) (VALID_VERSION | OP_CODE);
-
-        //Write Message Header
-        daous.write(versionAndCode);
-        daous.write((byte) msgId);
-    }
-
 
 
 

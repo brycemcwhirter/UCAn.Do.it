@@ -37,6 +37,8 @@ public class NoTiFiTest {
     @Nested
     class ackTest{
 
+        //TODO Bad Serialization Test
+
 
 
 
@@ -150,23 +152,9 @@ public class NoTiFiTest {
 
 
         @Test
-        void encodeTest() throws IOException {
-            byte[] pkt = new NoTiFiLocationAddition(1, 321, 100.2, 89.0, "This", "Place").encode();
-            NoTiFiLocationAddition message = (NoTiFiLocationAddition) NoTiFiMessage.decode(pkt);
-            assert message != null;
-            assertEquals(1, message.getMsgId());
-            assertEquals(321, message.getUserId());
-            assertEquals(100.0, message.getLongitude());
-            assertEquals(89.0, message.getLatitude());
-            assertEquals("This", message.getLocationName());
-            assertEquals("Place", message.getLocationDescription());
-        }
-
-
-
-        @Test
         void toStringTest(){
-            assertEquals("Addition: msgid=5 1010:here-the re (-75,65)", noTiFiLocationAddition.toString());
+            assertEquals("Addition: msgid="+noTiFiLocationAddition.getMsgId()+" 1010:"+noTiFiLocationAddition.getLocationName()+"-"+noTiFiLocationAddition.getLocationDescription()
+                    +" ("+(int) noTiFiLocationAddition.getLongitude()+","+(int) noTiFiLocationAddition.getLatitude()+")", noTiFiLocationAddition.toString());
         }
 
 
@@ -184,12 +172,58 @@ public class NoTiFiTest {
 
         }
 
+        // Todo this exception needs to be thrown
         @ParameterizedTest
         @ValueSource(ints = {-1, -2147483648, 100000, 2147483647})
         void invalidUserIDSet(int badVal){
             assertThrows(IllegalArgumentException.class, ()-> noTiFiLocationAddition.setUserId(badVal));
 
         }
+
+        //TODO Attribute Constructor tests
+        //  setting name & description to value that breaks UDP is not allowed
+
+
+        // todo invalid location description set xxxxxxxxxxxx
+
+
+        // todo bad set name xxxxxxxxxx
+
+
+        @ParameterizedTest
+        @MethodSource("validEncodeStreams")
+        void decodeTest(byte[] pkt, int msgID, int userID, double longitude, double latitude, String name, String desc) throws IOException{
+            NoTiFiLocationAddition message = (NoTiFiLocationAddition) NoTiFiMessage.decode(pkt);
+            assert message != null;
+            assertEquals(msgID, message.getMsgId());
+            assertEquals(userID, message.getUserId());
+            assertEquals(longitude, message.getLongitude());
+            assertEquals(latitude, message.getLatitude());
+            assertEquals(name, message.getLocationName());
+            assertEquals(desc, message.getLocationDescription());
+        }
+
+        @ParameterizedTest
+        @MethodSource("validEncodeStreams")
+        void encodeTest(byte[] pkt, int msgID, int userID, double longitude, double latitude, String name, String desc) throws IOException {
+            NoTiFiLocationAddition test = new NoTiFiLocationAddition(msgID, userID, longitude, latitude, name, desc);
+            byte[] encodePkt = test.encode();
+
+            for(int i = 0; i < pkt.length; i++){
+                assertEquals(encodePkt[i], pkt[i]);
+            }
+        }
+
+
+        public Stream<Arguments> validEncodeStreams(){
+            return Stream.of(
+                    arguments(new byte[] {49,1,0,0,0,6,51,51,51,51,51,51,21,-64,102,102,102,102,102,102,35,64,3,78,65,77,5,68,101,115,32,112}, 1, 6, -5.3, 9.7, "NAM", "Des p"),
+                    arguments(new byte[] {0}, 255, 00000, -20.5, 9.7, "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "98765432109876543210987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210987654321")
+            );
+        }
+
+
+
 
 
     }
@@ -241,32 +275,50 @@ public class NoTiFiTest {
 
 
 
-        @Test
-        void testDecode() throws IOException {
-            NoTiFiRegister test = (NoTiFiRegister) NoTiFiMessage.decode(pkt);
-            assertEquals(123, test.getMsgId());
-            assertEquals(1234, test.getPort());
-            assertEquals(ip.getHostAddress(), address);
-        }
 
 
 
 
 
-
-
-
-
-
-        @Test
-        void encodeTest() throws IOException{
-            byte[] pkt = new NoTiFiRegister(1, ip, 1234).encode();
+        @ParameterizedTest
+        @MethodSource("validEncodeStreams")
+        void encodeTest(byte[] pkt, int msgID, String address, int port) throws IOException{
             NoTiFiRegister message = (NoTiFiRegister) NoTiFiMessage.decode(pkt);
             assert message != null;
-            assertEquals(1, message.getMsgId());
-            assertEquals(1234, message.getPort());
+            assertEquals(msgID, message.getMsgId());
+            assertEquals(port, message.getPort());
             assertEquals(address, message.getAddress().getHostAddress());
         }
+
+        @ParameterizedTest
+        @MethodSource("validEncodeStreams")
+        void testDecode(byte[] pkt, int msgID, String address, int port) throws IOException {
+            NoTiFiRegister test = new NoTiFiRegister(msgID, (Inet4Address) Inet4Address.getByName(address), port);
+            byte[] encodePkt = test.encode();
+
+            for(int i = 0; i < pkt.length; i++){
+                assertEquals(encodePkt[i], pkt[i]);
+            }
+        }
+
+
+        public Stream<Arguments> validEncodeStreams(){
+            return Stream.of(
+                    arguments(new byte[] {48,0,1,-108,62,-127,3,0}, 0, "129.62.148.1", 3),
+                    arguments(new byte[] {48,-1,-1,-108,62,-127,-24,-3}, 255, "129.62.148.255", 65000)
+            );
+        }
+
+
+        //TODO specific encode & decode test
+
+
+
+
+
+
+
+
 
 
     }

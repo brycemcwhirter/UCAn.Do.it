@@ -8,16 +8,14 @@
 
 package notifi.serialization;
 
-import addatude.serialization.ValidationException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.regex.Pattern;
+
 
 /**
  * The NoTiFiError is a type of NoTiFiMessage that
@@ -49,7 +47,7 @@ public class NoTiFiError extends NoTiFiMessage{
         super(msgId);
 
         // Test Invalid errorMessage
-        testErrorMessage(errorMessage);
+        NoTiFiValidator.validCharacterSequence("Error Message", errorMessage);
 
         this.errorMessage = errorMessage;
     }
@@ -102,7 +100,7 @@ public class NoTiFiError extends NoTiFiMessage{
      */
     public NoTiFiError setErrorMessage(String errorMessage) throws IllegalArgumentException{
         // Test Invalid errorMessage
-        testErrorMessage(errorMessage);
+        NoTiFiValidator.validCharacterSequence("Error Message", errorMessage);
         this.errorMessage = errorMessage;
         return this;
     }
@@ -134,7 +132,7 @@ public class NoTiFiError extends NoTiFiMessage{
         DataOutputStream out = new DataOutputStream(byteStream);
 
         try {
-            writeNoTiFiHeader(out, ERROR_CODE);
+            NoTiFiWriter.writeNoTiFiHeader(out, ERROR_CODE, msgId);
             out.write(errorMessage.getBytes(StandardCharsets.US_ASCII));
             out.flush();
         } catch (IOException e) {
@@ -146,28 +144,6 @@ public class NoTiFiError extends NoTiFiMessage{
     }
 
 
-    /**
-     * Test if a NoTiFi Error Message is valid
-     * @param errorMessage the error message
-     */
-    private void testErrorMessage(String errorMessage) {
-
-        if(errorMessage == null){
-            throw new IllegalArgumentException("Error Message cannot be null");
-        }
-
-        if(errorMessage.length() > 65505){
-            throw new IllegalArgumentException("Error Message Does Not Fit");
-        }
-
-        for(int i = 0; i < errorMessage.length(); i++){
-            int val = errorMessage.charAt(i);
-
-            if(val < 32 || val > 126){
-                throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ errorMessage);
-            }
-        }
-    }
 
 
     @Override

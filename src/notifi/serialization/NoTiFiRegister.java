@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -25,10 +26,12 @@ import java.util.Objects;
  */
 public class NoTiFiRegister extends NoTiFiMessage{
 
+    public static final int REGISTER_SIZE = 8;
     /**
      * The Operation Code of the NoTiFi Register
      */
     static final byte REGISTER_CODE = 0;
+
 
 
     /**
@@ -45,6 +48,8 @@ public class NoTiFiRegister extends NoTiFiMessage{
 
 
 
+
+
     /**
      * Constructs a NoTiFi Register message
      * @param msgId the message id
@@ -57,7 +62,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
         super(msgId);
 
         //Tests invalid parameters
-        testAddress(address);
+        NoTiFiValidator.validAddress(address);
         testPort(port);
 
         this.address = address;
@@ -82,20 +87,22 @@ public class NoTiFiRegister extends NoTiFiMessage{
      * @throws UnknownHostException
      *      If the readAddress is an Unknown Host
      */
-    public static NoTiFiRegister decode(int readID, DataInputStream in) throws IllegalArgumentException, IOException {
+    public static NoTiFiRegister decode(int readID, DataInputStream in) throws IllegalArgumentException {
 
-        byte[] addressBuffer = new byte[4];
-        in.read(addressBuffer, 0, 4);
+        Inet4Address readAddress = null;
+        try {
+            readAddress = NoTiFiReader.readAddress(in);
+            int readPort = NoTiFiReader.readPort(in);
 
-        ByteBuffer byteBuffer = ByteBuffer.wrap(addressBuffer);
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
-        byte[] readAddress = new byte[4];
-        byteBuffer.get(readAddress, 0, 4);
+            return new NoTiFiRegister(readID, readAddress, readPort);
 
 
-        int port = in.readUnsignedShort();
-        return new NoTiFiRegister(readID, (Inet4Address) Inet4Address.getByAddress(readAddress), port);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("An Error Occurred During Reading");
+        }
+
+
+
 
     }
 
@@ -142,7 +149,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
      *      if address is null
      */
     public NoTiFiRegister setAddress(Inet4Address address) throws IllegalArgumentException{
-        testAddress(address);
+        NoTiFiValidator.validAddress(address);
         this.address = address;
         return this;
     }
@@ -208,16 +215,12 @@ public class NoTiFiRegister extends NoTiFiMessage{
 
         // Write Message Header
         try {
-            writeNoTiFiHeader(out, REGISTER_CODE);
+            NoTiFiWriter.writeNoTiFiHeader(out, REGISTER_CODE, msgId);
 
-            ByteBuffer b = ByteBuffer.allocate(4);
-            b.order(ByteOrder.BIG_ENDIAN);
-            b.put(address.getAddress());
-            byte[] buf = b.array();
-            out.write(buf);
+            NoTiFiWriter.writeInetAddress(out, address);
 
+            NoTiFiWriter.writePortValue(out, port);
 
-            out.writeShort(port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -242,17 +245,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-    /**
-     * Test if an Address is valid
-     * @param address the address
-     * @throws IllegalArgumentException
-     *      if the address is invalid
-     */
-    public void testAddress(Inet4Address address) throws IllegalArgumentException{
-        if(address == null){
-            throw new IllegalArgumentException("Address cannot be null");
-        }
-    }
+
 
 
     @Override
@@ -264,13 +257,19 @@ public class NoTiFiRegister extends NoTiFiMessage{
         return port == that.port && address.equals(that.address);
     }
 
+
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), address, port);
     }
 
+
+
     @Override
     public int getCode() {
         return REGISTER_CODE;
     }
+
+
 }
