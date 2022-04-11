@@ -42,7 +42,7 @@ public class NoTiFiValidator {
             int val = value.charAt(i);
 
             if(val < 32 || val > 126){
-                throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ param);
+                throw new IllegalArgumentException("Error Message must only contain ASCII-printable characters: "+ value);
             }
         }
 

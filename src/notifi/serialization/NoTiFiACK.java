@@ -28,7 +28,7 @@ public class NoTiFiACK extends NoTiFiMessage{
      * The Operation Code Specifying an ACK
      */
     public static final byte ACK_CODE = 0x03;
-    private static final int ACK_SIZE = 2;
+    public static final int ACK_SIZE = 2;
 
 
     /**
@@ -53,7 +53,7 @@ public class NoTiFiACK extends NoTiFiMessage{
         DataOutputStream out = new DataOutputStream(byteStream);
 
         try {
-            writeNoTiFiHeader(out, ACK_CODE);
+            NoTiFiWriter.writeNoTiFiHeader(out, ACK_CODE, msgId);
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();
