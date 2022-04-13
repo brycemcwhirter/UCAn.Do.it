@@ -11,6 +11,7 @@ package addatude.app.server;
 
 import addatude.serialization.ValidationException;
 import addatude.serialization.AddatudeValidator;
+import notifi.app.server.NoTiFiServer;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -64,11 +65,13 @@ public class Server {
         }
 
 
-
         // Set Values
         int serverPort = Integer.parseInt(args[0]);
         int threadPoolSize = Integer.parseInt(args[1]);
         File passwordFile = new File(args[2]);
+
+
+        NoTiFiServer.main(args);
 
 
 

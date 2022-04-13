@@ -34,7 +34,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
     /**
      * The Operation Code of the NoTiFi Register
      */
-    static final byte REGISTER_CODE = 0;
+public static final byte REGISTER_CODE = 0;
 
 
 
