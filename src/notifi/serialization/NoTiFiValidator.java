@@ -1,30 +1,47 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 5
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package notifi.serialization;
 
-import addatude.serialization.AddatudeValidator;
-import addatude.serialization.ValidationException;
 
 import java.net.Inet4Address;
-import java.util.regex.Pattern;
 
+
+/**
+ * This class helps in validating
+ * NoTiFi Data
+ */
 public class NoTiFiValidator {
 
+    // The largest port value available
     static final int LARGEST_PORT_VAL = 65535;
 
 
+    /**
+     * Validates an unsigned integer
+     * @param candidate the integer
+     */
+    public static void validUnsignedInteger(int candidate) {
 
-
-    public static void validUnsignedInteger(int userId) {
-
-        if(userId < 0 || userId > 99999){
-            throw new IllegalArgumentException("User ID Is Invalid: " + userId);
+        if(candidate < 0 || candidate > 99999){
+            throw new IllegalArgumentException("User ID Is Invalid: " + candidate);
         }
 
     }
 
 
-
-
-
+    /**
+     * Validates a character sequence
+     * @param param the parameter of the value
+     * @param value the candidate value
+     * @throws IllegalArgumentException
+     *      if the value is illegal
+     */
     public static void validCharacterSequence(String param, String value) throws IllegalArgumentException {
 
 
@@ -62,9 +79,5 @@ public class NoTiFiValidator {
     }
 
 
-    public static void validateSizeRead(String readName, String readDesc) {
 
-
-
-    }
 }

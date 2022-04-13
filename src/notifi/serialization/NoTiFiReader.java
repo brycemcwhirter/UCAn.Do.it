@@ -1,3 +1,11 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 5
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package notifi.serialization;
 
 import java.io.DataInputStream;
@@ -7,13 +15,21 @@ import java.net.Inet4Address;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * This class helps in reading
+ * NoTiFi Data
+ */
 public class NoTiFiReader {
 
-
+    // The size of a float value in bytes
     private static final int FLOAT_SIZE = 8;
 
 
-
+    /**
+     * Reads the Longitude parameter
+     * @param floatBuffer the buffer
+     * @return the longitude value
+     */
     public static double readLongitude(byte[] floatBuffer) {
 
         byte [] buf = new byte[8];
@@ -26,8 +42,11 @@ public class NoTiFiReader {
     }
 
 
-
-
+    /**
+     * Reads the latitude
+     * @param floatBuffer the buffer
+     * @return the latitude value
+     */
     public static double readLatitude(byte[] floatBuffer) {
 
         byte [] buf = new byte[8];
@@ -42,9 +61,13 @@ public class NoTiFiReader {
     }
 
 
-
-
-
+    /**
+     * Reads a length and string of that length
+     * @param in the input stream
+     * @return the string
+     * @throws IOException
+     *      if a read error occcurs
+     */
     public static String readStringWithLength(DataInputStream in) throws IOException {
 
         short length = in.readByte();
@@ -63,7 +86,13 @@ public class NoTiFiReader {
     }
 
 
-
+    /**
+     * Reads an internet address
+     * @param in the input stream
+     * @return the internet address
+     * @throws IOException
+     *      if a read error occurs
+     */
     public static Inet4Address readAddress(DataInputStream in) throws IOException {
 
         byte[] addressBuffer = new byte[4];
@@ -78,8 +107,13 @@ public class NoTiFiReader {
     }
 
 
-
-
+    /**
+     * Reads the port
+     * @param in the input stream
+     * @return the port value
+     * @throws IOException
+     *      if a read error occurs
+     */
     public static int readPort(DataInputStream in) throws IOException{
 
         byte[] readPort = new byte[2];

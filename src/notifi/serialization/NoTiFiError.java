@@ -144,8 +144,11 @@ public class NoTiFiError extends NoTiFiMessage{
     }
 
 
-
-
+    /**
+     * Equals implementation
+     * @param o the object
+     * @return a boolean describing equality
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -156,12 +159,17 @@ public class NoTiFiError extends NoTiFiMessage{
     }
 
 
-
+    /**
+     * @return hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), errorMessage);
     }
 
+    /**
+     * @return the code
+     */
     @Override
     public int getCode() {
         return ERROR_CODE;

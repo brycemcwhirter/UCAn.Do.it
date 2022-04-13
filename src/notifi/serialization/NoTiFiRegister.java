@@ -26,7 +26,11 @@ import java.util.Objects;
  */
 public class NoTiFiRegister extends NoTiFiMessage{
 
+
+    // The Valid Register Size
     public static final int REGISTER_SIZE = 8;
+
+
     /**
      * The Operation Code of the NoTiFi Register
      */
@@ -245,9 +249,12 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-
-
-
+    /**
+     * Equals implementation
+     * @param o the object
+     * @return
+     *      a boolean describing equality
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -258,14 +265,20 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-
+    /**
+     * Hash Code Implementation
+     * @return the hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), address, port);
     }
 
 
-
+    /**
+     * Returns the code
+     * @return the code
+     */
     @Override
     public int getCode() {
         return REGISTER_CODE;

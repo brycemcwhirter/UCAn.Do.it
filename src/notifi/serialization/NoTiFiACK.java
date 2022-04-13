@@ -70,6 +70,9 @@ public class NoTiFiACK extends NoTiFiMessage{
 
     }
 
+    /**
+     * @return the code
+     */
     @Override
     public int getCode() {
         return ACK_CODE;

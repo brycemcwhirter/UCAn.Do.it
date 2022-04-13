@@ -15,8 +15,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -121,7 +119,6 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
             String readName = NoTiFiReader.readStringWithLength(in);
             String readDesc = NoTiFiReader.readStringWithLength(in);
 
-            NoTiFiValidator.validateSizeRead(readName, readDesc);
 
             if(in.available() != 0){
                 throw new IllegalArgumentException("Illegal Packet Size for Location Addition");
@@ -388,9 +385,11 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     }
 
 
-
-
-
+    /**
+     * Equals implementation
+     * @param o the object
+     * @return a boolean describing equality
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -400,16 +399,20 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     }
 
 
-
-
+    /**
+     * hash code implementation
+     * @return the hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(userId, longitude, latitude, locationName, locationDescription);
     }
 
 
-
-
+    /**
+     * Returns the code
+     * @return the code
+     */
     @Override
     public int getCode() {
         return LOCATION_ADDITION_CODE;

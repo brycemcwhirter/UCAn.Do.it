@@ -268,10 +268,11 @@ public abstract class NoTiFiMessage {
     }
 
 
-
-
-
-
+    /**
+     * Equals implementation
+     * @param o the object
+     * @return a boolean describing equality
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -281,10 +282,10 @@ public abstract class NoTiFiMessage {
     }
 
 
-
-
-
-
+    /**
+     * Hash Code Implementation
+     * @return the hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(msgId);

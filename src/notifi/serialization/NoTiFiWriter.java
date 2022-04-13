@@ -1,3 +1,11 @@
+/************************************************
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 5
+ * Class: Data Communications
+ *
+ ************************************************/
+
 package notifi.serialization;
 
 import java.io.DataOutputStream;
@@ -5,6 +13,11 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.nio.ByteBuffer;
 
+/**
+ * This class helps write
+ * NoTiFi related data to an
+ * output stream
+ */
 public class NoTiFiWriter {
 
     private static final int BYTE_ADDRESS_SIZE = 4;
@@ -27,9 +40,13 @@ public class NoTiFiWriter {
     }
 
 
-
-
-
+    /**
+     * Write the internet address
+     * @param out the output stream
+     * @param address the address
+     * @throws IOException
+     *      if an error occurs
+     */
     public static void writeInetAddress(DataOutputStream out, Inet4Address address) throws IOException {
         ByteBuffer b = ByteBuffer.allocate(4);
         b.put(address.getAddress());
@@ -41,9 +58,13 @@ public class NoTiFiWriter {
     }
 
 
-
-
-
+    /**
+     * Writes the port value
+     * @param out the output stream
+     * @param port the port
+     * @throws IOException
+     *      if an error occurs
+     */
     public static void writePortValue(DataOutputStream out, int port) throws IOException{
         ByteBuffer b = ByteBuffer.allocate(2);
         b.putShort((short) port);
@@ -55,7 +76,13 @@ public class NoTiFiWriter {
     }
 
 
-
+    /**
+     * Writes a double value
+     * @param out the output stream
+     * @param value the double value
+     * @throws IOException
+     *      if an error occurs
+     */
     public static void writeDoubleValue(DataOutputStream out, double value) throws IOException {
         byte[] buf = new byte[8];
 
