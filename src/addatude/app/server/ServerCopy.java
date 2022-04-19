@@ -1,18 +1,15 @@
-/************************************************
- *
- * Author: Bryce McWhirter
- * Assignment: Program 3
- * Class: Data Communications
- *
- ************************************************/
-
 package addatude.app.server;
 
-
-import addatude.serialization.ValidationException;
 import addatude.serialization.AddatudeValidator;
+import addatude.serialization.ValidationException;
+import notifi.app.client.NoTiFiClient;
+import notifi.app.server.NoTiFiServer;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -21,13 +18,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-/**
- * Server
- *
- * This is the Sever for the Addatude Protocol
- */
-public class Server {
+public class ServerCopy {
 
 
     /**
@@ -56,7 +47,7 @@ public class Server {
      * @throws IOException if an I/O error occurs
      * @throws ValidationException if a validation exception occurred
      */
-    public static void main(String[] args) throws IOException, ValidationException {
+    public static void main(String[] args) throws IOException, ValidationException, InterruptedException {
 
         // Get the Arguments
         if(args.length != 3){
@@ -74,7 +65,7 @@ public class Server {
 
 
         //Reading Users and Passwords
-        Map<Long, User> userListMap = readUsers(passwordFile);
+        Map<Long, Server.User> userListMap = readUsers(passwordFile);
 
 
 
@@ -94,9 +85,11 @@ public class Server {
             Thread mainThread = new Thread(() -> {
                 while (true) {
                     Socket clntSocket;
+
                     try {
                         clntSocket = serverSocket.accept();
                         AddatudeProtocol.handleClient(clntSocket, logger, userListMap);
+
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "Client Accept Failed", e);
                     } catch (ValidationException e) {
@@ -107,9 +100,26 @@ public class Server {
                 }
             });
 
+            Thread threadNoTiFi = new Thread(() -> {
+                while (true) {
+                    DatagramSocket datagramSocket;
+
+                    try {
+                        datagramSocket = new DatagramSocket(serverSocket.getLocalSocketAddress());
+                        NoTiFiServer.handleClient(datagramSocket, logger, serverPort);
+                    } catch (IOException e) {
+                        logger.log(Level.WARNING, "Client Accept Failed", e);
+                    }
+                }
+            });
+
             mainThread.start();
+            threadNoTiFi.start();
             logger.info("Created & Started Thread = " + mainThread.getName());
+            logger.info("Created & Started Thread = " + threadNoTiFi.getName());
         }
+
+
 
 
 
@@ -125,8 +135,8 @@ public class Server {
      * @throws IOException If an I/O error occurs
      * @throws ValidationException If the UserID, username, or password is invalid
      */
-    private static HashMap<Long, User> readUsers(File passwordFile) throws IOException, ValidationException {
-        HashMap<Long, User> userMap = new HashMap<>();
+    private static HashMap<Long, Server.User> readUsers(File passwordFile) throws IOException, ValidationException {
+        HashMap<Long, Server.User> userMap = new HashMap<>();
         BufferedReader br = new BufferedReader(new FileReader(passwordFile));
 
         String line;
@@ -140,12 +150,11 @@ public class Server {
             AddatudeValidator.validUnsignedInteger("User ID", Long.toString(id));
             AddatudeValidator.validString("User Name", name);
             AddatudeValidator.validPassword(pw);
-            userMap.put(id, new User(name, pw));
+            userMap.put(id, new Server.User(name, pw));
         }
 
         return userMap;
     }
-
 
 
 

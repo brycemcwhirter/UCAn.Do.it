@@ -13,7 +13,6 @@ import addatude.serialization.*;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +21,7 @@ import mapservice.Location;
 import mapservice.MapBoxObserver;
 import mapservice.MapManager;
 import mapservice.MemoryMapManager;
+import notifi.app.server.NoTiFiServer;
 
 
 /**
@@ -90,7 +90,7 @@ public class AddatudeProtocol implements Runnable{
      * @throws IOException If an I/O Error Occurs
      * @throws ValidationException If the Client Message contains a validation exception
      */
-    public static void handleAddatudeClient(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) throws IOException, ValidationException {
+    public static void handleClient(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) throws IOException, ValidationException {
 
         // Establishing Client Message and Message Input & Output
         Message clntMessage;
@@ -100,6 +100,7 @@ public class AddatudeProtocol implements Runnable{
         // Establishing Map Manager for Storing Locations
         MapManager mgr = new MemoryMapManager();
         mgr.register(new MapBoxObserver(LOCATIONFILE, mgr));
+
 
 
 
@@ -209,9 +210,9 @@ public class AddatudeProtocol implements Runnable{
 
     public void run(){
         try {
-            handleAddatudeClient(clntSocket, logger, userListMap);
+            handleClient(clntSocket, logger, userListMap);
         } catch (IOException | ValidationException ignore) {
-            //handled by the handleAddatudeClient method
+            //handled by the handleClient method
         }
 
     }
