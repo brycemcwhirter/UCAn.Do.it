@@ -1,10 +1,10 @@
-/************************************************
- *
- * Author: Bryce McWhirter
- * Assignment: Program 5
- * Class: Data Communications
- *
- ************************************************/
+/*
+
+ Author: Bryce McWhirter
+ Assignment: Program 5
+ Class: Data Communications
+
+ */
 
 package notifi.app.client;
 
@@ -54,7 +54,7 @@ public class NoTiFiClient {
 
 
         // Random Message ID
-        int msgId = (int) (Math.random() *(MAX_MSG_ID_VALUE + 1));
+        int msgId = (int) (Math.random() * (MAX_MSG_ID_VALUE + 1));
 
 
         // Send a NoTiFi Register Message
@@ -66,8 +66,6 @@ public class NoTiFiClient {
         DatagramPacket sentPacket = new DatagramPacket(bytesToSend, bytesToSend.length, serverAddress, servPort);
 
         // Datagram Packet to Receive
-        // Todo This may need modification. 100 bytes is random
-        // TODO UDP SIZE??
         DatagramPacket receivedAck = new DatagramPacket(new byte[NoTiFiACK.ACK_SIZE], NoTiFiACK.ACK_SIZE);
 
         // Repeatedly (While The User Doesn't Quit or
@@ -94,13 +92,16 @@ public class NoTiFiClient {
                     // & terminate
 
                     if(newMessage.getMsgId() != noTiFiRegister.getMsgId()){
-                        System.out.println("Unexpected MSG ID");
-                        return;
+                        System.err.println("Unexpected MSG ID");
                     }
+
+
+                    receivedResponse = true;
 
                 }
 
-                receivedResponse = true;
+
+
 
             } catch(InterruptedIOException e){
                 tries += 1;
@@ -111,7 +112,7 @@ public class NoTiFiClient {
 
 
         if(!receivedResponse){
-            System.out.println("Unable to register");
+            System.err.println("Unable to register");
             return;
         }
 
@@ -120,45 +121,51 @@ public class NoTiFiClient {
 
 
 
-        do{
+        while(true){
+
             DatagramPacket receivedPacket = new DatagramPacket(new byte[MAX_READ_SIZE], MAX_READ_SIZE);
             socket.receive(receivedPacket);
             byte[] receivedBuf = Arrays.copyOf(receivedPacket.getData(), receivedPacket.getLength());
 
-            NoTiFiMessage newMessage = NoTiFiMessage.decode(receivedBuf);
+            try {
+
+                NoTiFiMessage newMessage = NoTiFiMessage.decode(receivedBuf);
 
 
-            // If you received a Location Addition
-            // Print the location addition following specification
-            if(newMessage.getCode() == NoTiFiLocationAddition.LOCATION_ADDITION_CODE) {
+                // If you received a Location Addition
+                // Print the location addition following specification
+                if (newMessage.getCode() == NoTiFiLocationAddition.LOCATION_ADDITION_CODE) {
 
-                NoTiFiLocationAddition LocationAdditionMessage = (NoTiFiLocationAddition) newMessage;
+                    NoTiFiLocationAddition LocationAdditionMessage = (NoTiFiLocationAddition) newMessage;
 
-                System.out.println("Addition");
-                System.out.println("Latitude & Longitude");
-                System.out.println(LocationAdditionMessage.getLatitude() + " " + LocationAdditionMessage.getLongitude());
-                System.out.println("Name & Description");
-                System.out.println(LocationAdditionMessage.getLocationName() + " " + LocationAdditionMessage.getLocationDescription());
+                    System.out.println("Addition: " + LocationAdditionMessage);
 
+
+                }
+
+
+                // If you received an Error
+                // Print the error message to the console
+                else if (newMessage.getCode() == NoTiFiError.ERROR_CODE) {
+
+                    NoTiFiError error = (NoTiFiError) newMessage;
+                    System.err.println(error.getErrorMessage());
+
+                }
+
+
+                // If you received any other NoTiFi type
+                // print Unexpected Message type
+                else if(newMessage.getCode() == NoTiFiRegister.REGISTER_CODE){
+                    System.err.println("Unexpected Message Type");
+                }
+
+
+            }catch(IllegalArgumentException e){
+                System.err.println("Unable to parse message: " + e.getMessage());
             }
 
-
-            // If you received an Error
-            // Print the error message to the console
-            else if(newMessage.getCode() == NoTiFiError.ERROR_CODE) {
-
-                NoTiFiError error = (NoTiFiError) newMessage;
-                System.out.println(error.getErrorMessage());
-
-            }
-
-
-            // If you received any other NoTiFi type
-            // print Unexpected Message type
-            else {
-                System.out.println("Unexpected Message Type");
-            }
-        }while(true);
+        }
 
 
 
