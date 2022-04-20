@@ -74,9 +74,14 @@ public class ServerCopy {
 
 
 
-        // Create the Socket w/ A timeout of 60 seconds
+        // Create the TCP Socket w/ A timeout of 60 seconds
         ServerSocket serverSocket = new ServerSocket(serverPort);
         serverSocket.setSoTimeout(60*1000);
+
+        // Create the UDP socket
+        //TODO HOW TO SET UDP SOCKET?
+        DatagramSocket datagramSocket = new DatagramSocket();
+
 
 
         // Create the logger without using Parent Handlers
@@ -87,7 +92,7 @@ public class ServerCopy {
 
         for(int i = 0; i < threadPoolSize; i++) {
             new Thread(() -> executeAddatudeProtocol(serverSocket, logger, userListMap)).start();
-            new Thread(() -> executeNoTiFiProtocol(logger, serverPort)).start();
+            new Thread(() -> executeNoTiFiProtocol(datagramSocket, logger, serverPort)).start();
         }
 
 
@@ -105,7 +110,7 @@ public class ServerCopy {
                     clntSocket = serverSocket.accept();
                     AddatudeProtocol.handleClient(clntSocket, logger, userListMap);
                 } catch (IOException e) {
-                    logger.log(Level.WARNING, "Client Accept Failed", e);
+                    logger.log(Level.WARNING, "TCP Client Accept Failed", e);
                 } catch (ValidationException e) {
                     logger.log(Level.WARNING, "Validation Exception in Client", e);
                 }
@@ -115,13 +120,13 @@ public class ServerCopy {
 
 
 
-    public static void executeNoTiFiProtocol(Logger logger, int serverPort){
+    public static void executeNoTiFiProtocol(DatagramSocket datagramSocket, Logger logger, int serverPort) {
 
-        try(DatagramSocket datagramSocket = new DatagramSocket(serverPort)) {
-            while (true) {
+        while (true) {
 
-                byte[] inBuffer = new byte[MAX_READ_SIZE_UDP];
+            byte[] inBuffer = new byte[MAX_READ_SIZE_UDP];
 
+            try {
 
                 // Receive the packet from the client
                 DatagramPacket packet = new DatagramPacket(inBuffer, inBuffer.length);
@@ -130,11 +135,13 @@ public class ServerCopy {
 
 
                 NoTiFiServer.handleClientConnection(datagramSocket, encodedMsg, logger, serverPort);
+            }catch (IOException e){
+                logger.log(Level.WARNING, "UDP Client Accept Failed", e);
 
             }
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Client Accept Failed", e);
+
         }
+
     }
 
 

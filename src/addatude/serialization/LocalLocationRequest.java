@@ -4,6 +4,11 @@ package addatude.serialization;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+
+
+
+
+
 public class LocalLocationRequest extends Message{
 
     String latitude;
@@ -28,6 +33,9 @@ public class LocalLocationRequest extends Message{
         this.mapId = mapId;
     }
 
+
+
+
     public LocalLocationRequest(long mapIdVal, MessageInput in) throws ValidationException {
         super(OPERATION, mapIdVal);
 
@@ -38,6 +46,7 @@ public class LocalLocationRequest extends Message{
         String readLatitude = in.readUntilSpace();
         setLatitude(readLatitude);
     }
+
 
 
     public String getLatitude() {
