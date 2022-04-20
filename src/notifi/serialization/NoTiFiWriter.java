@@ -1,10 +1,10 @@
-/************************************************
- *
- * Author: Bryce McWhirter
- * Assignment: Program 5
- * Class: Data Communications
- *
- ************************************************/
+/*
+
+ Author: Bryce McWhirter
+ Assignment: Program 5
+ Class: Data Communications
+
+ */
 
 package notifi.serialization;
 
@@ -20,8 +20,12 @@ import java.nio.ByteBuffer;
  */
 public class NoTiFiWriter {
 
+
+    // The Size of the Byte Address
     private static final int BYTE_ADDRESS_SIZE = 4;
 
+
+    // The Size of a Short Value
     private static final int SHORT_SIZE = 2;
 
 

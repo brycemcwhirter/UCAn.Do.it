@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 5
  * Class: Data Communications
  *
- ************************************************/
+*/
 
 package notifi.serialization;
 

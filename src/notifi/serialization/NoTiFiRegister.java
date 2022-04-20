@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 4
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 package notifi.serialization;
 
@@ -34,7 +34,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
     /**
      * The Operation Code of the NoTiFi Register
      */
-public static final byte REGISTER_CODE = 0;
+    public static final byte REGISTER_CODE = 0;
 
 
 
@@ -88,12 +88,10 @@ public static final byte REGISTER_CODE = 0;
      * @return a new NoTiFi Register Message
      * @throws IllegalArgumentException
      *      If any illegal parameters
-     * @throws UnknownHostException
-     *      If the readAddress is an Unknown Host
      */
     public static NoTiFiRegister decode(int readID, DataInputStream in) throws IllegalArgumentException {
 
-        Inet4Address readAddress = null;
+        Inet4Address readAddress;
         try {
             readAddress = NoTiFiReader.readAddress(in);
             int readPort = NoTiFiReader.readPort(in);

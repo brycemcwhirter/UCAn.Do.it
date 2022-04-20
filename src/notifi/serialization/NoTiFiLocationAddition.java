@@ -1,15 +1,20 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 4
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 package notifi.serialization;
 
+
+
 import addatude.serialization.ValidationException;
 import addatude.serialization.AddatudeValidator;
+
+
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -18,11 +23,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+
+
+
+
 /**
  * The NoTiFi Location Addition is a notification for a new
  * location record addition.
  */
 public class NoTiFiLocationAddition extends NoTiFiMessage{
+
+
 
     /**
      * The Operation Code for the NoTiFi Location Addition
@@ -132,8 +143,6 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
             throw new IllegalArgumentException("Error in Reading Occurred. Message: "+ e.getMessage());
         }
 
-        // Return a new NoTiFiLocationAddition
-
     }
 
 
@@ -187,6 +196,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
             out.flush();
         } catch (IOException e) {
+
         }
 
 

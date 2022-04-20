@@ -1,8 +1,19 @@
+/*
+
+ Author: Bryce McWhirter
+ Assignment: Program 6
+ Class: Data Communications
+
+ */
+
 package addatude.app.server;
 
 import addatude.serialization.AddatudeValidator;
 import addatude.serialization.ValidationException;
 import notifi.app.server.NoTiFiServer;
+
+
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,7 +27,12 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ServerCopy {
+
+
+
+
+
+public class AddatudeServer {
 
 
     /**
@@ -26,8 +42,8 @@ public class ServerCopy {
      * user. A User has a username and password
      */
     static class User{
-        private String userName;
-        private String password;
+        private final String userName;
+        private final String password;
 
         User(String userName, String password){
             this.userName = userName;
@@ -39,6 +55,9 @@ public class ServerCopy {
         }
     }
 
+
+
+    public static Logger logger = Logger.getLogger("AddatudeAndNotifiServerLog");
 
 
 
@@ -69,7 +88,7 @@ public class ServerCopy {
 
 
         //Reading Users and Passwords
-        Map<Long, Server.User> userListMap = readUsers(passwordFile);
+        Map<Long, AddatudeServer.User> userListMap = readUsers(passwordFile);
 
 
 
@@ -79,30 +98,27 @@ public class ServerCopy {
         serverSocket.setSoTimeout(60*1000);
 
         // Create the UDP socket
-        //TODO HOW TO SET UDP SOCKET?
-        DatagramSocket datagramSocket = new DatagramSocket();
+        DatagramSocket datagramSocket = new DatagramSocket(serverPort);
 
 
 
         // Create the logger without using Parent Handlers
-        final Logger logger = Logger.getLogger("server.log");
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.WARNING);
 
 
+
         for(int i = 0; i < threadPoolSize; i++) {
             new Thread(() -> executeAddatudeProtocol(serverSocket, logger, userListMap)).start();
-            new Thread(() -> executeNoTiFiProtocol(datagramSocket, logger, serverPort)).start();
+            new Thread(() -> executeNoTiFiProtocol(datagramSocket, logger)).start();
         }
-
-
 
 
 
     }
 
 
-    public static void executeAddatudeProtocol(ServerSocket serverSocket, Logger logger,Map<Long, Server.User> userListMap){
+    public static void executeAddatudeProtocol(ServerSocket serverSocket, Logger logger,Map<Long, AddatudeServer.User> userListMap){
 
             while(true) {
                 Socket clntSocket;
@@ -120,7 +136,10 @@ public class ServerCopy {
 
 
 
-    public static void executeNoTiFiProtocol(DatagramSocket datagramSocket, Logger logger, int serverPort) {
+
+
+
+    public static void executeNoTiFiProtocol(DatagramSocket datagramSocket, Logger logger) {
 
         while (true) {
 
@@ -133,16 +152,18 @@ public class ServerCopy {
                 datagramSocket.receive(packet);
                 byte[] encodedMsg = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 
-
-                NoTiFiServer.handleClientConnection(datagramSocket, encodedMsg, logger, serverPort);
+                new NoTiFiServer(datagramSocket, encodedMsg).handleClientConnection(logger);
             }catch (IOException e){
                 logger.log(Level.WARNING, "UDP Client Accept Failed", e);
 
             }
 
         }
-
     }
+
+
+
+
 
 
 
@@ -153,8 +174,8 @@ public class ServerCopy {
      * @throws IOException If an I/O error occurs
      * @throws ValidationException If the UserID, username, or password is invalid
      */
-    private static HashMap<Long, Server.User> readUsers(File passwordFile) throws IOException, ValidationException {
-        HashMap<Long, Server.User> userMap = new HashMap<>();
+    private static HashMap<Long, AddatudeServer.User> readUsers(File passwordFile) throws IOException, ValidationException {
+        HashMap<Long, AddatudeServer.User> userMap = new HashMap<>();
         BufferedReader br = new BufferedReader(new FileReader(passwordFile));
 
         String line;
@@ -168,7 +189,7 @@ public class ServerCopy {
             AddatudeValidator.validUnsignedInteger("User ID", Long.toString(id));
             AddatudeValidator.validString("User Name", name);
             AddatudeValidator.validPassword(pw);
-            userMap.put(id, new Server.User(name, pw));
+            userMap.put(id, new AddatudeServer.User(name, pw));
         }
 
         return userMap;

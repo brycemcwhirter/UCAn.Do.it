@@ -7,12 +7,12 @@ const stores = {
         'type': 'Point',
         'coordinates': [
         3.21,
-        3.42
+        2.234
          ]
         },
       'properties': {
-      'name': 'BryceMcWhirter:THIS',
-      'description': 'PLACE',
+      'name': 'BryceMcWhirter:this',
+      'description': 'place',
        }
      },
 ]};

@@ -1,10 +1,12 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 5
  * Class: Data Communications
  *
- ************************************************/
+ */
+
+
 
 package notifi.serialization;
 
@@ -14,6 +16,9 @@ import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+
+
+
 
 /**
  * This class helps in reading
@@ -80,7 +85,7 @@ public class NoTiFiReader {
 
 
         // Read Location Name
-        in.read(readNameBuf, 0, length);
+        var val = in.read(readNameBuf, 0, length);
         return new String(readNameBuf, StandardCharsets.UTF_8);
 
     }
@@ -137,5 +142,6 @@ public class NoTiFiReader {
         return port;
 
     }
+
 
 }

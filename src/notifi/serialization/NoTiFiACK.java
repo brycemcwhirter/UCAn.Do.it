@@ -1,20 +1,23 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 4
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 package notifi.serialization;
 
 
+
+
+
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
+
+
+
 
 /**
  * The NoTiFi Ack is a type of NoTiFi Message
@@ -28,6 +31,9 @@ public class NoTiFiACK extends NoTiFiMessage{
      * The Operation Code Specifying an ACK
      */
     public static final byte ACK_CODE = 0x03;
+
+
+
     public static final int ACK_SIZE = 2;
 
 

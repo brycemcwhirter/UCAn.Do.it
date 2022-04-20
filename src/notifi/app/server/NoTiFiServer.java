@@ -1,10 +1,17 @@
+/*
+
+ Author: Bryce McWhirter
+ Assignment: Program 6
+ Class: Data Communications
+
+ */
+
+
 package notifi.app.server;
 
 
-import notifi.serialization.NoTiFiACK;
-import notifi.serialization.NoTiFiError;
-import notifi.serialization.NoTiFiMessage;
-import notifi.serialization.NoTiFiRegister;
+import addatude.serialization.LocationRecord;
+import notifi.serialization.*;
 
 import java.io.IOException;
 import java.net.*;
@@ -12,73 +19,78 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 
-
-
-
+/**
+ * The NoTiFi Server handles the connection
+ * from the NoTiFi Client
+ */
 public class NoTiFiServer {
 
+    // A List of Registered Internet Addresses
+    private static final ArrayList<Inet4Address> registeredAddresses = new ArrayList<>();
 
 
-    private static final int VALID_PORT_NOTIFI = 5000;
-
-    private static ArrayList registeredAddresses = new ArrayList();
-
+    // The Datagram Socket Connection
+    private static DatagramSocket datagramSocket;
 
 
-    public static void handleClientConnection(DatagramSocket socket, byte[] encodedMsg, Logger logger, int serverPort) throws IOException {
+    // The received register message
+    public static NoTiFiRegister regMsg;
 
+
+    /**
+     * The Constructor sets up the Datagram Socket &
+     * the register message
+     * @param datagramSocket the socket
+     * @param encodedMsg the encoded message
+     */
+    public NoTiFiServer(DatagramSocket datagramSocket, byte[] encodedMsg) {
+        NoTiFiServer.datagramSocket = datagramSocket;
         // Decode the Message
-        NoTiFiMessage msg = NoTiFiMessage.decode(encodedMsg);
+        regMsg = (NoTiFiRegister) NoTiFiMessage.decode(encodedMsg);
+    }
 
 
 
 
 
-        if(msg.getCode() != NoTiFiRegister.REGISTER_CODE) {
-            NoTiFiError errorMsg = new NoTiFiError(msg.getMsgId(), "Unexpected Message Type: "+ msg.getCode());
-            socket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length, socket.getInetAddress(), serverPort));
-        }
 
-
-        // Get the Address involved with the NoTiFi Register message
-        NoTiFiRegister regMsg = (NoTiFiRegister) msg;
-
+    /**
+     * Handles the Initial Client Connection made
+     * to the server
+     * @param logger the logger for logging messages
+     * @throws IOException
+     *      if an I/O error occurs
+     */
+    public void handleClientConnection(Logger logger) throws IOException {
 
 
         // If the address is Multicast Address
+        // Send Error Message to Client "Bad Address"
+
         if(regMsg.getAddress().isMulticastAddress()) {
-            // Send Error Message to Client "Bad Address"
-            NoTiFiError errorMsg = new NoTiFiError(msg.getMsgId(), "Bad Address");
-            socket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length, socket.getLocalAddress(), serverPort));
-
-
+            NoTiFiError errorMsg = new NoTiFiError(regMsg.getMsgId(), "Bad Address");
+            datagramSocket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length, regMsg.getAddress(), regMsg.getPort()));
         }
 
 
 
 
         // If the port is incorrect
-        else if(regMsg.getPort() != VALID_PORT_NOTIFI){
-            // Send Error Message to Client "Incorrect Port"
+        // Send Error Message to Client "Incorrect Port"
+
+        /*else if(regMsg.getPort() != VALID_PORT_NOTIFI){
             NoTiFiError errorMsg = new NoTiFiError(msg.getMsgId(), "Incorrect Port");
-            socket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length));
-
-
-        }
-
+            datagramSocket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length, regMsg.getAddress(), regMsg.getPort()));
+        }*/
 
 
 
 
         // If the register address & port is already registered
+        // Send error message to Client "Already Registered"
         else if(registeredAddresses.contains(regMsg.getAddress())){
-
-            // Send error message to Client "Already Registered"
-            NoTiFiError errorMsg = new NoTiFiError(msg.getMsgId(), "Already Registered");
-            socket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length, socket.getInetAddress(), serverPort));
-
-
-
+            NoTiFiError errorMsg = new NoTiFiError(regMsg.getMsgId(), "Already Registered");
+            datagramSocket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length, regMsg.getAddress(), regMsg.getPort()));
         }
 
 
@@ -91,15 +103,16 @@ public class NoTiFiServer {
 
 
             // Send the ACK with MSG ID from the received message to the client
-            DatagramPacket ackResponse = new DatagramPacket(new NoTiFiACK(msg.getMsgId()).encode(), NoTiFiACK.ACK_SIZE, socket.getInetAddress(), serverPort);
-            socket.send(ackResponse);
+            DatagramPacket ackResponse = new DatagramPacket(new NoTiFiACK(regMsg.getMsgId()).encode(), NoTiFiACK.ACK_SIZE, regMsg.getAddress(), regMsg.getPort());
+            datagramSocket.send(ackResponse);
 
 
 
             // If register & source address do not match
-            if(socket.getInetAddress() != regMsg.getAddress()){
-                // log warning entry on specification
-                logger.warning("Register and Source Address mismatch: "+regMsg.getAddress()+" "+socket.getInetAddress());
+            // log warning entry on specification
+
+            if(datagramSocket.getInetAddress() != regMsg.getAddress()){
+                logger.warning("Register and Source Address mismatch: "+regMsg.getAddress()+" "+datagramSocket.getInetAddress());
 
             }
 
@@ -109,15 +122,21 @@ public class NoTiFiServer {
     }
 
 
+    /**
+     * This method sends a notification of a new
+     * location addition to the NoTiFi Client
+     * @param newLocationRecord the new location record added
+     * @throws IOException
+     *      if an I/O Error Occurs
+     */
+    public static void handleNewLocationAddition(LocationRecord newLocationRecord) throws IOException {
 
-    public static void handleNewLocationAddition(){
+        byte[] msgToSend = new NoTiFiLocationAddition(regMsg.getMsgId(), (int) newLocationRecord.getUserId(),
+                Double.parseDouble(newLocationRecord.getLongitude()), Double.parseDouble(newLocationRecord.getLatitude()),
+                newLocationRecord.getLocationName(), newLocationRecord.getLocationDescription()).encode();
 
-        // If a location has been added in the Addatude protocol
 
-        // Send a NoTiFi location addition message to all addresses registered.
-
-        // TODO how to see if new location has been added to Addatude.
-
+        datagramSocket.send(new DatagramPacket(msgToSend, msgToSend.length, regMsg.getAddress(), regMsg.getPort()));
     }
 
 

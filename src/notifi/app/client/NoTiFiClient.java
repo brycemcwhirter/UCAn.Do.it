@@ -8,7 +8,12 @@
 
 package notifi.app.client;
 
+
+
 import notifi.serialization.*;
+
+
+
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -17,13 +22,35 @@ import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.util.Arrays;
 
+
+/**
+ * The NoTiFi Client sends Notification
+ * of location additions from the Addatude
+ * Protocol
+ */
 public class NoTiFiClient {
 
+
+
+
+    // Describes the Timeout Length
     private static final int TIMEOUT = 3000;
+
+    // Describes the Maximum Number of Tries
     private static final int MAXTRIES = 2;
-    private static final int MINIMUM_PORT_VALUE = 0;
+
+    // Describes the Largest Valid MSG ID Value
     private static final int MAX_MSG_ID_VALUE = 255;
+
+
+    // Describes the Largest Number of bytes to be read
     private static final int MAX_READ_SIZE = 65507;
+
+
+
+
+
+
 
     public static void main(String[] args) throws IOException {
 
@@ -80,9 +107,9 @@ public class NoTiFiClient {
                 // Decode the Message You Received
                 NoTiFiMessage newMessage = NoTiFiMessage.decode(receivedAck.getData());
 
-                if(!receivedAck.getAddress().equals(serverAddress)){
+                /*if(!receivedAck.getAddress().equals(serverAddress)){
                     throw new IOException("Received a packet from an unknown source");
-                }
+                }*/
 
                 // If you received an ACK
                 if(newMessage.getCode() == NoTiFiACK.ACK_CODE){
@@ -139,7 +166,7 @@ public class NoTiFiClient {
 
                     NoTiFiLocationAddition LocationAdditionMessage = (NoTiFiLocationAddition) newMessage;
 
-                    System.out.println("Addition: " + LocationAdditionMessage);
+                    System.out.println(LocationAdditionMessage);
 
 
                 }
