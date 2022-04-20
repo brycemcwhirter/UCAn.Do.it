@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 3
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 package addatude.app.server;
 
@@ -21,7 +21,6 @@ import mapservice.Location;
 import mapservice.MapBoxObserver;
 import mapservice.MapManager;
 import mapservice.MemoryMapManager;
-import notifi.app.server.NoTiFiServer;
 
 
 /**

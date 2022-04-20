@@ -100,6 +100,7 @@ public class NoTiFiClient {
 
                 }
 
+                System.out.println("Connection Occurred");
 
 
 

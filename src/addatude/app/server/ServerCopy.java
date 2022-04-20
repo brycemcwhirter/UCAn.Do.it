@@ -2,16 +2,14 @@ package addatude.app.server;
 
 import addatude.serialization.AddatudeValidator;
 import addatude.serialization.ValidationException;
-import notifi.app.client.NoTiFiClient;
 import notifi.app.server.NoTiFiServer;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -42,12 +40,18 @@ public class ServerCopy {
     }
 
 
+
+
+    private static final int MAX_READ_SIZE_UDP = 65507;
+
+
+
     /** The Main Method for the Server to Execute
      * @param args Port, Number of Threads, Password File
      * @throws IOException if an I/O error occurs
      * @throws ValidationException if a validation exception occurred
      */
-    public static void main(String[] args) throws IOException, ValidationException, InterruptedException {
+    public static void main(String[] args) throws IOException, ValidationException {
 
         // Get the Arguments
         if(args.length != 3){
@@ -71,7 +75,7 @@ public class ServerCopy {
 
 
         // Create the Socket w/ A timeout of 60 seconds
-        final ServerSocket serverSocket = new ServerSocket(serverPort);
+        ServerSocket serverSocket = new ServerSocket(serverPort);
         serverSocket.setSoTimeout(60*1000);
 
 
@@ -82,41 +86,8 @@ public class ServerCopy {
 
 
         for(int i = 0; i < threadPoolSize; i++) {
-            Thread mainThread = new Thread(() -> {
-                while (true) {
-                    Socket clntSocket;
-
-                    try {
-                        clntSocket = serverSocket.accept();
-                        AddatudeProtocol.handleClient(clntSocket, logger, userListMap);
-
-                    } catch (IOException e) {
-                        logger.log(Level.WARNING, "Client Accept Failed", e);
-                    } catch (ValidationException e) {
-                        logger.log(Level.WARNING, "Validation Exception in Client", e);
-                    }
-
-
-                }
-            });
-
-            Thread threadNoTiFi = new Thread(() -> {
-                while (true) {
-                    DatagramSocket datagramSocket;
-
-                    try {
-                        datagramSocket = new DatagramSocket(serverSocket.getLocalSocketAddress());
-                        NoTiFiServer.handleClient(datagramSocket, logger, serverPort);
-                    } catch (IOException e) {
-                        logger.log(Level.WARNING, "Client Accept Failed", e);
-                    }
-                }
-            });
-
-            mainThread.start();
-            threadNoTiFi.start();
-            logger.info("Created & Started Thread = " + mainThread.getName());
-            logger.info("Created & Started Thread = " + threadNoTiFi.getName());
+            new Thread(() -> executeAddatudeProtocol(serverSocket, logger, userListMap)).start();
+            new Thread(() -> executeNoTiFiProtocol(logger, serverPort)).start();
         }
 
 
@@ -125,6 +96,46 @@ public class ServerCopy {
 
     }
 
+
+    public static void executeAddatudeProtocol(ServerSocket serverSocket, Logger logger,Map<Long, Server.User> userListMap){
+
+            while(true) {
+                Socket clntSocket;
+                try {
+                    clntSocket = serverSocket.accept();
+                    AddatudeProtocol.handleClient(clntSocket, logger, userListMap);
+                } catch (IOException e) {
+                    logger.log(Level.WARNING, "Client Accept Failed", e);
+                } catch (ValidationException e) {
+                    logger.log(Level.WARNING, "Validation Exception in Client", e);
+                }
+            }
+    }
+
+
+
+
+    public static void executeNoTiFiProtocol(Logger logger, int serverPort){
+
+        try(DatagramSocket datagramSocket = new DatagramSocket(serverPort)) {
+            while (true) {
+
+                byte[] inBuffer = new byte[MAX_READ_SIZE_UDP];
+
+
+                // Receive the packet from the client
+                DatagramPacket packet = new DatagramPacket(inBuffer, inBuffer.length);
+                datagramSocket.receive(packet);
+                byte[] encodedMsg = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
+
+
+                NoTiFiServer.handleClientConnection(datagramSocket, encodedMsg, logger, serverPort);
+
+            }
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Client Accept Failed", e);
+        }
+    }
 
 
 

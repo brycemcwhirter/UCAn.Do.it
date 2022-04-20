@@ -1,12 +1,12 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 0
  * Class: Data Communications
  *
- ************************************************/
+ */
 
-/**
+/*
  * Testing Partner: John Harrison
  */
 
@@ -33,7 +33,7 @@ public class AddatudeValidator {
     /**
      * A list of operations.
      */
-    private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR");
+    private static final List<String> Operations = Arrays.asList("NEW", "ALL", "RESPONSE", "ERROR", "LOCAL");
 
 
 
