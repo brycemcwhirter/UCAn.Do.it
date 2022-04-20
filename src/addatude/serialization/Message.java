@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 1
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 /*
  * Testing Partner: John Harrison
@@ -114,6 +114,7 @@ public abstract class Message {
             case LocationRequest.OPERATION -> a = new LocationRequest(mapIdVal);
             case LocationResponse.OPERATION -> a = new LocationResponse(mapIdVal, in);
             case Error.OPERATION -> a = new Error(mapIdVal, in);
+            case LocalLocationRequest.OPERATION -> a = new LocalLocationRequest(mapIdVal, in);
             default -> throw new ValidationException(operation, "Invalid Operation");
         }
 

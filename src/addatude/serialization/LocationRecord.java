@@ -1,12 +1,12 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 0
  * Class: Data Communications
  *
- ************************************************/
+ */
 
-/**
+/*
  * Testing Partner: John Harrison
  */
 
@@ -52,6 +52,7 @@ public class LocationRecord {
      * The Description of the location
      */
     String locationDescription;
+
 
     public static final int LOCATION_NAME_AND_DESCRIPTION = 2;
 
