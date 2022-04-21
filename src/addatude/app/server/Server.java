@@ -8,11 +8,10 @@
 
 package addatude.app.server;
 
+
 import addatude.serialization.AddatudeValidator;
 import addatude.serialization.ValidationException;
 import notifi.app.server.NoTiFiServer;
-
-
 
 
 import java.io.BufferedReader;
@@ -28,11 +27,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-
-
-
-
-public class AddatudeServer {
+/**
+ * The Addatude Server
+ */
+public class Server {
 
 
     /**
@@ -57,10 +55,11 @@ public class AddatudeServer {
 
 
 
+    // The Logger for Logging Information
     public static Logger logger = Logger.getLogger("AddatudeAndNotifiServerLog");
 
 
-
+    // The maximum size for a UDP packet
     private static final int MAX_READ_SIZE_UDP = 65507;
 
 
@@ -88,7 +87,7 @@ public class AddatudeServer {
 
 
         //Reading Users and Passwords
-        Map<Long, AddatudeServer.User> userListMap = readUsers(passwordFile);
+        Map<Long, Server.User> userListMap = readUsers(passwordFile);
 
 
 
@@ -118,7 +117,17 @@ public class AddatudeServer {
     }
 
 
-    public static void executeAddatudeProtocol(ServerSocket serverSocket, Logger logger,Map<Long, AddatudeServer.User> userListMap){
+
+
+
+
+    /**
+     * Executes the Addatude Protocol
+     * @param serverSocket the socket from the TCP connection
+     * @param logger logs important information
+     * @param userListMap a map of valid users.
+     */
+    public static void executeAddatudeProtocol(ServerSocket serverSocket, Logger logger,Map<Long, Server.User> userListMap){
 
             while(true) {
                 Socket clntSocket;
@@ -138,7 +147,11 @@ public class AddatudeServer {
 
 
 
-
+    /**
+     * Executes the NoTiFi Protocol
+     * @param datagramSocket the socket from the UDP connection
+     * @param logger logs important messages
+     */
     public static void executeNoTiFiProtocol(DatagramSocket datagramSocket, Logger logger) {
 
         while (true) {
@@ -174,8 +187,8 @@ public class AddatudeServer {
      * @throws IOException If an I/O error occurs
      * @throws ValidationException If the UserID, username, or password is invalid
      */
-    private static HashMap<Long, AddatudeServer.User> readUsers(File passwordFile) throws IOException, ValidationException {
-        HashMap<Long, AddatudeServer.User> userMap = new HashMap<>();
+    private static HashMap<Long, Server.User> readUsers(File passwordFile) throws IOException, ValidationException {
+        HashMap<Long, Server.User> userMap = new HashMap<>();
         BufferedReader br = new BufferedReader(new FileReader(passwordFile));
 
         String line;
@@ -189,7 +202,7 @@ public class AddatudeServer {
             AddatudeValidator.validUnsignedInteger("User ID", Long.toString(id));
             AddatudeValidator.validString("User Name", name);
             AddatudeValidator.validPassword(pw);
-            userMap.put(id, new AddatudeServer.User(name, pw));
+            userMap.put(id, new Server.User(name, pw));
         }
 
         return userMap;

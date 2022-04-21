@@ -1,10 +1,9 @@
-/************************************************
- *
+/*
  * Author: Bryce McWhirter
  * Assignment: Program 2
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 /*
  * Programming Compadre: John Harrison

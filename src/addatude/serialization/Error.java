@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 1
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 /*
  * Testing Partner: John Harrison

@@ -9,12 +9,7 @@
 package notifi.app.client;
 
 
-
 import notifi.serialization.*;
-
-
-
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.DatagramPacket;

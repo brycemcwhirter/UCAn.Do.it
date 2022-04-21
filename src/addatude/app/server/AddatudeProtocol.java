@@ -59,7 +59,7 @@ public class AddatudeProtocol implements Runnable{
     /**
      *  The List of Users
      */
-    private final Map<Long, AddatudeServer.User> userListMap;
+    private final Map<Long, Server.User> userListMap;
 
 
     static {
@@ -76,7 +76,7 @@ public class AddatudeProtocol implements Runnable{
      * @param logger The logger of the connection
      * @param userListMap the list of all users
      */
-    public AddatudeProtocol(Socket clntSocket, Logger logger, Map<Long, AddatudeServer.User> userListMap) {
+    public AddatudeProtocol(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) {
         this.clntSocket = clntSocket;
         this.logger = logger;
         this.userListMap = userListMap;
@@ -90,7 +90,7 @@ public class AddatudeProtocol implements Runnable{
      * @throws IOException If an I/O Error Occurs
      * @throws ValidationException If the Client Message contains a validation exception
      */
-    public static void handleClient(Socket clntSocket, Logger logger, Map<Long, AddatudeServer.User> userListMap) throws IOException, ValidationException {
+    public static void handleClient(Socket clntSocket, Logger logger, Map<Long, Server.User> userListMap) throws IOException, ValidationException {
 
         // Establishing Client Message and Message Input & Output
         Message clntMessage;
@@ -153,7 +153,7 @@ public class AddatudeProtocol implements Runnable{
 
                 else{
                     // Setting the Current User & Attaching the Username to the Location Record Name
-                    AddatudeServer.User currentUser = userListMap.get(newLocationRecord.getUserId());
+                    Server.User currentUser = userListMap.get(newLocationRecord.getUserId());
                     newLocationRecord.setLocationName(currentUser.getUserName()+":" + newLocationRecord.getLocationName());
 
 
