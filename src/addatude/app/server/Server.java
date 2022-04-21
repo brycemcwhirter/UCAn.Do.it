@@ -95,7 +95,7 @@ public class Server {
 
 
         // Create the UDP socket
-        DatagramSocket datagramSocket = new DatagramSocket();
+        DatagramSocket datagramSocket = new DatagramSocket(serverPort);
 
 
 
