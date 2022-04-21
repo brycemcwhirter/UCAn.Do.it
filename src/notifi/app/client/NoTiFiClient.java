@@ -92,6 +92,8 @@ public class NoTiFiClient {
 
         // Repeatedly (While The User Doesn't Quit or
         do {
+
+
             // Receive Message
             socket.send(sentPacket);
 
@@ -102,9 +104,6 @@ public class NoTiFiClient {
                 // Decode the Message You Received
                 NoTiFiMessage newMessage = NoTiFiMessage.decode(receivedAck.getData());
 
-                /*if(!receivedAck.getAddress().equals(serverAddress)){
-                    throw new IOException("Received a packet from an unknown source");
-                }*/
 
                 // If you received an ACK
                 if(newMessage.getCode() == NoTiFiACK.ACK_CODE){

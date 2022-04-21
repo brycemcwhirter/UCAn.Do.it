@@ -84,11 +84,8 @@ public class Server {
 
 
 
-
-
         //Reading Users and Passwords
         Map<Long, Server.User> userListMap = readUsers(passwordFile);
-
 
 
 
@@ -96,8 +93,9 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(serverPort);
         serverSocket.setSoTimeout(60*1000);
 
+
         // Create the UDP socket
-        DatagramSocket datagramSocket = new DatagramSocket(serverPort);
+        DatagramSocket datagramSocket = new DatagramSocket();
 
 
 
@@ -108,8 +106,8 @@ public class Server {
 
 
         for(int i = 0; i < threadPoolSize; i++) {
-            new Thread(() -> executeAddatudeProtocol(serverSocket, logger, userListMap)).start();
             new Thread(() -> executeNoTiFiProtocol(datagramSocket, logger)).start();
+            new Thread(() -> executeAddatudeProtocol(serverSocket, logger, userListMap)).start();
         }
 
 
@@ -128,7 +126,6 @@ public class Server {
      * @param userListMap a map of valid users.
      */
     public static void executeAddatudeProtocol(ServerSocket serverSocket, Logger logger,Map<Long, Server.User> userListMap){
-
             while(true) {
                 Socket clntSocket;
                 try {
