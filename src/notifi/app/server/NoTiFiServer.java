@@ -45,7 +45,6 @@ public class NoTiFiServer {
      */
     public NoTiFiServer(DatagramSocket datagramSocket, byte[] encodedMsg) {
         NoTiFiServer.datagramSocket = datagramSocket;
-        // Decode the Message
         regMsg = (NoTiFiRegister) NoTiFiMessage.decode(encodedMsg);
     }
 
@@ -55,13 +54,13 @@ public class NoTiFiServer {
 
 
     /**
-     * Handles the Initial Client Connection made
-     * to the server
+     * Handles the Initial Client Connection made to the server
      * @param logger the logger for logging messages
+     * @param datagramPacket
      * @throws IOException
      *      if an I/O error occurs
      */
-    public void handleClientConnection(Logger logger) throws IOException {
+    public void handleClientConnection(Logger logger, DatagramPacket datagramPacket) throws IOException {
 
 
         // If the address is Multicast Address
@@ -77,11 +76,10 @@ public class NoTiFiServer {
 
         // If the port is incorrect
         // Send Error Message to Client "Incorrect Port"
-
-        /*else if(regMsg.getPort() != VALID_PORT_NOTIFI){
-            NoTiFiError errorMsg = new NoTiFiError(msg.getMsgId(), "Incorrect Port");
+        else if(regMsg.getPort() != datagramPacket.getPort()){
+            NoTiFiError errorMsg = new NoTiFiError(regMsg.getMsgId(), "Incorrect Port");
             datagramSocket.send(new DatagramPacket(errorMsg.encode(), errorMsg.encode().length, regMsg.getAddress(), regMsg.getPort()));
-        }*/
+        }
 
 
 
@@ -110,9 +108,8 @@ public class NoTiFiServer {
 
             // If register & source address do not match
             // log warning entry on specification
-
-            if(datagramSocket.getInetAddress() != regMsg.getAddress()){
-                logger.warning("Register and Source Address mismatch: "+regMsg.getAddress()+" "+datagramSocket.getInetAddress());
+            if(datagramPacket.getAddress() != regMsg.getAddress()){
+                logger.warning("Register and Source Address mismatch: "+regMsg.getAddress()+" "+datagramPacket.getAddress());
 
             }
 

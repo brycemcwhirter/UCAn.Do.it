@@ -161,11 +161,11 @@ public class Server {
             try {
 
                 // Receive the packet from the client
-                DatagramPacket packet = new DatagramPacket(inBuffer, inBuffer.length);
-                datagramSocket.receive(packet);
-                byte[] encodedMsg = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
+                DatagramPacket datagramPacket = new DatagramPacket(inBuffer, inBuffer.length);
+                datagramSocket.receive(datagramPacket);
+                byte[] encodedMsg = Arrays.copyOfRange(datagramPacket.getData(), 0, datagramPacket.getLength());
 
-                new NoTiFiServer(datagramSocket, encodedMsg).handleClientConnection(logger);
+                new NoTiFiServer(datagramSocket, encodedMsg).handleClientConnection(logger, datagramPacket);
             }catch (IOException e){
                 logger.log(Level.WARNING, "UDP Client Accept Failed", e);
 
