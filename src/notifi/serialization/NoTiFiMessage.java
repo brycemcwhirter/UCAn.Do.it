@@ -32,24 +32,16 @@ public abstract class NoTiFiMessage {
     static final byte VALID_VERSION = 0x30;
 
 
-
-
     /**
      *  The Message ID of the Message
      */
     int msgId;
 
 
-
-
-
     /**
      * The Mask used to receive the NoTiFi Message Type
      */
     static final int CODE_MASK = 0x0f;
-
-
-
 
 
     /**
@@ -90,8 +82,6 @@ public abstract class NoTiFiMessage {
         byte versionAndCode;
 
 
-
-
         try {
             versionAndCode = in.readByte();
 
@@ -110,18 +100,10 @@ public abstract class NoTiFiMessage {
             testMessageID(readID);
 
 
-
-
             // Switch Statement Based On Code
             switch(code){
                 case NoTiFiRegister.REGISTER_CODE -> {
-
-                    if(pkt.length != NoTiFiRegister.REGISTER_SIZE){
-                        throw new IllegalArgumentException("Invalid Size of Packet for Register");
-                    }
-
-
-
+                    NoTiFiValidator.validatePacketSize(pkt.length, NoTiFiRegister.REGISTER_SIZE);
                     message = NoTiFiRegister.decode(readID, in);
                 }
 
@@ -132,11 +114,7 @@ public abstract class NoTiFiMessage {
 
 
                 case NoTiFiACK.ACK_CODE -> {
-
-                    if(pkt.length != NoTiFiACK.ACK_SIZE){
-                        throw new IllegalArgumentException("Invalid Size of Packet for ACK");
-                    }
-
+                    NoTiFiValidator.validatePacketSize(pkt.length, NoTiFiACK.ACK_SIZE);
                     message = new NoTiFiACK(readID);
                 }
 
@@ -155,9 +133,6 @@ public abstract class NoTiFiMessage {
         return message;
     }
 
-
-
-
     /**
      * Serializes Message
      * Declared abstract with respect to specific
@@ -167,23 +142,11 @@ public abstract class NoTiFiMessage {
     public abstract byte[] encode();
 
 
-
-
-
-
-
-
     /**
      * Gets the operation code
      * @return operation code
      */
     public abstract int getCode();
-
-
-
-
-
-
 
 
     /**
@@ -193,12 +156,6 @@ public abstract class NoTiFiMessage {
     public int getMsgId() {
         return msgId;
     }
-
-
-
-
-
-
 
 
     /**
@@ -215,10 +172,6 @@ public abstract class NoTiFiMessage {
     }
 
 
-
-
-
-
     /**
      * Tests if the message id is valid
      * @param msgId the message id
@@ -228,10 +181,6 @@ public abstract class NoTiFiMessage {
             throw new IllegalArgumentException("Illegal Message ID Value: "+ msgId);
         }
     }
-
-
-
-
 
 
     /**
@@ -249,10 +198,6 @@ public abstract class NoTiFiMessage {
 
         throw new IllegalArgumentException("Invalid Operation Code: "+ operationCode);
     }
-
-
-
-
 
 
     /**

@@ -79,5 +79,15 @@ public class NoTiFiValidator {
     }
 
 
+    /**
+     * Validates the Size of a Packet
+     * @param actual the actual size
+     * @param expected the expected size
+     */
+    public static void validatePacketSize(int actual, int expected){
+        if(actual != expected){
+            throw new IllegalArgumentException("Invalid Size of Packet");
+        }
+    }
 
 }

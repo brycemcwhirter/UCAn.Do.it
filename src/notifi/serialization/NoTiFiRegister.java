@@ -37,21 +37,22 @@ public class NoTiFiRegister extends NoTiFiMessage{
     public static final byte REGISTER_CODE = 0;
 
 
+    /**
+     * Describes the largest port value
+     */
+    private static final int LARGEST_PORT_VALUE = 65535;
+
 
     /**
      * The Client address of the Message
      */
-    Inet4Address address;
+    private Inet4Address address;
 
 
     /**
      * The Client port of the Message
      */
-    int port;
-
-
-
-
+    private int port;
 
 
     /**
@@ -72,13 +73,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
         this.address = address;
         this.port = port;
     }
-
-
-
-
-
-
-
 
 
     /**
@@ -109,14 +103,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-
-
-
-
-
-
-
-
     /**
      * Returns a String Representation
      * @return string representation
@@ -127,9 +113,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-
-
-
     /**
      * Get the register address
      * @return register address
@@ -137,10 +120,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
     public Inet4Address getAddress() {
         return address;
     }
-
-
-
-
 
 
     /**
@@ -157,10 +136,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-
-
-
-
     /**
      * Gets the register port
      * @return register port
@@ -168,10 +143,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
     public int getPort() {
         return port;
     }
-
-
-
-
 
 
     /**
@@ -188,10 +159,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
     }
 
 
-
-
-
-
     /**
      * Get Address
      * @return register address
@@ -199,10 +166,6 @@ public class NoTiFiRegister extends NoTiFiMessage{
     public InetSocketAddress getSocketAddress(){
         return new InetSocketAddress(address, port);
     }
-
-
-
-
 
 
     /**
@@ -241,7 +204,7 @@ public class NoTiFiRegister extends NoTiFiMessage{
      *      if the port is invalid
      */
     public void testPort(int port) throws IllegalArgumentException{
-        if(port < 0 || port > 65535){
+        if(port < 0 || port > LARGEST_PORT_VALUE){
             throw new IllegalArgumentException("Port is out of Range");
         }
     }

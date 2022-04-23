@@ -33,7 +33,9 @@ public class NoTiFiACK extends NoTiFiMessage{
     public static final byte ACK_CODE = 0x03;
 
 
-
+    /**
+     * The Size of an ACK Packet
+     */
     public static final int ACK_SIZE = 2;
 
 
@@ -61,8 +63,7 @@ public class NoTiFiACK extends NoTiFiMessage{
         try {
             NoTiFiWriter.writeNoTiFiHeader(out, ACK_CODE, msgId);
             out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
 
         byte[] data = byteStream.toByteArray();

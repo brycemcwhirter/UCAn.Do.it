@@ -44,31 +44,31 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
     /**
      * The User ID of the Location Record
      */
-    int userId;
+    private int userId;
 
 
     /**
      * The Longitude of the Location Record
      */
-    double longitude;
+    private double longitude;
 
 
     /**
      * The Latitude of the Location Record
      */
-    double latitude;
+    private double latitude;
 
 
     /**
      * The name of the location
      */
-    String locationName;
+    private String locationName;
 
 
     /**
      * A Description of the location.
      */
-    String locationDescription;
+    private String locationDescription;
 
 
 
@@ -195,7 +195,7 @@ public class NoTiFiLocationAddition extends NoTiFiMessage{
 
 
             out.flush();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
         }
 

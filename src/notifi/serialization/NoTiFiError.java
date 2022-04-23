@@ -32,7 +32,7 @@ public class NoTiFiError extends NoTiFiMessage{
     /**
      * The Error Message for the Error Notification
      */
-    String errorMessage;
+    private String errorMessage;
 
 
     /**
@@ -134,8 +134,7 @@ public class NoTiFiError extends NoTiFiMessage{
             NoTiFiWriter.writeNoTiFiHeader(out, ERROR_CODE, msgId);
             out.write(errorMessage.getBytes(StandardCharsets.US_ASCII));
             out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
 
         return byteStream.toByteArray();
