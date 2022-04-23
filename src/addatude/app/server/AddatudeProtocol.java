@@ -126,14 +126,14 @@ public class AddatudeProtocol implements Runnable{
 
             // If you received request for all locations
             // Send the list of locations with the list of locations with MapID from the AddATude Message
-            else if(clntMessage.getOperation().equals(LocationRequest.OPERATION)){
+            else if(clntMessage.getOperation().equals("REQUEST")){
                 logger.log(Level.INFO, "Received request for all locations. Sending Locations to Client: "+clntSocket.getInetAddress());
                 response.encode(messageOutput);
             }
 
 
             // If you receive a new location request
-            else if(clntMessage.getOperation().equals(NewLocation.OPERATION)){
+            else if(clntMessage.getOperation().equals("NEW")){
                 logger.log(Level.INFO, "Received New Location Request from Client: "+clntSocket.getInetAddress());
                 NewLocation newLocationRequest = (NewLocation) clntMessage;
                 LocationRecord newLocationRecord = newLocationRequest.getLocationRecord();
@@ -172,6 +172,32 @@ public class AddatudeProtocol implements Runnable{
 
 
                 }
+
+            }
+
+            else if(clntMessage.getOperation().equals("LOCAL")){
+                logger.log(Level.INFO, "Received LOCAL request from client: "+clntSocket.getInetAddress());
+                LocationResponse euclidean = new LocationResponse(response.getMapId(), response.getMapName());
+                LocalLocationRequest clientMessage = (LocalLocationRequest) clntMessage;
+                double x1 = Double.parseDouble(clientMessage.getLatitude());
+                double y1 = Double.parseDouble(clientMessage.getLongitude());
+                LocationRecord shortestEuclidean;
+                double shortestEuclideanValue = 0;
+
+                // TODO refactor and put in separate function
+                for (LocationRecord lr: response.getLocationRecordList()) {
+                    double x2 = Double.parseDouble(lr.getLatitude());
+                    double y2 = Double.parseDouble(lr.getLongitude());
+                    double euclideanDistance = Math.sqrt((y2-y1) * (y2-y1)+(x2-x1)*(x2-x1));
+
+                    if(euclideanDistance > shortestEuclideanValue){
+
+                    }
+               }
+
+
+                euclidean.encode(messageOutput);
+
 
             }
 

@@ -33,7 +33,7 @@ public class Error extends Message{
     /**
      * The Operation of the Error Message
      */
-    public static final String OPERATION = "ERROR";
+    protected static final String OPERATION = "ERROR";
 
 
 
@@ -157,25 +157,10 @@ public class Error extends Message{
     }
 
 
-
-
-
-
-
-    /**
-     * @return The Operation
-     */
     @Override
     public String getOperation() {
         return OPERATION;
     }
-
-
-
-
-
-
-
 
     /**
      * Equals Implementation

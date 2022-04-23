@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 1
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 /*
  * Testing Partner: John Harrison
@@ -24,7 +24,7 @@ public class LocationRequest extends Message{
     /**
      * The Specified Operation for the location request
      */
-    public static final String OPERATION = "ALL";
+    protected static final String OPERATION = "ALL";
 
 
     /**

@@ -29,7 +29,7 @@ public class LocalLocationRequest extends Message{
     long mapId;
 
     // The Operation of the Local Location Request
-    public static final String OPERATION = "LOCAL";
+    protected static final String OPERATION = "LOCAL";
 
 
     /**

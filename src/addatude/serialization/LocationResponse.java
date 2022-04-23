@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 1
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 /*
  * Testing Partner: John Harrison
@@ -40,7 +40,7 @@ public class LocationResponse extends Message{
     /**
      * The Operation of the Location Response
      */
-    public static final String OPERATION = "RESPONSE";
+    protected static final String OPERATION = "RESPONSE";
 
 
     /**
@@ -173,7 +173,6 @@ public class LocationResponse extends Message{
      */
     @Override
     public String getOperation() {
-
         return OPERATION;
     }
 

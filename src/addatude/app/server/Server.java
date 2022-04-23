@@ -115,10 +115,6 @@ public class Server {
     }
 
 
-
-
-
-
     /**
      * Executes the Addatude Protocol
      * @param serverSocket the socket from the TCP connection
@@ -138,10 +134,6 @@ public class Server {
                 }
             }
     }
-
-
-
-
 
 
     /**
@@ -170,11 +162,6 @@ public class Server {
 
         }
     }
-
-
-
-
-
 
 
     /**

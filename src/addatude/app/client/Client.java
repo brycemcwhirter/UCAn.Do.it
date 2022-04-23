@@ -45,12 +45,7 @@ public class Client {
     private static final String NEW_OPERATION = "NEW";
 
 
-
-
-
-
-
-
+    private static final String LOCAL_OPERATION = "LOCAL";
 
 
 
@@ -87,9 +82,6 @@ public class Client {
         // Restart the cycle if map id isn't VALID_MAP_ID
         return mapID;
     }
-
-
-
 
 
     /**
@@ -149,8 +141,8 @@ public class Client {
             newLocation.encode(out);
         }
 
+        // If a Validation Error Occurs on the client side
         catch (ValidationException e){
-            // If a Validation Error Occurs on the client side
             System.err.println("Invalid User Input: " + e.getMessage());
             System.err.flush();
             return null;
@@ -161,8 +153,6 @@ public class Client {
         return byteArrayOutputStream.toByteArray();
 
     }
-
-
 
 
     /**
@@ -203,10 +193,34 @@ public class Client {
 
 
 
+    private static byte[] localOperation(int mapId, BufferedReader consoleReader) throws IOException {
+
+        LocalLocationRequest req;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        MessageOutput out = new MessageOutput(byteArrayOutputStream);
 
 
+        try{
+            // Reading Longitude
+            System.out.print("Longitude > ");
+            String readLongitude = consoleReader.readLine();
+            AddatudeValidator.validLongitude(readLongitude);
 
+            // Reading Latitude
+            System.out.print("Latitude > ");
+            String readLatitude = consoleReader.readLine();
+            AddatudeValidator.validLongitude(readLatitude);
 
+            req = new LocalLocationRequest(mapId, readLongitude, readLatitude);
+            req.encode(out);
+        } catch (ValidationException e) {
+            System.err.println("Invalid User Input: " + e.getMessage());
+            System.err.flush();
+            return null;
+        }
+
+        return byteArrayOutputStream.toByteArray();
+    }
 
 
     /**
@@ -217,13 +231,8 @@ public class Client {
      * @return
      *      a boolean describing if the operation read is the new operation.
      */
-    private static boolean getOperation(BufferedReader consoleReader) {
+    private static String getOperation(BufferedReader consoleReader) {
 
-        // Describes if the input is valid operation
-        boolean validOperation;
-
-        // Describes if the user selects the new operation.
-        boolean isNewOperation = false;
 
         // Continue to ask the user for the operation
         // until a valid operation is given.
@@ -234,31 +243,30 @@ public class Client {
             String operation = null;
             try {
                 operation = consoleReader.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignore) {
             }
 
 
             switch (Objects.requireNonNull(operation)) {
-                case ALL_OPERATION -> validOperation = true;
+                case ALL_OPERATION -> {
+                    return ALL_OPERATION;
+                }
 
                 case NEW_OPERATION -> {
-                    isNewOperation = true;
-                    validOperation = true;
+                    return NEW_OPERATION;
                 }
-                default -> {
-                    System.err.println("Invalid User Input: " + "Unknown Operation \""+ operation+"\"");
-                    System.err.flush();
-                    validOperation = false;
+
+                case LOCAL_OPERATION -> {
+                    return LOCAL_OPERATION;
                 }
+
+                default -> System.err.println("Invalid User Input: " + "Unknown Operation \""+ operation+"\"");
+
             }
-        } while (!validOperation);
-
-        return isNewOperation;
-    }
 
 
-
+        } while (true);
+   }
 
 
     /**
@@ -274,11 +282,10 @@ public class Client {
         BufferedReader consoleReader;
 
 
-        // Describes if the user would like to execute the new operation
-        boolean isNewOperation;
+
 
         // The Message to be sent to the Server
-        byte[] msg;
+        byte[] msg = null;
 
         // The Map ID inputted by the user
         int mapId;
@@ -305,7 +312,7 @@ public class Client {
             consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
             // Get the Operation & MapID
-            isNewOperation = getOperation(consoleReader);
+            String operation = getOperation(consoleReader);
             mapId = getMapID(consoleReader);
 
 
@@ -313,13 +320,16 @@ public class Client {
             if(mapId != -1) {
 
 
+                Objects.requireNonNull(operation);
+
                 // Call the correct operation and create the message
                 // to be encoded to the server
-                if (isNewOperation) {
-                    msg = newOperation(mapId, consoleReader);
-                } else {
-                    msg = allOperation(mapId);
+                switch(operation){
+                    case(ALL_OPERATION) -> msg = allOperation(mapId);
+                    case(NEW_OPERATION)-> msg = newOperation(mapId, consoleReader);
+                    case(LOCAL_OPERATION) -> msg = localOperation(mapId, consoleReader);
                 }
+
 
 
                 // Don't do anything if the message received back is null.
@@ -353,7 +363,7 @@ public class Client {
 
                             // If you received a Location Response,
                             // Output each location record
-                            if (receivedMessage.getOperation().equals(LocationResponse.OPERATION)) {
+                            if (receivedMessage.getOperation().equals("RESPONSE")) {
                                 for(LocationRecord loc : ((LocationResponse) receivedMessage).getLocationRecordList()){
                                     System.out.println(loc);
                                 }
@@ -361,10 +371,11 @@ public class Client {
 
                             // If you received an Error Message from the server
                             // Handle the error message
-                            else if (receivedMessage.getOperation().equals(Error.OPERATION)) {
+                            else if (receivedMessage.getOperation().equals("ERROR")) {
                                 Error error = (Error) receivedMessage;
                                 System.out.println("Error: " + error.getErrorMessage());
                             }
+
                         }
 
                         // If you received an unexpected message,
@@ -387,7 +398,6 @@ public class Client {
             }
 
 
-        // TO DO Figure out Why system error aand print ln are not printing in order
 
         try {
             System.out.print("Would you like to continue? > ");
@@ -404,7 +414,6 @@ public class Client {
 
 
     }
-
 
 
 

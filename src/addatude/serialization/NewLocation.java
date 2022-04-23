@@ -1,10 +1,10 @@
-/************************************************
+/*
  *
  * Author: Bryce McWhirter
  * Assignment: Program 1
  * Class: Data Communications
  *
- ************************************************/
+ */
 
 /*
  * Testing Partner: John Harrison
@@ -33,7 +33,7 @@ public class NewLocation extends Message{
     /**
      * The Operation Describing the Message
      */
-    public static final String OPERATION = "NEW";
+    protected static final String OPERATION = "NEW";
 
 
 
