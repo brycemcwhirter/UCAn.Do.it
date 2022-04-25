@@ -37,7 +37,6 @@ public class NoTiFiTest {
     @Nested
     class ackTest{
 
-        //TODO Bad Serialization Test
 
 
 
@@ -53,14 +52,14 @@ public class NoTiFiTest {
         }
 
         @Test
-        void decode() throws IOException {
+        void decode() {
             NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(new byte[] {51, -1});
             assertEquals(255, ack.getMsgId());
             assertEquals(3, ack.getCode());
         }
 
         @Test
-        void toStringTest() throws IOException {
+        void toStringTest()  {
             NoTiFiACK ack = (NoTiFiACK) NoTiFiMessage.decode(new byte[] {0x33, 1});
             assertEquals("ACK: msgid="+1, ack.toString());
         }
@@ -83,7 +82,7 @@ public class NoTiFiTest {
 
 
         @Test
-        void encodeTest() throws IOException{
+        void encodeTest() {
             byte[] pkt = new NoTiFiError(1, errorMessage).encode();
             NoTiFiError message = (NoTiFiError) NoTiFiMessage.decode(pkt);
             assert message != null;
@@ -93,15 +92,15 @@ public class NoTiFiTest {
 
 
 
-        @ParameterizedTest
-        @MethodSource("validBytes")
-        void decode(byte[] valid) throws IOException {
+        /*@ParameterizedTest
+        @("validBytes")
+        void decode(byte[] valid)   {
             NoTiFiError noTiFiError = (NoTiFiError) NoTiFiMessage.decode(valid);
 
-        }
+        }*/
 
         @Test
-        void toStringTest() throws IOException {
+        void toStringTest()   {
             NoTiFiError noTiFiError = (NoTiFiError) NoTiFiMessage.decode(new byte[] {0x32, 1, 'T', 'h', 'i', 's', ' ', 'm', 'i', 'g', 'h', 't', ' ', 'w', 'o', 'r', 'k'});
             assertEquals("Error: msgid="+1+' '+"This might work", noTiFiError.toString());
         }
@@ -114,11 +113,11 @@ public class NoTiFiTest {
 
 
 
-        public Stream<Arguments> validBytes(){
+        /*public Stream<Arguments> validBytes(){
             return Stream.of(
-                    arguments(new byte[] {50,0,49,50,51})
+                    arguments( new byte[] {50,0,49,50,51})
             );
-        }
+        }*/
 
 
 
@@ -172,7 +171,6 @@ public class NoTiFiTest {
 
         }
 
-        // Todo this exception needs to be thrown
         @ParameterizedTest
         @ValueSource(ints = {-1, -2147483648, 100000, 2147483647})
         void invalidUserIDSet(int badVal){
@@ -180,19 +178,10 @@ public class NoTiFiTest {
 
         }
 
-        //TODO Attribute Constructor tests
-        //  setting name & description to value that breaks UDP is not allowed
-
-
-        // todo invalid location description set xxxxxxxxxxxx
-
-
-        // todo bad set name xxxxxxxxxx
-
 
         @ParameterizedTest
         @MethodSource("validEncodeStreams")
-        void decodeTest(byte[] pkt, int msgID, int userID, double longitude, double latitude, String name, String desc) throws IOException{
+        void decodeTest(byte[] pkt, int msgID, int userID, double longitude, double latitude, String name, String desc)  {
             NoTiFiLocationAddition message = (NoTiFiLocationAddition) NoTiFiMessage.decode(pkt);
             assert message != null;
             assertEquals(msgID, message.getMsgId());
@@ -205,7 +194,7 @@ public class NoTiFiTest {
 
         @ParameterizedTest
         @MethodSource("validEncodeStreams")
-        void encodeTest(byte[] pkt, int msgID, int userID, double longitude, double latitude, String name, String desc) throws IOException {
+        void encodeTest(byte[] pkt, int msgID, int userID, double longitude, double latitude, String name, String desc)   {
             NoTiFiLocationAddition test = new NoTiFiLocationAddition(msgID, userID, longitude, latitude, name, desc);
             byte[] encodePkt = test.encode();
 
@@ -281,7 +270,7 @@ public class NoTiFiTest {
 
         @ParameterizedTest
         @MethodSource("validEncodeStreams")
-        void encodeTest(byte[] pkt, int msgID, String address, int port) throws IOException{
+        void encodeTest(byte[] pkt, int msgID, String address, int port) {
             NoTiFiRegister message = (NoTiFiRegister) NoTiFiMessage.decode(pkt);
             assert message != null;
             assertEquals(msgID, message.getMsgId());
@@ -308,8 +297,6 @@ public class NoTiFiTest {
             );
         }
 
-
-        //TODO specific encode & decode test
 
 
 

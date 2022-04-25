@@ -13,6 +13,8 @@ import addatude.serialization.*;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,6 +66,7 @@ public class AddatudeProtocol implements Runnable{
 
     static {
         try {
+            // The Location Record Response
             response = new LocationResponse(345, "Class Map");
         } catch (ValidationException e) {
             e.printStackTrace();
@@ -72,6 +75,44 @@ public class AddatudeProtocol implements Runnable{
 
 
     /**
+     * A Location with a Euclidean Distance.
+     *
+     * This Class is used for sorting the list of location records
+     * with euclidean distances of the location record.
+     */
+    static class LocationAndEuclideanRecord implements Comparable<LocationAndEuclideanRecord>{
+        LocationRecord lr;
+        double euclidean;
+
+
+        /**
+         * Constructs a Location And Euclidean Record
+         * @param lr the location record
+         * @param euclideanDistance the euclidean distance
+         */
+        public LocationAndEuclideanRecord(LocationRecord lr, double euclideanDistance) {
+            this.lr = lr;
+            this.euclidean = euclideanDistance;
+        }
+
+        /**
+         * Specifies how to sort
+         * the records
+         * @param o the location and euclidean record
+         * @return the specification on how to sort (ascending order)
+         */
+        @Override
+        public int compareTo(LocationAndEuclideanRecord o) {
+            return (int) Math.round(this.euclidean - o.euclidean);
+        }
+    }
+
+
+
+
+
+    /**
+     * Constructs an Addatude Protocol Instance
      * @param clntSocket The Client Connection
      * @param logger The logger of the connection
      * @param userListMap the list of all users
@@ -81,6 +122,8 @@ public class AddatudeProtocol implements Runnable{
         this.logger = logger;
         this.userListMap = userListMap;
     }
+
+
 
 
     /** This method handles a client request
@@ -107,6 +150,7 @@ public class AddatudeProtocol implements Runnable{
 
         try {
 
+
             // Establishing Message Input & Output & Decode the Message from the client
             messageInput = new MessageInput(clntSocket.getInputStream());
             messageOutput = new MessageOutput(clntSocket.getOutputStream());
@@ -126,7 +170,7 @@ public class AddatudeProtocol implements Runnable{
 
             // If you received request for all locations
             // Send the list of locations with the list of locations with MapID from the AddATude Message
-            else if(clntMessage.getOperation().equals("REQUEST")){
+            else if(clntMessage.getOperation().equals("ALL")){
                 logger.log(Level.INFO, "Received request for all locations. Sending Locations to Client: "+clntSocket.getInetAddress());
                 response.encode(messageOutput);
             }
@@ -177,28 +221,9 @@ public class AddatudeProtocol implements Runnable{
 
             else if(clntMessage.getOperation().equals("LOCAL")){
                 logger.log(Level.INFO, "Received LOCAL request from client: "+clntSocket.getInetAddress());
-                LocationResponse euclidean = new LocationResponse(response.getMapId(), response.getMapName());
-                LocalLocationRequest clientMessage = (LocalLocationRequest) clntMessage;
-                double x1 = Double.parseDouble(clientMessage.getLatitude());
-                double y1 = Double.parseDouble(clientMessage.getLongitude());
-                LocationRecord shortestEuclidean;
-                double shortestEuclideanValue = 0;
-
-                // TODO refactor and put in separate function
-                for (LocationRecord lr: response.getLocationRecordList()) {
-                    double x2 = Double.parseDouble(lr.getLatitude());
-                    double y2 = Double.parseDouble(lr.getLongitude());
-                    double euclideanDistance = Math.sqrt((y2-y1) * (y2-y1)+(x2-x1)*(x2-x1));
-
-                    if(euclideanDistance > shortestEuclideanValue){
-
-                    }
-               }
-
-
-                euclidean.encode(messageOutput);
-
-
+                LocationResponse responseWithShortestDistance = new LocationResponse(response.getMapId(), response.getMapName());
+                calculateEuclideanMessage(responseWithShortestDistance, clntMessage);
+                responseWithShortestDistance.encode(messageOutput);
             }
 
 
@@ -212,16 +237,23 @@ public class AddatudeProtocol implements Runnable{
 
 
         }
-         catch (ValidationException e){
-            // log warning: received a message with a validation exception
+
+
+        // log warning: received a message with a validation exception
+        // Return an error message "Unexpected version: "
+        catch (ValidationException e){
              logger.log(Level.SEVERE, "Validation Exception Caught: Sending Error Message to Client: " + clntSocket.getInetAddress());
-            // Return an error message "Unexpected version: "
              new Error(0,"Invalid message").encode(messageOutput);
          }
 
+
+        // Catch any other exceptions thrown in the protocol
+        // and log them.
         catch (Exception e){
             logger.log(Level.SEVERE, "Exception thrown in Addatude Protocol: ", e);
         }
+
+
 
         finally {
             try {
@@ -233,6 +265,41 @@ public class AddatudeProtocol implements Runnable{
 
 
     }
+
+
+    /**
+     * This Method Calculates the Euclidean Distance
+     * for the Local Location Request.
+     * @param responseWithShortestDistance the response to send back to the client
+     * @param clntMessage the Client Message with the Euclidean Coordinates
+     */
+    static void calculateEuclideanMessage(LocationResponse responseWithShortestDistance, Message clntMessage) throws ValidationException {
+
+        ArrayList<LocationAndEuclideanRecord> list = new ArrayList<>();
+
+        LocalLocationRequest clientMessage = (LocalLocationRequest) clntMessage;
+        double x1 = Double.parseDouble(clientMessage.getLatitude());
+        double y1 = Double.parseDouble(clientMessage.getLongitude());
+
+
+
+        for (LocationRecord lr: response.getLocationRecordList()) {
+            double x2 = Double.parseDouble(lr.getLatitude());
+            double y2 = Double.parseDouble(lr.getLongitude());
+            double euclideanDistance = Math.sqrt((y2-y1) * (y2-y1)+(x2-x1)*(x2-x1));
+            list.add(new LocationAndEuclideanRecord(lr, euclideanDistance));
+        }
+
+
+        if(!list.isEmpty()){
+            Collections.sort(list);
+            responseWithShortestDistance.addLocationRecord(list.get(0).lr);
+        }
+
+    }
+
+
+
 
 
     /**
