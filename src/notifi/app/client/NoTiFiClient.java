@@ -157,22 +157,16 @@ public class NoTiFiClient {
                 // If you received a Location Addition
                 // Print the location addition following specification
                 if (newMessage.getCode() == NoTiFiLocationAddition.LOCATION_ADDITION_CODE) {
-
                     NoTiFiLocationAddition LocationAdditionMessage = (NoTiFiLocationAddition) newMessage;
-
                     System.out.println(LocationAdditionMessage);
-
-
                 }
 
 
                 // If you received an Error
                 // Print the error message to the console
                 else if (newMessage.getCode() == NoTiFiError.ERROR_CODE) {
-
                     NoTiFiError error = (NoTiFiError) newMessage;
                     System.err.println(error.getErrorMessage());
-
                 }
 
 
