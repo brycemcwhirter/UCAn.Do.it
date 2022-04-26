@@ -5,18 +5,21 @@ import notifi.serialization.NoTiFiLocationAddition;
 import notifi.serialization.NoTiFiMessage;
 import notifi.serialization.NoTiFiRegister;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Arrays;
+
+
+
+
 
 public class NoTiFiMulticastClient {
 
 
-    // Describes the Largest Number of bytes to be read
-    private static final int MAX_READ_SIZE = 65507;
 
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         // Validate Argument Length
         if (args.length != 2) {
@@ -34,8 +37,45 @@ public class NoTiFiMulticastClient {
             throw new IllegalArgumentException("Address is not multicast");
         }
 
-        while(true) {
+        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
+
+
+
+        new Thread(new handleNoTiFiMessages(multicastAddress, destPort)).start();
+        new Thread(new handleQuitOption(consoleReader)).start();
+
+
+    }
+
+}
+
+
+
+
+
+class handleNoTiFiMessages implements Runnable {
+
+    // Describes the Largest Number of bytes to be read
+    private static final int MAX_READ_SIZE = 65507;
+
+    int destPort;
+
+    InetSocketAddress multicastAddress;
+
+
+    handleNoTiFiMessages(InetSocketAddress multicastAddress, int destPort){
+        this.multicastAddress = multicastAddress;
+        this.destPort = destPort;
+    }
+
+
+
+
+    @Override
+    public void run() {
+
+        while(true) {
 
             try (MulticastSocket sock = new MulticastSocket(destPort)) {
                 sock.joinGroup(multicastAddress, null);
@@ -69,14 +109,13 @@ public class NoTiFiMulticastClient {
                 }
 
 
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | IOException e) {
                 System.err.println("Unable to parse message: " + e.getMessage());
             }
         }
 
 
     }
-
 }
 
 
@@ -84,3 +123,31 @@ public class NoTiFiMulticastClient {
 
 
 
+class handleQuitOption implements Runnable{
+
+    private static final String QUIT_OPTION = "quit";
+
+
+    BufferedReader consoleReader;
+
+    handleQuitOption(BufferedReader consoleReader){
+        this.consoleReader = consoleReader;
+    }
+
+
+    @Override
+    public void run() {
+
+        try {
+            String line = consoleReader.readLine();
+
+            if(line.equals(QUIT_OPTION)){
+                System.exit(0);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+}
