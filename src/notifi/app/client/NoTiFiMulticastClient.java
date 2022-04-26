@@ -19,43 +19,34 @@ public class NoTiFiMulticastClient {
     public static void main(String[] args) throws IOException {
 
         // Validate Argument Length
-        if(args.length != 2){
+        if (args.length != 2) {
             throw new IllegalArgumentException("Parameters: <MulticastAddress> <Port>");
         }
 
 
         // Save Arguments
-        InetAddress multicastAddress = InetAddress.getByName(args[0]);
+        InetSocketAddress multicastAddress = new InetSocketAddress(args[0], 0);
         int destPort = Integer.parseInt(args[1]);
 
 
         // Validate Arguments
-        if(!multicastAddress.isMulticastAddress()){
-            throw new IllegalArgumentException("Attach a Multicast Address");
+        if (!multicastAddress.getAddress().isMulticastAddress()) {
+            throw new IllegalArgumentException("Address is not multicast");
         }
 
+        while(true) {
 
 
-        // Establish the Multicast Socket
-        InetSocketAddress socketAddress = new InetSocketAddress(multicastAddress, destPort);
-        MulticastSocket socket = new MulticastSocket(socketAddress);
+            try (MulticastSocket sock = new MulticastSocket(destPort)) {
+                sock.joinGroup(multicastAddress, null);
 
-
-
-        while(true){
-
-            // Receive a Packet
-            DatagramPacket receivedPacket = new DatagramPacket(new byte[MAX_READ_SIZE], MAX_READ_SIZE);
-            socket.receive(receivedPacket);
-            byte[] receivedBuf = Arrays.copyOf(receivedPacket.getData(), receivedPacket.getLength());
-
-
-
-            try {
+                // Receive a Packet
+                DatagramPacket receivedPacket = new DatagramPacket(new byte[MAX_READ_SIZE], MAX_READ_SIZE);
+                sock.receive(receivedPacket);
+                byte[] receivedBuf = Arrays.copyOf(receivedPacket.getData(), receivedPacket.getLength());
 
                 // Decode the NoTiFi Message
                 NoTiFiMessage newMessage = NoTiFiMessage.decode(receivedBuf);
-
 
 
                 // Protocol for a Location Addition
@@ -73,19 +64,23 @@ public class NoTiFiMulticastClient {
 
 
                 // Protocol for any other message type
-                else if(newMessage.getCode() == NoTiFiRegister.REGISTER_CODE){
+                else if (newMessage.getCode() == NoTiFiRegister.REGISTER_CODE) {
                     System.err.println("Unexpected Message Type");
                 }
 
 
-            }catch(IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 System.err.println("Unable to parse message: " + e.getMessage());
             }
-
-
         }
+
 
     }
 
-
 }
+
+
+
+
+
+
