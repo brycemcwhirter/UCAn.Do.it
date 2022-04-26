@@ -1,3 +1,11 @@
+/*
+ *
+ * Author: Bryce McWhirter
+ * Assignment: Program 7
+ * Class: Data Communications
+ *
+ */
+
 package notifi.app.client;
 
 import notifi.serialization.NoTiFiError;
@@ -12,9 +20,10 @@ import java.net.*;
 import java.util.Arrays;
 
 
-
-
-
+/**
+ * Handles the Initialization of variables
+ * and pre necessary steps for the NoTiFi Connection
+ */
 public class NoTiFiMulticastClient {
 
 
@@ -37,13 +46,18 @@ public class NoTiFiMulticastClient {
             throw new IllegalArgumentException("Address is not multicast");
         }
 
+        // The Console Reader for reading the statement "quit"
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
 
 
+        // Generating two threads
 
+        // One for handling NoTiFi Messages
         new Thread(new handleNoTiFiMessages(multicastAddress, destPort)).start();
-        new Thread(new handleQuitOption(consoleReader)).start();
+
+        // The other for handling user input
+        new Thread(new handleUserInput(consoleReader)).start();
 
 
     }
@@ -51,19 +65,27 @@ public class NoTiFiMulticastClient {
 }
 
 
-
-
-
+/**
+ * This method handles the NoTiFi Messages
+ * being received.
+ */
 class handleNoTiFiMessages implements Runnable {
 
     // Describes the Largest Number of bytes to be read
     private static final int MAX_READ_SIZE = 65507;
 
+    // The destination Port
     int destPort;
 
+    // The socket with the multicast address
     InetSocketAddress multicastAddress;
 
 
+    /**
+     * Constructs an instance of the class
+     * @param multicastAddress the multicast socket address
+     * @param destPort the destination port
+     */
     handleNoTiFiMessages(InetSocketAddress multicastAddress, int destPort){
         this.multicastAddress = multicastAddress;
         this.destPort = destPort;
@@ -119,18 +141,19 @@ class handleNoTiFiMessages implements Runnable {
 }
 
 
+/**
+ * Handles User Input
+ */
+class handleUserInput implements Runnable{
 
-
-
-
-class handleQuitOption implements Runnable{
-
+    // The Quit Option
     private static final String QUIT_OPTION = "quit";
 
-
+    // The Console Reader
     BufferedReader consoleReader;
 
-    handleQuitOption(BufferedReader consoleReader){
+
+    handleUserInput(BufferedReader consoleReader){
         this.consoleReader = consoleReader;
     }
 
@@ -139,14 +162,16 @@ class handleQuitOption implements Runnable{
     public void run() {
 
         try {
+            // Retrieve a line
             String line = consoleReader.readLine();
 
+            // If the user wishes to quit
+            // exit the program
             if(line.equals(QUIT_OPTION)){
                 System.exit(0);
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
 
     }
